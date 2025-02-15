@@ -1,9 +1,63 @@
-import { useState } from "react"
-import { Link } from "react-router-dom"
-import Header from "./Header"
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import Header from "./Header";
 
 export default function SignUpPage() {
-  const [showPassword, setShowPassword] = useState(false)
+  const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+
+  });
+  const [error, setError] = useState(null);
+  const [success, setSuccess] = useState(null);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setSuccess(null);
+
+    // Client-side validation for password match
+    if (formData.password !== formData.confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
+
+    try {
+
+      const response = await fetch("http://127.0.0.1:8000/api/signup/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          first_name: formData.first_name,
+          last_name: formData.last_name,
+          email: formData.email,
+          password: formData.password,
+          user_type: "Employee",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess("Account created successfully! You can now log in.");
+        setFormData({ first_name: "", last_name: "", email: "", password: "", confirmPassword: "" });
+      } else {
+        setError(data.error || "Signup failed.");
+      }
+    } catch (error) {
+      setError("Something went wrong. Please try again.");
+    }
+  };
 
   return (
     <div className="bg-[#F8FBFF]">
@@ -14,14 +68,59 @@ export default function SignUpPage() {
             <h1 className="text-2xl font-semibold tracking-tight">Job Seeker Sign Up</h1>
             <p className="text-sm text-muted-foreground">Create an account to apply for jobs and track applications</p>
           </div>
-          <form className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <input type="email" placeholder="Email" className="w-full px-3 py-2 border rounded-md" />
+              <input
+                type="text"
+                name="first_name"
+                placeholder="First Name"
+                value={formData.first_name}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+              />
+            </div>
+            <div className="space-y-2">
+              <input
+                type="text"
+                name="last_name"
+                placeholder="Last Name"
+                value={formData.last_name}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+              />
+            </div>
+            <div className="space-y-2">
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+              />
             </div>
             <div className="relative space-y-2">
               <input
                 type={showPassword ? "text" : "password"}
+                name="password"
                 placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+              />
+            </div>
+            <div className="relative space-y-2">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="Confirm Password"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                required
                 className="w-full px-3 py-2 border rounded-md"
               />
               <button
@@ -32,21 +131,14 @@ export default function SignUpPage() {
                 {showPassword ? "Hide" : "Show"}
               </button>
             </div>
-            <div className="flex items-center space-x-2">
-              <input type="checkbox" id="privacy" className="rounded" />
-              <label htmlFor="privacy" className="text-sm leading-none text-muted-foreground">
-                I agree to the{" "}
-                <Link to="/privacy" className="text-primary hover:underline">
-                  Privacy Policy
-                </Link>
-              </label>
-            </div>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {success && <p className="text-green-500 text-sm">{success}</p>}
             <button type="submit" className="w-full bg-[#4CAF50] hover:bg-[#45a049] text-white py-2 rounded-md">
               Sign Up
             </button>
             <div className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link to="/sign-in" className="font-medium text-primary hover:underline">
+              <Link to="/job-seeker/signin" className="font-medium text-primary hover:underline">
                 Sign In
               </Link>
             </div>
@@ -54,6 +146,5 @@ export default function SignUpPage() {
         </div>
       </main>
     </div>
-  )
+  );
 }
-
