@@ -46,7 +46,7 @@ class Application(models.Model):
     applicant_experience = models.TextField(blank=True, null=True)
     applicant_location = models.CharField(max_length=100, blank=True, null=True)
     application_action = models.TextField(blank=True, null=True)  
-    skills_req = models.TextField(blank=True, null=True)  # Store CSV skills as a string
+    applicant_skills = models.TextField(blank=True, null=True)  # Store CSV skills as a string
 
     def __str__(self):
         return f"{self.applicant_name} - {self.applicant_role}"
@@ -61,7 +61,7 @@ class JobPost(models.Model):
     location = models.CharField(max_length=100, blank=True, null=True)
     salary_range = models.CharField(max_length=50, blank=True, null=True)
     skills_req = models.TextField(blank=True, null=True)  # Store CSV skills as a string
-
+    tags = models.TextField(blank=True, null=True) 
     def __str__(self):
         return self.job_title
 

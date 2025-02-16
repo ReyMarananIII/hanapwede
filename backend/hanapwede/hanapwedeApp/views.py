@@ -7,9 +7,14 @@ from django.contrib.auth import authenticate
 from rest_framework.decorators import api_view
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import logout
-User = get_user_model()
 from django.http import JsonResponse
-
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from .models import EmployerProfile
+from .serializer import EmployerProfileSerializer
+User = get_user_model()
 
 @csrf_exempt
 def signup(request):
@@ -75,3 +80,25 @@ def logout_view(request):
         logout(request)
         return JsonResponse({"message": "Successfully logged out"}, status=200)
     return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def employer_profile(request):
+    
+    user = request.user
+    
+    if user.user_type != "Employer":
+        return Response({"error": "Unauthorized. Only employers can update their profile."}, status=status.HTTP_403_FORBIDDEN)
+
+
+    profile, created = EmployerProfile.objects.get_or_create(user=user)
+
+    serializer = EmployerProfileSerializer(profile, data=request.data, partial=True)  # Allows partial updates
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "Profile updated successfully!", "data": serializer.data}, status=status.HTTP_200_OK)
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -2,11 +2,14 @@ import { useState } from "react"
 import LoggedInHeader from "./LoggedInHeader"
 
 export default function EmployerProfile() {
+  
   const [formData, setFormData] = useState({
-    companyName: "",
-    companyDescription: "",
-    companyWebsite: "",
+    comp_name: "",
+    comp_desc: "",
+    comp_site: "",
     industry: "",
+    location:"",
+    contact_no:"",
   })
 
   const handleChange = (e) => {
@@ -17,11 +20,35 @@ export default function EmployerProfile() {
     }))
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log("Form submitted:", formData)
-    // Handle form submission
-  }
+  const handleSubmit = async (e) => {
+    
+    e.preventDefault();
+    
+    
+  
+    try {
+      const response = await fetch("http://localhost:8000/api/employer-profile/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${localStorage.getItem("authToken")}`, // Adjust authentication as needed
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Profile updated successfully:", data);
+        alert("Employer profile submitted successfully!");
+      } else {
+        console.error("Error submitting profile:", response.statusText);
+        alert("Failed to submit profile");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
@@ -36,8 +63,8 @@ export default function EmployerProfile() {
               <label className="block text-sm mb-2">Company Name</label>
               <input
                 type="text"
-                name="companyName"
-                value={formData.companyName}
+                name="comp_name"
+                value={formData.comp_name}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md"
                 required
@@ -47,8 +74,8 @@ export default function EmployerProfile() {
             <div>
               <label className="block text-sm mb-2">Company Description</label>
               <textarea
-                name="companyDescription"
-                value={formData.companyDescription}
+                name="comp_desc"
+                value={formData.comp_desc}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md h-32"
                 required
@@ -59,8 +86,8 @@ export default function EmployerProfile() {
               <label className="block text-sm mb-2">Company Website</label>
               <input
                 type="url"
-                name="companyWebsite"
-                value={formData.companyWebsite}
+                name="comp_site"
+                value={formData.comp_site}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md"
                 required
@@ -73,6 +100,30 @@ export default function EmployerProfile() {
                 type="text"
                 name="industry"
                 value={formData.industry}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm mb-2">Location</label>
+              <input
+                type="text"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                className="w-full p-2 border rounded-md"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm mb-2">Contact Number</label>
+              <input
+                type="text"
+                name="contact_no"
+                value={formData.contact_no}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md"
                 required
