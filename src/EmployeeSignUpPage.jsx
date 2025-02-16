@@ -24,7 +24,7 @@ export default function SignUpPage() {
     setError(null);
     setSuccess(null);
 
-    // Client-side validation for password match
+
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match.");
       return;

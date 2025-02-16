@@ -1,10 +1,43 @@
 import { useState } from "react"
-import { Link } from "react-router-dom"
+import { Link,useNavigate } from "react-router-dom"
 import Header from "./Header"
+
 
 export default function EmployerSignIn() {
   const [showPassword, setShowPassword] = useState(false)
+  const [formData, setFormData] = useState({ email: "", password: "" })
+  const [error, setError] = useState(null)
+  const navigate = useNavigate()
 
+  const handleChange = (e) => {
+    setFormData({...formData,[e.target.name]:e.target.value});
+  }
+  const handleSubmit = async (e)=>{
+    e.preventDefault();
+    setError(null);
+    try{
+      const response = await fetch("http://127.0.0.1:8000/api/login/",{ 
+        method: "POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify(formData),
+  });
+  const data  = await response.json();
+  if (response.ok){
+    if (data.user_type !== "Employer") {
+      setError("Invalid role. Please sign in using an Employer Account.");
+      return;
+    }
+    localStorage.setItem("userType", data.user_type);
+    localStorage.setItem("authToken",data.token);
+    navigate("/employer/profile");
+  }
+  else {
+    setError(data.error || "Invalid email or password.");
+  }
+}catch(error){
+    setError("Something went wrong. Please try again.");
+  }
+  }
   return (
     <div className="bg-[#F8FBFF]">
       <Header />
@@ -14,14 +47,26 @@ export default function EmployerSignIn() {
             <h1 className="text-2xl font-semibold tracking-tight">Employer Sign In</h1>
             <p className="text-sm text-muted-foreground">Sign in to post jobs and manage applications</p>
           </div>
-          <form className="space-y-4">
-            <div className="space-y-2">
-              <input type="email" placeholder="Email" className="w-full px-3 py-2 border rounded-md" />
+          <form  onSubmit={handleSubmit}className="space-y-4">
+          <div className="space-y-2">
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="w-full px-3 py-2 border rounded-md"
+              />
             </div>
             <div className="relative space-y-2">
               <input
                 type={showPassword ? "text" : "password"}
+                name="password"
                 placeholder="Password"
+                value={formData.password}
+                required
+                onChange={handleChange}
                 className="w-full px-3 py-2 border rounded-md"
               />
               <button
@@ -32,7 +77,7 @@ export default function EmployerSignIn() {
                 {showPassword ? "Hide" : "Show"}
               </button>
             </div>
-           
+           {error && <div className="text-red-500 text-sm">{error}</div>}
             <button type="submit" className="w-full bg-[#4CAF50] hover:bg-[#45a049] text-white py-2 rounded-md">
               Sign In
             </button>

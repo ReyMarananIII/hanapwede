@@ -1,8 +1,16 @@
-import { Link } from "react-router-dom"
-import Header from "./Header"
-
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import Header from "./Header";
+import LoggedInHeader from "./LoggedInHeader"; 
 
 export default function LandingPage() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("authToken"); 
+    setIsLoggedIn(!!token);
+  }, []);
+
   const featuredJobs = [
     {
       title: "Software Developer",
@@ -28,13 +36,12 @@ export default function LandingPage() {
       location: "Quezon City, Philippines",
       tags: ["Full-time", "Remote Work", "Flexible Hours"],
     },
-  ]
+  ];
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
-      <Header />
+      {isLoggedIn ? <LoggedInHeader /> : <Header />}
 
-   
       <section className="container mx-auto px-4 py-12">
         <div className="grid md:grid-cols-2 gap-8 items-center">
           <div className="space-y-6">
@@ -165,6 +172,5 @@ export default function LandingPage() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
-

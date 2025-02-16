@@ -16,9 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from hanapwedeApp.views import signup
+from hanapwedeApp.views import signup, login_view,logout_view
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/signup/', signup, name='signup'),
+    path("api/login/", login_view, name="login"),
+    path("api/logout/", logout_view, name="logout"),
 ]

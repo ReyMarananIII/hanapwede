@@ -32,6 +32,8 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'corsheaders',
+    'rest_framework',
+    'rest_framework.authtoken',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -40,7 +42,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'hanapwedeApp',
 ]
-
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "rest_framework.authentication.TokenAuthentication",
+    ],
+}
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -51,7 +57,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-CORS_ALLOW_ALL_ORIGINS = True #papaltan pa  to ( FOR DEV LANG )
+ #papaltan pa  to ( FOR DEV LANG )
+
 CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1']
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:5173", 

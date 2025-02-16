@@ -1,18 +1,17 @@
-
-
-# Create your views here.
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.http import JsonResponse
 import json
-
+from django.contrib.auth import authenticate
+from rest_framework.decorators import api_view
+from rest_framework.authtoken.models import Token
+from django.contrib.auth import logout
 User = get_user_model()
-
+from django.http import JsonResponse
 
 
 @csrf_exempt
-
 def signup(request):
     if request.method == "POST":
         try:
@@ -45,3 +44,34 @@ def signup(request):
             return JsonResponse({"error": "Invalid JSON data."}, status=400)
 
     return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+@api_view(["POST"])
+def login_view(request):
+    email = request.data.get("email")
+    password = request.data.get("password")
+
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "Invalid credentials."}, status=400)
+
+    user = authenticate(username=user.username, password=password)
+
+    if user is not None:
+        token, _ = Token.objects.get_or_create(user=user)
+        print(token)
+        print(token.key)
+        print(user.user_type)
+        return JsonResponse({"token": token.key, "message": "Login successful.","user_type":user.user_type})
+    else:
+        return JsonResponse({"error": "Invalid credentials."}, status=400)
+    
+  
+
+@csrf_exempt
+def logout_view(request):
+    if request.method == "POST":
+        logout(request)
+        return JsonResponse({"message": "Successfully logged out"}, status=200)
+    return JsonResponse({"error": "Invalid request"}, status=400)
