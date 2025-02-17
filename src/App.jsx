@@ -11,6 +11,8 @@ import Unauthorized from "./Unauthorized";
 import NotFound from "./NotFound";
 import EditProfile from "./EditProfile"; 
 import PostJobForm from "./PostJobForm";
+import EmployerDashboard from "./EmployerDashboard";
+import Preferences from "./Preferences";
 
 function App() {
   return (
@@ -28,6 +30,16 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Employee"]}>
               <EmployeeDashboard />
+              
+            </ProtectedRoute>
+          } 
+        />
+
+<Route 
+          path="/job-seeker/preferences" 
+          element={
+            <ProtectedRoute allowedRoles={["Employee"]}>
+              <Preferences />
               
             </ProtectedRoute>
           } 
@@ -59,11 +71,16 @@ function App() {
             </ProtectedRoute>
           } 
         />
-
+         <Route 
+          path="/employer/dashboard" 
+          element={
+            <ProtectedRoute allowedRoles={["Employer"]}>
+              <EmployerDashboard />
+            </ProtectedRoute>
+          } 
+        />
 
         <Route path="/unauthorized" element={<Unauthorized />} />
-
-      
         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>

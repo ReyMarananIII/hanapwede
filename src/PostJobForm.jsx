@@ -11,12 +11,14 @@ useEffect(() => {
     }, []);
   
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    jobType: "Full Time",
-    skills: "",
+    job_title: "",
+    job_desc: "",
+    job_type: "Full Time",
+    skills_req: "",
+    category:"Technology",
+    salary_range: "",
     location: "",
-    salaryRange: "",
+    tags: "",
   })
 
   const handleChange = (e) => {
@@ -27,11 +29,40 @@ useEffect(() => {
     }))
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    console.log("Form submitted:", formData)
-    // Handle form submission
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+  
+    const token = localStorage.getItem("authToken");
+  
+    if (!token) {
+      alert("You must be logged in to post a job.");
+      return;
+    }
+  
+    try {
+      const response = await fetch("http://localhost:8000/api/post-job/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${token}`, // ✅ Ensure "Token" is used instead of "Bearer"
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log("Job posted successfully:", data);
+        alert("Job posted successfully!");
+      } else {
+        console.error("Error posting job:", response.statusText);
+        alert("Failed to post job");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred. Please try again.");
+    }
+  };
+  
 
   return (
   <div className="min-h-screen bg-[#F8FBFF]">
@@ -43,8 +74,8 @@ useEffect(() => {
           <label className="block text-sm mb-2">Job Title</label>
           <input
             type="text"
-            name="title"
-            value={formData.title}
+            name="job_title"
+            value={formData.job_title}
             onChange={handleChange}
             placeholder="Enter job title"
             className="w-full p-2 border rounded-md"
@@ -55,8 +86,8 @@ useEffect(() => {
         <div>
           <label className="block text-sm mb-2">Job Description</label>
           <textarea
-            name="description"
-            value={formData.description}
+            name="job_desc"
+            value={formData.job_desc}
             onChange={handleChange}
             placeholder="Enter job description"
             className="w-full p-2 border rounded-md h-32 resize-none"
@@ -64,12 +95,38 @@ useEffect(() => {
           />
         </div>
 
+
+
+        <div>
+          <label className="block text-sm mb-2">Category</label>
+          <div className="relative">
+            <select
+              name="category"
+              value={formData.category}
+              onChange={handleChange}
+              className="w-full p-2 border rounded-md bg-white appearance-none"
+              required
+            >
+              <option value="Technology">Technology</option>
+              <option value="Sales">Sales</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Finance">Finance</option>
+              <option value="Education">Education</option>
+            </select>
+            <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+        </div>
+
         <div>
           <label className="block text-sm mb-2">Job Type</label>
           <div className="relative">
             <select
-              name="jobType"
-              value={formData.jobType}
+              name="job_type"
+              value={formData.job_type}
               onChange={handleChange}
               className="w-full p-2 border rounded-md bg-white appearance-none"
               required
@@ -91,8 +148,8 @@ useEffect(() => {
           <label className="block text-sm mb-2">Required Skills (comma separated)</label>
           <input
             type="text"
-            name="skills"
-            value={formData.skills}
+            name="skills_req"
+            value={formData.skills_req}
             onChange={handleChange}
             placeholder="Communication, Teamwork, Creativity"
             className="w-full p-2 border rounded-md"
@@ -117,8 +174,8 @@ useEffect(() => {
           <label className="block text-sm mb-2">Salary Range</label>
           <input
             type="text"
-            name="salaryRange"
-            value={formData.salaryRange}
+            name="salary_range"
+            value={formData.salary_range}
             onChange={handleChange}
             placeholder="Enter salary range"
             className="w-full p-2 border rounded-md"

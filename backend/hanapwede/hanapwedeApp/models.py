@@ -1,7 +1,16 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.utils.timezone import now 
+from django.conf import settings
 
-class User(AbstractUser):  # Custom user model
+class Tag(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+    
+class User(AbstractUser):
+    preferences = models.ManyToManyField(Tag, blank=True)
     USER_TYPES = (
         ('employee', 'Employee'),
         ('employer', 'Employer'),
@@ -53,6 +62,12 @@ class Application(models.Model):
 
 
 class JobPost(models.Model):
+    posted_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+        limit_choices_to={'user_type': 'Employer'},
+        null=True
+    )
     post_id = models.AutoField(primary_key=True)
     job_title = models.CharField(max_length=100)
     job_desc = models.TextField()
@@ -60,8 +75,9 @@ class JobPost(models.Model):
     category = models.CharField(max_length=100, blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     salary_range = models.CharField(max_length=50, blank=True, null=True)
-    skills_req = models.TextField(blank=True, null=True)  # Store CSV skills as a string
+    skills_req = models.TextField(blank=True, null=True)  
     tags = models.TextField(blank=True, null=True) 
+    created_at = models.DateTimeField(default=now, editable=False)
     def __str__(self):
         return self.job_title
 
