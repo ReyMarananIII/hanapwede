@@ -31,6 +31,7 @@ export default function EmployeeSignIn() {
           return;
         }
         localStorage.setItem("authToken", data.token);
+        localStorage.setItem("userId", data.userId);
         localStorage.setItem("userType", data.user_type);
         navigate("/job-seeker/dashboard"); 
       } else {

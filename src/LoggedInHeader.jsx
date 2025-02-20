@@ -21,7 +21,7 @@ export default function LoggedInHeader() {
       });
 
       if (response.ok) {
-        console.log("User logged out");
+     
         localStorage.removeItem('authToken'); 
         localStorage.clear();
         navigate("/"); 

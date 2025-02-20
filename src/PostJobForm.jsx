@@ -44,14 +44,13 @@ useEffect(() => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Token ${token}`, // ✅ Ensure "Token" is used instead of "Bearer"
+          Authorization: `Token ${token}`, 
         },
         body: JSON.stringify(formData),
       });
   
       if (response.ok) {
         const data = await response.json();
-        console.log("Job posted successfully:", data);
         alert("Job posted successfully!");
       } else {
         console.error("Error posting job:", response.statusText);

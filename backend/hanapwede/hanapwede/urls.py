@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from hanapwedeApp.views import signup, login_view,logout_view,employer_profile,post_job, get_tags,save_preferences
+from hanapwedeApp.views import signup, login_view,logout_view,employer_profile,post_job, get_tags,save_preferences,recommend_jobs
 
 
 urlpatterns = [
@@ -28,5 +28,6 @@ urlpatterns = [
     path("api/post-job/", post_job, name="post-job"),
     path("api/tags/", get_tags, name="get_tags"),
     path("api/save-preferences/", save_preferences, name="save_preferences"),
-    
+    path("api/recommend_jobs/", recommend_jobs, name="recommend_jobs"),
+
 ]

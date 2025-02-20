@@ -31,7 +31,7 @@ export default function EmployerProfile() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Token ${localStorage.getItem("authToken")}`, // Adjust authentication as needed
+          Authorization: `Token ${localStorage.getItem("authToken")}`, 
         },
         body: JSON.stringify(formData),
       });

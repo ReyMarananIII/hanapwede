@@ -76,10 +76,22 @@ class JobPost(models.Model):
     location = models.CharField(max_length=100, blank=True, null=True)
     salary_range = models.CharField(max_length=50, blank=True, null=True)
     skills_req = models.TextField(blank=True, null=True)  
-    tags = models.TextField(blank=True, null=True) 
+    tags = models.ManyToManyField(Tag, blank=True) 
     created_at = models.DateTimeField(default=now, editable=False)
+
+    def get_company_name(self):
+        """Fetch company name from EmployerProfile if it exists."""
+        employer_profile = EmployerProfile.objects.filter(user=self.posted_by).first()
+        return employer_profile.comp_name if employer_profile else "Unknown Company"
+    
+    def get_company_location(self):
+        """Fetch company name from EmployerProfile if it exists."""
+        employer_profile = EmployerProfile.objects.filter(user=self.posted_by).first()
+        return employer_profile.location if employer_profile else "Unknown Location"
+
     def __str__(self):
-        return self.job_title
+        return f"{self.job_title} - {self.get_company_name()} ({self.get_company_location()})"
+
 
 
 class Announcement(models.Model):

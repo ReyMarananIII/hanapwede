@@ -1,30 +1,45 @@
-import { useState } from "react"
-import LoggedInHeader from "./LoggedInHeader"
+import { useState, useEffect } from "react";
+import LoggedInHeader from "./LoggedInHeader";
 
 export default function EmployeeDashboard() {
-  const [jobType, setJobType] = useState("All Types")
-  const [location, setLocation] = useState("")
+  const [jobType, setJobType] = useState("All Types");
+  const [location, setLocation] = useState("");
+  const [jobs, setJobs] = useState([]); 
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const userId = localStorage.getItem("userId"); 
+  const authToken = localStorage.getItem("authToken"); 
 
-  const jobs = [
-    {
-      title: "Frontend Developer",
-      company: "Tech Solutions Inc.",
-      location: "Remote",
-      tags: ["Full-time", "Flexible Hours", "Remote Work"],
-    },
-    {
-      title: "UX Designer",
-      company: "Creative Agency",
-      location: "New York, NY",
-      tags: ["Full-time", "Accessible Office", "Flexible Schedule"],
-    },
-    {
-      title: "Content Writer",
-      company: "Digital Media Co.",
-      location: "Remote",
-      tags: ["Full-time", "Screen Reader Compatible", "Flexible Hours"],
-    },
-  ]
+  useEffect(() => {
+    if (!authToken) {
+      setError("Authentication token not found.");
+      setLoading(false);
+      return;
+    }
+
+    fetch(`http://127.0.0.1:8000/api/recommend_jobs/?user_id=${userId}`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Token ${authToken}`, 
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Failed to fetch jobs");
+        }
+        return response.json();
+      })
+      .then((data) => {
+        setJobs(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching jobs:", error);
+        setError(error.message);
+        setLoading(false);
+      });
+  }, [authToken]);
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
@@ -77,29 +92,36 @@ export default function EmployeeDashboard() {
           <div className="md:col-span-3">
             <h2 className="text-sm font-semibold text-gray-500 mb-4">Recommended for You</h2>
 
-            <div className="space-y-4">
-              {jobs.map((job, index) => (
-                <div key={index} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                  <h3 className="text-xl font-semibold mb-2">{job.title}</h3>
-                  <div className="flex items-center text-gray-600 mb-4">
-                    <span>{job.company}</span>
-                    <span className="mx-2">•</span>
-                    <span>{job.location}</span>
+            {loading ? (
+              <p className="text-gray-500">Loading jobs...</p>
+            ) : error ? (
+              <p className="text-red-500">{error}</p>
+            ) : jobs.length === 0 ? (
+              <p className="text-gray-500">No job recommendations available.</p>
+            ) : (
+              <div className="space-y-4">
+                {jobs.map((job, index) => (
+                  <div key={index} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                    <h3 className="text-xl font-semibold mb-2">{job.job_title}</h3>
+                    <div className="flex items-center text-gray-600 mb-4">
+                      <span>{job.comp_name || "Unknown Company"}</span>
+                      <span className="mx-2">•</span>
+                      <span>{job.comp_location || "Location not specified"}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {job.tags?.split(", ").map((tag, tagIndex) => (
+                        <span key={tagIndex} className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {job.tags.map((tag, tagIndex) => (
-                      <span key={tagIndex} className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }
-
