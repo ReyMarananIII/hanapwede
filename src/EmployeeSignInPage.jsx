@@ -15,25 +15,43 @@ export default function EmployeeSignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
-
+  
     try {
       const response = await fetch("http://127.0.0.1:8000/api/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-
+  
       const data = await response.json();
-
+  
       if (response.ok) {
         if (data.user_type !== "Employee") {
           setError("Invalid role. Please sign in using a Job Seeker Account.");
           return;
         }
+  
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("userId", data.userId);
         localStorage.setItem("userType", data.user_type);
-        navigate("/job-seeker/dashboard"); 
+  
+        // Check if the employee has preferences set
+        const preferencesResponse = await fetch(`http://127.0.0.1:8000/api/user-preferences/${data.userId}/`, {
+          method: "GET",
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Token ${data.token}`
+          },
+        });
+  
+        const preferencesData = await preferencesResponse.json();
+        console.log(preferencesData)
+  
+        if (preferencesData.has_preferences) {
+          navigate("/job-seeker/dashboard");  // Redirect to dashboard
+        } else {
+          navigate("/job-seeker/preferences");  // Redirect to preferences setup
+        }
       } else {
         setError(data.error || "Invalid email or password.");
       }
@@ -41,7 +59,7 @@ export default function EmployeeSignIn() {
       setError("Something went wrong. Please try again.");
     }
   };
-
+  
   return (
     <div className="bg-[#F8FBFF]">
       <Header />

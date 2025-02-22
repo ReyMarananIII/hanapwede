@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import LoggedInHeader from "./LoggedInHeader";
+import { useNavigate } from "react-router-dom";
 
 export default function EmployeeDashboard() {
   const [jobType, setJobType] = useState("All Types");
@@ -8,7 +9,8 @@ export default function EmployeeDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const userId = localStorage.getItem("userId"); 
-  const authToken = localStorage.getItem("authToken"); 
+  const authToken = localStorage.getItem("authToken");
+  const navigate = useNavigate(); 
 
   useEffect(() => {
     if (!authToken) {
@@ -31,6 +33,7 @@ export default function EmployeeDashboard() {
         return response.json();
       })
       .then((data) => {
+        console.log(data)
         setJobs(data);
         setLoading(false);
       })
@@ -101,22 +104,30 @@ export default function EmployeeDashboard() {
             ) : (
               <div className="space-y-4">
                 {jobs.map((job, index) => (
-                  <div key={index} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                    <h3 className="text-xl font-semibold mb-2">{job.job_title}</h3>
-                    <div className="flex items-center text-gray-600 mb-4">
-                      <span>{job.comp_name || "Unknown Company"}</span>
-                      <span className="mx-2">•</span>
-                      <span>{job.comp_location || "Location not specified"}</span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {job.tags?.split(", ").map((tag, tagIndex) => (
-                        <span key={tagIndex} className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))}
+    <div key={index} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+      <h3 className="text-xl font-semibold mb-2">{job.job_title}</h3>
+      <div className="flex items-center text-gray-600 mb-4">
+        <span>{job.comp_name || "Unknown Company"}</span>
+        <span className="mx-2">•</span>
+        <span>{job.comp_location || "Location not specified"}</span>
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {job.tags?.split(", ").map((tag, tagIndex) => (
+          <span key={tagIndex} className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
+            {tag}
+          </span>
+        ))}
+      </div>
+
+      {/* Apply Button */}
+      <button
+        onClick={() => navigate(`/job-seeker/apply?post_id=${job.post_id}`)} // pending pag redirect 
+        className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+      >
+        Apply Now
+      </button>
+    </div>
+  ))}
               </div>
             )}
           </div>

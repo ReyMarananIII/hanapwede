@@ -4,12 +4,21 @@ import LoggedInHeader from "./LoggedInHeader"
 
 export default function PostJobForm() {
 const [isLoggedIn, setIsLoggedIn] = useState(false);
+const [disabilityTags, setDisabilityTags] = useState([]); // Store disability tags
+const [selectedTags, setSelectedTags] = useState([]);
 
 useEffect(() => {
       const token = localStorage.getItem("authToken"); 
       setIsLoggedIn(!!token);
+      fetch("http://localhost:8000/api/disability-tags/", {
+        headers: token ? { Authorization: `Token ${token}` } : {}
+    })
+      .then((res) => res.json())
+      .then((data) => setDisabilityTags(data))
+      .catch((error) => console.error("Error fetching disability tags:", error));
     }, []);
-  
+    {/*tags: "",*/}
+      {/*tags: "",*/}
   const [formData, setFormData] = useState({
     job_title: "",
     job_desc: "",
@@ -17,8 +26,9 @@ useEffect(() => {
     skills_req: "",
     category:"Technology",
     salary_range: "",
-    location: "",
-    tags: "",
+    location: "", 
+  
+    disabilitytag: [],
   })
 
   const handleChange = (e) => {
@@ -29,38 +39,46 @@ useEffect(() => {
     }))
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-  
-    const token = localStorage.getItem("authToken");
-  
-    if (!token) {
+  const handleTagChange = (e) => {
+    const { value, checked } = e.target;
+    const tagId = Number(value);  // Ensure it’s a number
+
+    setSelectedTags((prevTags) =>
+        checked ? [...prevTags, tagId] : prevTags.filter((tag) => tag !== tagId)
+    );
+};
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const token = localStorage.getItem("authToken");
+
+  if (!token) {
       alert("You must be logged in to post a job.");
       return;
-    }
-  
-    try {
+  }
+
+  try {
+    console.log(formData)
       const response = await fetch("http://localhost:8000/api/post-job/", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Token ${token}`, 
-        },
-        body: JSON.stringify(formData),
+          method: "POST",
+          headers: {
+              "Content-Type": "application/json",
+              Authorization: `Token ${token}`, 
+          },
+          body: JSON.stringify({ ...formData, disabilitytag: selectedTags }),
       });
-  
+
       if (response.ok) {
-        const data = await response.json();
-        alert("Job posted successfully!");
+          alert("Job posted successfully!");
       } else {
-        console.error("Error posting job:", response.statusText);
-        alert("Failed to post job");
+          console.error("Error posting job:", response.statusText);
+          alert("Failed to post job");
       }
-    } catch (error) {
+  } catch (error) {
       console.error("Error:", error);
       alert("An error occurred. Please try again.");
-    }
-  };
+  }
+};
   
 
   return (
@@ -142,6 +160,24 @@ useEffect(() => {
             </div>
           </div>
         </div>
+
+        <div>
+            <label className="block text-sm mb-2">Recognized Disabilities</label>
+            <div className="grid grid-cols-2 gap-2">
+              {disabilityTags.map((tag) => (
+                <label key={tag.id} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    value={tag.id}
+                    checked={selectedTags.includes(tag.id)}
+                    onChange={handleTagChange}
+                    className="mr-2"
+                  />
+                  {tag.name}
+                </label>
+              ))}
+            </div>
+          </div>
 
         <div>
           <label className="block text-sm mb-2">Required Skills (comma separated)</label>

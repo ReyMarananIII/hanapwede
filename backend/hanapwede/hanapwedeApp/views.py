@@ -1,5 +1,6 @@
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password
 import json
 from django.contrib.auth import authenticate
@@ -8,16 +9,17 @@ from django.contrib.auth import logout
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes,parser_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import EmployerProfile
 from .serializer import EmployerProfileSerializer
 from .serializer import JobPostSerializer
-from .models import Tag, User, JobPost
-from .serializer import TagSerializer
+from .models import Tag, User, JobPost, UserDisabilityTag, DisabilityTag
+from .serializer import TagSerializer, DisabilityTagSerializer,JobApplicationSerializer
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from rest_framework.parsers import MultiPartParser, FormParser
 
 User = get_user_model()
 @csrf_exempt
@@ -101,19 +103,40 @@ def employer_profile(request):
 
 
 @api_view(["POST"])
-@permission_classes([IsAuthenticated]) 
 def post_job(request):
-    user = request.user
+    print("Request Data:", request.data)
 
-    if user.user_type != "Employer":
-        return Response({"error": "Unauthorized. Only employers can post jobs."}, status=status.HTTP_403_FORBIDDEN)
+    
+    if not request.user.is_authenticated:
+        return Response({"error": "User is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    print("User Type:", request.user.user_type)  
 
     serializer = JobPostSerializer(data=request.data)
-    if serializer.is_valid():
-        serializer.save(posted_by_id=user.id)  
-        return Response({"message": "Job posted successfully!", "data": serializer.data}, status=status.HTTP_201_CREATED)
 
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    if serializer.is_valid():
+        try:
+            job_post = serializer.save(posted_by=request.user)
+            print("Job Post Created:", job_post.post_id)
+
+        
+            disability_tags = request.data.get('disabilitytag', [])
+            if disability_tags:
+                tags = DisabilityTag.objects.filter(id__in=disability_tags)
+                if not tags.exists():
+                    return Response({"error": "Invalid disability tags provided"}, status=status.HTTP_400_BAD_REQUEST)
+                job_post.disabilitytag.set(tags)
+                print("Disability Tags Set:", [tag.id for tag in tags])
+
+            return Response(JobPostSerializer(job_post).data, status=status.HTTP_201_CREATED)
+
+        except Exception as e:
+            print("Error while saving job post:", str(e))
+            return Response({"error": f"Error while saving job post: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    print("Serializer Errors:", serializer.errors)
+    return Response({"error": "Invalid data", "details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['GET'])
 def get_tags(request):
@@ -129,6 +152,26 @@ def save_preferences(request):
     user.preferences.set(Tag.objects.filter(id__in=tag_ids))
     return Response({"message": "Preferences saved successfully"})
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_preferences(request, user_id):
+    """
+    Check if an employee has set their preferences.
+    """
+    user = get_object_or_404(User, id=user_id)
+
+    # Ensure the user is an employee
+    if user.user_type != "Employee":
+        return Response({"detail": "User is not an employee."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Check if the user has preferences
+    if user.preferences.exists():
+        return Response({"has_preferences": True})
+    else:
+        return Response({"has_preferences": False})
+
+
+
 @permission_classes([IsAuthenticated]) 
 def recommend_jobs(request):
     user_id = request.GET.get("user_id")  
@@ -141,7 +184,7 @@ def recommend_jobs(request):
   
     job_data = [
         {
-            "job_id": job.post_id,
+            "post_id": job.post_id,
             "job_title": job.job_title,
             "job_description": job.job_desc,
             "skills_required": job.skills_req if job.skills_req else "",
@@ -168,6 +211,39 @@ def recommend_jobs(request):
     similarity_scores = cosine_similarity(user_vector, tfidf_matrix).flatten()
 
     df["similarity_score"] = similarity_scores
-    recommended_jobs = df.sort_values(by="similarity_score", ascending=False).head(2) #count nung irereturn na jobs, ranked by similarity score
+    recommended_jobs = df.sort_values(by="similarity_score", ascending=False).head(5) #count nung irereturn na jobs, ranked by similarity score
 
     return JsonResponse(recommended_jobs.to_dict(orient="records"), safe=False)
+
+@api_view(["GET"])  
+def get_disability_tags(request):
+    tags = DisabilityTag.objects.all()
+    serializer = DisabilityTagSerializer(tags, many=True)
+    return Response(serializer.data)
+
+
+
+def get_job(request, post_id):
+    job = get_object_or_404(JobPost, post_id=post_id)
+    
+    job_data = {
+        "post_id": job.post_id,
+        "job_title": job.job_title,
+        "job_desc": job.job_desc,
+        "job_type": job.job_type,
+        "location": job.location,
+        "salary_range": job.salary_range,
+    }
+    
+    return JsonResponse(job_data, safe=False)
+
+@api_view(["POST"])
+@parser_classes([MultiPartParser, FormParser])  # Allows file uploads
+def apply_job(request):
+    serializer = JobApplicationSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response({"message": "Application submitted successfully!"}, status=201)
+
+    return Response(serializer.errors, status=400)

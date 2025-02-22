@@ -5,6 +5,7 @@ import EmployerSignUpPage from "./EmployerSignUpPage";
 import EmployeeSignIn from "./EmployeeSignInPage";
 import EmployerSignIn from "./EmployerSignInPage";
 import LandingPage from "./LandingPage";
+import { useState } from "react";
 import EmployeeDashboard from "./EmployeeDashboard";
 import EmployerProfile from "./EmployerProfile";
 import Unauthorized from "./Unauthorized"; 
@@ -13,8 +14,11 @@ import EditProfile from "./EditProfile";
 import PostJobForm from "./PostJobForm";
 import EmployerDashboard from "./EmployerDashboard";
 import Preferences from "./Preferences";
+import TextToSpeech from "./TextToSpeech";
+import JobApplication from "./JobApplication";
 
 function App() {
+  const [isOpen, setIsOpen] = useState(false);
   return (
     <Router>
       <Routes>
@@ -40,6 +44,15 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Employee"]}>
               <Preferences />
+              
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/job-seeker/apply/" 
+          element={
+            <ProtectedRoute allowedRoles={["Employee"]}>
+              <JobApplication />
               
             </ProtectedRoute>
           } 
@@ -83,6 +96,21 @@ function App() {
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
+
+       {/* Floating Button for TTS */}
+       <button
+        className="fixed bottom-5 right-5 bg-blue-500 text-white p-3 rounded-full shadow-lg"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        🗣️
+      </button>
+
+      {/* Show TTS when button is clicked */}
+      {isOpen && (
+        <div className="fixed bottom-16 right-5 bg-white p-4 rounded-lg shadow-md">
+          <TextToSpeech />
+        </div>
+      )}
     </Router>
   );
 }

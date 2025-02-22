@@ -38,7 +38,9 @@ const Preferences = ({ onPreferencesSaved }) => {
       });
 
       if (response.ok) {
+        alert("Preferences saved successfully!");
         onPreferencesSaved();
+        
       } else {
         console.error("Error saving preferences:", response.statusText);
       }
