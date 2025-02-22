@@ -9,17 +9,18 @@ from django.contrib.auth import logout
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import api_view, permission_classes,parser_classes
+from rest_framework.decorators import api_view, permission_classes,parser_classes,authentication_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import EmployerProfile
 from .serializer import EmployerProfileSerializer
 from .serializer import JobPostSerializer
-from .models import Tag, User, JobPost, UserDisabilityTag, DisabilityTag
+from .models import Tag, User, JobPost, UserDisabilityTag, DisabilityTag,Application
 from .serializer import TagSerializer, DisabilityTagSerializer,JobApplicationSerializer
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.authentication import TokenAuthentication
 
 User = get_user_model()
 @csrf_exempt
@@ -190,6 +191,7 @@ def recommend_jobs(request):
             "skills_required": job.skills_req if job.skills_req else "",
             "tags": ", ".join(tag.name for tag in job.tags.all()),
             "comp_name":job.get_company_name(),
+            "category":job.category,
             "comp_location":job.get_company_location()
         }
         for job in job_posts
@@ -199,9 +201,11 @@ def recommend_jobs(request):
         return JsonResponse({"message": "No jobs found"}, status=404)
 
     df = pd.DataFrame(job_data)
-    df["combined_text"] = df["job_description"] + " " + df["skills_required"] + " " + df["tags"]
+    df["combined_text"] = df["job_description"] + " " + df["skills_required"] + " " + df["tags"] +df["category"]
 
     user_profile = " ".join(preferred_tag_names)
+    print(user_profile)
+    
 
     tfidf_vectorizer = TfidfVectorizer(stop_words="english")
     tfidf_matrix = tfidf_vectorizer.fit_transform(df["combined_text"])
@@ -247,3 +251,41 @@ def apply_job(request):
         return Response({"message": "Application submitted successfully!"}, status=201)
 
     return Response(serializer.errors, status=400)
+
+
+@api_view(["GET"])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def employer_dashboard(request):
+    employer = request.user  
+    jobs = JobPost.objects.filter(posted_by=employer)
+
+    # Serialize job postings
+    job_posts_data = list(jobs.values(
+        "post_id", 
+        "job_title", 
+        "job_desc", 
+        "job_type", 
+        "category", 
+        "location", 
+        "salary_range", 
+        "created_at"
+    ))
+
+    applications = Application.objects.filter(job_post__in=jobs)
+
+    applicants_data = list(applications.values(
+        "applicant_name",
+        "applicant_role",
+        "applicant_experience",
+        "applicant_location",
+        "application_action"
+    ))
+
+    return JsonResponse({
+        "active_jobs_count": jobs.count(),
+        "total_applications": applications.count(),
+        "applicants": applicants_data,
+        "job_posts": job_posts_data  
+        
+    })
