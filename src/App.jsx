@@ -16,6 +16,7 @@ import EmployerDashboard from "./EmployerDashboard";
 import Preferences from "./Preferences";
 import TextToSpeech from "./TextToSpeech";
 import JobApplication from "./JobApplication";
+import ForumPage from "./ForumPage";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -89,6 +90,15 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Employer"]}>
               <EmployerDashboard />
+            </ProtectedRoute>
+          } 
+        />
+
+<Route 
+          path="/employer/forum" 
+          element={
+            <ProtectedRoute allowedRoles={["Employer"]}>
+              <ForumPage />
             </ProtectedRoute>
           } 
         />

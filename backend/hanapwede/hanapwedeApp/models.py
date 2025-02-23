@@ -120,3 +120,47 @@ class Announcement(models.Model):
 
     def __str__(self):
         return self.title
+
+
+#START OF FORUMS MODELS
+#------------------------------------------------------------------------------
+class Post(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="posts")
+    title = models.CharField(max_length=255)
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+class Comment(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="comments")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+    parent = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name="replies")
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Comment by {self.user.username} on {self.post.title}"
+
+class Report(models.Model):
+    reported_by = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="reports")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="reports", null=True, blank=True)
+    comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="reports", null=True, blank=True)
+    reason = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        if self.post:
+            return f"Report by {self.reported_by.username} on Post {self.post.id}"
+        elif self.comment:
+            return f"Report by {self.reported_by.username} on Comment {self.comment.id}"
+        return f"Report by {self.reported_by.username}"
+
+
+class BannedWord(models.Model):
+    word = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.word
+    

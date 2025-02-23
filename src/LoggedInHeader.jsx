@@ -66,6 +66,30 @@ export default function LoggedInHeader() {
                     Profile
                   </Link>
                 </li>
+                
+
+                {userRole !== "Employee" && (
+  <li>
+    <Link
+      to={"/employer/forum"}
+      className="block px-4 py-2 hover:bg-gray-100"
+      onClick={() => setIsDropdownOpen(false)}
+    >
+      Forum
+    </Link>
+  </li>
+)}
+
+
+
+
+
+
+
+
+
+
+
                 <li>
                   <Link
                     to={userRole === "Employee" ? "/job-seeker/dashboard" : "/employer/dashboard"}

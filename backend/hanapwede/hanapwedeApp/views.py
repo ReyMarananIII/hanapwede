@@ -7,20 +7,23 @@ from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import logout
 from django.http import JsonResponse
-from rest_framework import status
+from rest_framework import status, serializers
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, permission_classes,parser_classes,authentication_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import EmployerProfile
+from .models import EmployerProfile, Post, Comment, Report, BannedWord
 from .serializer import EmployerProfileSerializer
 from .serializer import JobPostSerializer
-from .models import Tag, User, JobPost, UserDisabilityTag, DisabilityTag,Application
+from .models import Tag, User, JobPost, DisabilityTag,Application
 from .serializer import TagSerializer, DisabilityTagSerializer,JobApplicationSerializer
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.authentication import TokenAuthentication
+from rest_framework import viewsets
+from .permissions import IsEmployer
+from .serializer import PostSerializer, CommentSerializer, ReportSerializer, BannedWordSerializer
 
 User = get_user_model()
 @csrf_exempt
@@ -74,6 +77,7 @@ def login_view(request):
         print(token)
         print(token.key)
         print(user.user_type)
+        print(user.id)
         return JsonResponse({"token": token.key, "message": "Login successful.","user_type":user.user_type,'userId':user.id}, status=200)
     else:
         return JsonResponse({"error": "Invalid credentials."}, status=400)
@@ -289,3 +293,51 @@ def employer_dashboard(request):
         "job_posts": job_posts_data  
         
     })
+
+
+# START OF FORUMS VIEWS
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all().order_by('-created_at')
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated, IsEmployer]
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)  # Assign authenticated user
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all().order_by('-created_at')
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated, IsEmployer]
+
+    def get_queryset(self):
+        post_id = self.request.query_params.get('post_id')
+        print("POST ID TO" ,post_id)
+        if post_id:
+            return self.queryset.filter(post__id=post_id)
+        return self.queryset
+    def perform_create(self, serializer):
+        parent_id = self.request.data.get("parent")
+        print("PARENT ID TO" ,parent_id)
+        parent_comment = None
+
+        if parent_id!=None:
+            try:
+                parent_comment = Comment.objects.get(id=parent_id)
+            except Comment.DoesNotExist:
+                raise serializers.ValidationError({"error": "Parent comment not found"})
+
+        serializer.save(user=self.request.user, parent=parent_comment)
+        
+
+class ReportViewSet(viewsets.ModelViewSet):
+    queryset = Report.objects.all().order_by("-created_at")
+    serializer_class = ReportSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(reported_by=self.request.user)
+
+class BannedWordViewSet(viewsets.ModelViewSet):
+    queryset = BannedWord.objects.all()
+    serializer_class = BannedWordSerializer
+    permission_classes = [IsAuthenticated, IsEmployer]

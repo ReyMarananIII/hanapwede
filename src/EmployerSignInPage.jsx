@@ -29,6 +29,7 @@ export default function EmployerSignIn() {
     }
     localStorage.setItem("userType", data.user_type);
     localStorage.setItem("authToken",data.token);
+    localStorage.setItem("userId", data.userId);
     navigate("/employer/profile");
   }
   else {

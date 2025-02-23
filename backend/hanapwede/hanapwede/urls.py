@@ -18,8 +18,18 @@ from django.contrib import admin
 from django.urls import path
 from hanapwedeApp.views import signup, login_view,logout_view,employer_profile,post_job, get_tags,save_preferences,recommend_jobs, get_user_preferences
 from hanapwedeApp.views import get_disability_tags,get_job,apply_job,employer_dashboard
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
+from hanapwedeApp.views import PostViewSet, CommentViewSet, ReportViewSet, BannedWordViewSet
+
+router = DefaultRouter()
+router.register(r'posts', PostViewSet)
+router.register(r'comments', CommentViewSet)
+router.register(r'reports', ReportViewSet)
+router.register(r'banned-words', BannedWordViewSet)
 
 urlpatterns = [
+    path('api/', include(router.urls)),
     path('admin/', admin.site.urls),
     path('api/signup/', signup, name='signup'),
     path("api/login/", login_view, name="login"),

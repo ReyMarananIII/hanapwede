@@ -30,10 +30,11 @@ export default function EmployeeSignIn() {
           setError("Invalid role. Please sign in using a Job Seeker Account.");
           return;
         }
-  
+       
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("userId", data.userId);
         localStorage.setItem("userType", data.user_type);
+        
   
         // Check if the employee has preferences set
         const preferencesResponse = await fetch(`http://127.0.0.1:8000/api/user-preferences/${data.userId}/`, {
