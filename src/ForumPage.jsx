@@ -9,6 +9,7 @@ export default function ForumPage() {
   const[reportedCommentId, setReportedCommentId]=useState(null);
   const [reportReason, setReportReason] = useState("");
 
+
   const [reportDetails, setReportDetails] = useState("");
   const [newPost, setNewPost] = useState({ title: "", content: "" });
   const [newComment, setNewComment] = useState("");
@@ -73,13 +74,19 @@ const [activeCommentId, setActiveCommentId] = useState(null);
       alert("Please select a reason for reporting.");
       return;
     }
+
+    if (!reportDetails) {
+        alert("Please put details for reporting.");
+        return;
+      }
   
     const reportData = {
       reason: reportReason,
       reported_by: localStorage.getItem("userId"),
+      report_desc:reportDetails,
       post:""
     };
-    console.log(reportData.post)
+    console.log("REPORT DETAILS ITO", reportData.reportDetails)
   
     // kung comment  reported
     if (typeof reportedCommentId !== "undefined" && reportedCommentId !== null) {
@@ -118,25 +125,38 @@ const [activeCommentId, setActiveCommentId] = useState(null);
   };
   
  
-  const handleCreatePost = (e) => {
-    e.preventDefault();
-    fetch(`${API_BASE_URL}/posts/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Token ${localStorage.getItem("authToken")}`, 
-      },
-      body: JSON.stringify(newPost),
-    })
-      .then((res) => res.json())
-      .then((post) => {
-        setPosts([{ ...post, comments: [] }, ...posts]); 
-        setNewPost({ title: "", content: "" });
-        setShowNewPostModal(false);
-      })
-      .catch((error) => console.error("Error creating post:", error));
-  };
+  const [error, setError] = useState(""); // State to store error messages
 
+const handleCreatePost = (e) => {
+    e.preventDefault();
+    setError(""); // Clear previous error
+
+    fetch(`${API_BASE_URL}/posts/`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            Authorization: `Token ${localStorage.getItem("authToken")}`,
+        },
+        body: JSON.stringify(newPost),
+    })
+        .then(async (res) => {
+            const data = await res.json(); // Parse JSON response
+
+            if (!res.ok) {
+                throw new Error(data.error || "Failed to create post"); // Handle validation errors
+            }
+
+            return data;
+        })
+        .then((post) => {
+            setPosts([{ ...post, comments: [] }, ...posts]);
+            setNewPost({ title: "", content: "" });
+            setShowNewPostModal(false);
+        })
+        .catch((error) => {
+            setError(error.message); // Set error message in state
+        });
+};
   // Add a comment to a post
   const handleAddComment = (postId, parentId = null) => {
     console.log(parentId)
@@ -152,9 +172,11 @@ const [activeCommentId, setActiveCommentId] = useState(null);
             parent: parentId,
         }),
     })
-        .then((res) => {
+        .then(async (res) => {
             if (!res.ok) {
-                throw new Error("Failed to add comment");
+                const errorData = await res.json();
+                alert(errorData.error);
+                throw new Error(errorData.error||"Failed to add comment");
             }
             return res.json();
         })
@@ -351,6 +373,7 @@ const [activeCommentId, setActiveCommentId] = useState(null);
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg max-w-2xl w-full p-6">
             <h2 className="text-xl font-bold mb-4">Create New Post</h2>
+            {error && <p style={{ color: "red" }}>Unable to create post ({error})</p>} {/* Show error */}
             <form onSubmit={handleCreatePost}>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
@@ -404,7 +427,9 @@ const [activeCommentId, setActiveCommentId] = useState(null);
               <option value="other">Other</option>
             </select>
             <textarea
-              placeholder="Additional details (optional)"
+              value={reportDetails}
+              onChange={(e)=>setReportDetails(e.target.value)}
+              placeholder="Additional details"
               className="w-full px-3 py-2 border rounded-lg mb-4 focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"
               rows="3"
             />

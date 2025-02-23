@@ -148,6 +148,7 @@ class Report(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="reports", null=True, blank=True)
     comment = models.ForeignKey(Comment, on_delete=models.CASCADE, related_name="reports", null=True, blank=True)
     reason = models.TextField()
+    report_desc = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

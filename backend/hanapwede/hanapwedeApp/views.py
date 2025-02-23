@@ -302,7 +302,12 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     permission_classes = [IsAuthenticated, IsEmployer]
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)  # Assign authenticated user
+        title = self.request.data.get("title", "")  
+        content = self.request.data.get("content", "")
+
+        if contains_banned_words(title) or contains_banned_words(content):
+           raise serializers.ValidationError({"error": "Post contains profanity/banned words"})
+        serializer.save(user=self.request.user)  
 
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().order_by('-created_at')
@@ -316,6 +321,9 @@ class CommentViewSet(viewsets.ModelViewSet):
             return self.queryset.filter(post__id=post_id)
         return self.queryset
     def perform_create(self, serializer):
+        if(contains_banned_words(self.request.data.get("content"))):
+            raise serializers.ValidationError({"error": "Comment contains profanity/banned words"})
+
         parent_id = self.request.data.get("parent")
         print("PARENT ID TO" ,parent_id)
         parent_comment = None
@@ -341,3 +349,7 @@ class BannedWordViewSet(viewsets.ModelViewSet):
     queryset = BannedWord.objects.all()
     serializer_class = BannedWordSerializer
     permission_classes = [IsAuthenticated, IsEmployer]
+
+
+def contains_banned_words(text):
+    return BannedWord.objects.filter(word__in=text.lower().split()).exists()
