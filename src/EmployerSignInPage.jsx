@@ -36,6 +36,7 @@ export default function EmployerSignIn() {
     setError(data.error || "Invalid email or password.");
   }
 }catch(error){
+    console.error("Error:", error);
     setError("Something went wrong. Please try again.");
   }
   }
@@ -83,7 +84,7 @@ export default function EmployerSignIn() {
               Sign In
             </button>
             <div className="text-center text-sm text-muted-foreground">
-              Don't have an account?{" "}
+            Don&apos;t have an account?{" "}
               <Link to="/employer/signup" className="font-medium text-primary hover:underline">
                 Sign Up
               </Link>

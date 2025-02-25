@@ -27,6 +27,7 @@ function App() {
         <Route path="/employer/signin" element={<EmployerSignIn />} />
         <Route path="/job-seeker/signup" element={<EmployeeSignUpPage />} />
         <Route path="/employer/signup" element={<EmployerSignUpPage />} />
+        <Route path="/hanapwede/forum" element={<ForumPage />} />
         <Route path="/" element={<LandingPage />} />
 
         {/* Employee Routes */}
@@ -94,14 +95,7 @@ function App() {
           } 
         />
 
-<Route 
-          path="/employer/forum" 
-          element={
-            <ProtectedRoute allowedRoles={["Employer"]}>
-              <ForumPage />
-            </ProtectedRoute>
-          } 
-        />
+
 
         <Route path="/unauthorized" element={<Unauthorized />} />
         <Route path="*" element={<NotFound />} />

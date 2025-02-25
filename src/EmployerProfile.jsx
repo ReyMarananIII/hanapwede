@@ -37,8 +37,6 @@ export default function EmployerProfile() {
       });
   
       if (response.ok) {
-        const data = await response.json();
-        console.log("Profile updated successfully:", data);
         alert("Employer profile submitted successfully!");
       } else {
         console.error("Error submitting profile:", response.statusText);

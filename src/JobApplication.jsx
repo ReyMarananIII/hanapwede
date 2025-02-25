@@ -5,7 +5,7 @@ import LoggedInHeader from "./LoggedInHeader";
 export default function JobApplication() {
   const [searchParams] = useSearchParams();
   const jobId = searchParams.get("post_id");
-  console.log("Extracted job_id:", jobId); 
+ 
 
   const [job, setJob] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -35,7 +35,7 @@ export default function JobApplication() {
         return res.json();
       })
       .then((data) => {
-        console.log(data);
+    
         setJob(data);
         setLoading(false);
       })
@@ -95,9 +95,9 @@ export default function JobApplication() {
     formDataToSend.append("applicant_location", formData.applicant_location);
     formDataToSend.append("applicant_skills", skills.join(",")); // Convert array to a comma-separated string
     formDataToSend.append("job_post", jobId);
-    console.log(jobId)
+
     formDataToSend.append("application_action", "For Approval");
-    console.log(skills.join(","));
+
 
     if (resume) {
       formDataToSend.append("resume", resume);

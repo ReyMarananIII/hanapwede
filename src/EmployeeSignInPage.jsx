@@ -34,7 +34,7 @@ export default function EmployeeSignIn() {
         localStorage.setItem("authToken", data.token);
         localStorage.setItem("userId", data.userId);
         localStorage.setItem("userType", data.user_type);
-        
+        localStorage.setItem("username", data.username);
   
         // Check if the employee has preferences set
         const preferencesResponse = await fetch(`http://127.0.0.1:8000/api/user-preferences/${data.userId}/`, {
@@ -46,7 +46,7 @@ export default function EmployeeSignIn() {
         });
   
         const preferencesData = await preferencesResponse.json();
-        console.log(preferencesData)
+       
   
         if (preferencesData.has_preferences) {
           navigate("/job-seeker/dashboard");  // Redirect to dashboard
@@ -57,6 +57,7 @@ export default function EmployeeSignIn() {
         setError(data.error || "Invalid email or password.");
       }
     } catch (error) {
+      console.error("Error:", error);
       setError("Something went wrong. Please try again.");
     }
   };
@@ -105,7 +106,7 @@ export default function EmployeeSignIn() {
               Sign In
             </button>
             <div className="text-center text-sm text-muted-foreground">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link to="/job-seeker/signup" className="font-medium text-primary hover:underline">
                 Sign Up
               </Link>

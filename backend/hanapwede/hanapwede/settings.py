@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'hanapwedeApp',
+    'channels',
 ]
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
@@ -81,7 +82,13 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'hanapwede.wsgi.application'
+ASGI_APPLICATION = "hanapwede.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer",  # for dev, lipat redis for prod
+    }
+}
 
 AUTH_USER_MODEL = 'hanapwedeApp.User'
 

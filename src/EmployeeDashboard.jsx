@@ -33,7 +33,7 @@ export default function EmployeeDashboard() {
         return response.json();
       })
       .then((data) => {
-        console.log(data)
+    
         setJobs(data);
         setLoading(false);
       })

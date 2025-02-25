@@ -13,8 +13,7 @@ export default function ForumPage() {
   const [reportDetails, setReportDetails] = useState("");
   const [newPost, setNewPost] = useState({ title: "", content: "" });
   const [newComment, setNewComment] = useState("");
-  const [activeCommentPost, setActiveCommentPost] = useState(null);
-  const [activeReplyComment, setActiveReplyComment] = useState(null);
+
 
 
   const [activePostId, setActivePostId] = useState(null); 
@@ -86,7 +85,7 @@ const [activeCommentId, setActiveCommentId] = useState(null);
       report_desc:reportDetails,
       post:""
     };
-    console.log("REPORT DETAILS ITO", reportData.reportDetails)
+   
   
     // kung comment  reported
     if (typeof reportedCommentId !== "undefined" && reportedCommentId !== null) {
@@ -96,7 +95,7 @@ const [activeCommentId, setActiveCommentId] = useState(null);
       else if (typeof reportedPostId !== "undefined" && reportedPostId !== null) {
         
         reportData.post = reportedPostId;
-        console.log(reportData.post)
+      
       } 
       else {
         alert("Error: No post or comment selected.");
@@ -159,7 +158,7 @@ const handleCreatePost = (e) => {
 };
   // Add a comment to a post
   const handleAddComment = (postId, parentId = null) => {
-    console.log(parentId)
+
     fetch(`${API_BASE_URL}/comments/`, {
         method: "POST",
         headers: {
@@ -202,7 +201,7 @@ const handleCreatePost = (e) => {
 
             setPosts(updatedPosts);
             setNewComment("");
-            setActiveCommentPost(null);
+            
         })
         .catch((error) => console.error("Error adding comment:", error));
 };
@@ -218,7 +217,7 @@ const handleCreatePost = (e) => {
       <LoggedInHeader />
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">Employer Forum</h1>
+          <h1 className="text-2xl font-bold">Hanapwede Forum</h1>
           <button
             onClick={() => setShowNewPostModal(true)}
             className="bg-[#4CAF50] text-white px-4 py-2 rounded-lg hover:bg-[#45a049] transition-colors"
@@ -338,7 +337,7 @@ const handleCreatePost = (e) => {
                       />
                       <div className="flex justify-end gap-2 mt-2">
                         <button
-                          onClick={() => setActiveCommentPost(null)}
+                          
                           className="px-4 py-2 text-gray-600 hover:text-gray-800"
                         >
                           Cancel

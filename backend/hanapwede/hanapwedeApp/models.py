@@ -2,6 +2,9 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils.timezone import now 
 from django.conf import settings
+from django.contrib.auth import get_user_model
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 class Tag(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -36,6 +39,7 @@ class User(AbstractUser):
 class EmployeeProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
     pro_headline = models.CharField(max_length=255, blank=True, null=True)
+    full_name=models.CharField(max_length=100,blank=True,null=True)
     bio = models.TextField(blank=True, null=True)
     user_disablitytag = models.ManyToManyField(UserDisabilityTag, blank=True)
     contact_no = models.CharField(max_length=20, blank=True, null=True)
@@ -108,6 +112,8 @@ class Application(models.Model):
     null=True,  # Temporary to allow migration
     
 )
+    
+    
 
     def __str__(self):
         return f"{self.applicant_name} - {self.applicant_role} (Applied for {self.job_post.job_title})"
@@ -165,3 +171,51 @@ class BannedWord(models.Model):
     def __str__(self):
         return self.word
     
+# START NG NOTIFS MODEL
+
+
+
+User = get_user_model()
+
+class Notification(models.Model):
+    recipient = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notifications")
+    title = models.CharField(max_length=255) 
+    action = models.CharField(max_length=255)  
+    
+   
+    target_content_type = models.ForeignKey(
+        ContentType, on_delete=models.SET_NULL, null=True, blank=True
+    )
+    target_object_id = models.PositiveIntegerField(null=True, blank=True)
+    target = GenericForeignKey("target_content_type", "target_object_id")
+
+    is_read = models.BooleanField(default=False)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-timestamp"]  
+
+    def __str__(self):
+        return f"{self.recipient} - {self.title} ({self.action})"
+    
+# END NG NOTIFS MODEL
+
+
+#START NG CHAT MODEL
+
+
+User = get_user_model()
+
+class PrivateChatRoom(models.Model):
+    user1 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="chat_user1")
+    user2 = models.ForeignKey(User, on_delete=models.CASCADE, related_name="chat_user2")
+
+    def get_room_name(self):
+        return f"chat_{min(self.user1.id, self.user2.id)}_{max(self.user1.id, self.user2.id)}"
+
+class Message(models.Model):
+    room = models.ForeignKey(PrivateChatRoom, on_delete=models.CASCADE)
+    sender = models.ForeignKey(User, on_delete=models.CASCADE)
+    content = models.TextField()
+    timestamp = models.DateTimeField(auto_now_add=True)
+

@@ -58,7 +58,7 @@ const handleSubmit = async (e) => {
   }
 
   try {
-    console.log(formData)
+
       const response = await fetch("http://localhost:8000/api/post-job/", {
           method: "POST",
           headers: {

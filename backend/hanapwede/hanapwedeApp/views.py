@@ -2,6 +2,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password
+from django.contrib.contenttypes.models import ContentType
+from hanapwedeApp.models import EmployeeProfile,Notification
 import json
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
@@ -22,9 +24,9 @@ from sklearn.metrics.pairwise import cosine_similarity
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import viewsets
-from .permissions import IsEmployer
-from .serializer import PostSerializer, CommentSerializer, ReportSerializer, BannedWordSerializer
 
+from .serializer import PostSerializer, CommentSerializer, ReportSerializer, BannedWordSerializer
+from .serializer import EmployeeProfileSerializer,NotificationSerializer
 User = get_user_model()
 @csrf_exempt
 def signup(request):
@@ -157,6 +159,41 @@ def save_preferences(request):
     user.preferences.set(Tag.objects.filter(id__in=tag_ids))
     return Response({"message": "Preferences saved successfully"})
 
+
+@api_view(['PUT'])
+@permission_classes([IsAuthenticated])
+def edit_profile(request):
+    id = request.user.id
+    print(id)
+    
+    try:
+        user_profile = EmployeeProfile.objects.get(user_id=id)
+    except EmployeeProfile.DoesNotExist:
+        return Response({"error": "User profile not found"}, status=404)
+
+    serializer = EmployeeProfileSerializer(user_profile, data=request.data, partial=True)
+    
+    if serializer.is_valid():
+        serializer.save()
+
+        # Create a notification for the user
+        Notification.objects.create(
+            recipient=request.user,
+            title="Profile Updated",
+            action="Your profile has been successfully updated.",
+            target_content_type=ContentType.objects.get_for_model(EmployeeProfile),
+            target_object_id=user_profile.user_id
+        )
+
+        return Response({"message": "Account edited successfully"}, status=201)
+    
+    return Response(serializer.errors, status=400)
+
+
+
+
+
+
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_preferences(request, user_id):
@@ -251,7 +288,18 @@ def apply_job(request):
     serializer = JobApplicationSerializer(data=request.data)
 
     if serializer.is_valid():
-        serializer.save()
+        job_application= serializer.save()
+
+        job= job_application.job_post
+        employer = job.posted_by
+        Notification.objects.create(
+            recipient=employer,  
+            title="New Job Application",
+            action=f"{job_application.applicant_name} applied for {job.job_title}.",
+            is_read=False
+        )
+
+
         return Response({"message": "Application submitted successfully!"}, status=201)
 
     return Response(serializer.errors, status=400)
@@ -261,7 +309,7 @@ def apply_job(request):
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
 def employer_dashboard(request):
-    employer = request.user  
+    employer = request.user
     jobs = JobPost.objects.filter(posted_by=employer)
 
     # Serialize job postings
@@ -300,7 +348,7 @@ def employer_dashboard(request):
 class PostViewSet(viewsets.ModelViewSet):
     queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer
-    permission_classes = [IsAuthenticated, IsEmployer]
+    permission_classes = [IsAuthenticated]
     def perform_create(self, serializer):
         title = self.request.data.get("title", "")  
         content = self.request.data.get("content", "")
@@ -312,7 +360,7 @@ class PostViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all().order_by('-created_at')
     serializer_class = CommentSerializer
-    permission_classes = [IsAuthenticated, IsEmployer]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         post_id = self.request.query_params.get('post_id')
@@ -348,8 +396,34 @@ class ReportViewSet(viewsets.ModelViewSet):
 class BannedWordViewSet(viewsets.ModelViewSet):
     queryset = BannedWord.objects.all()
     serializer_class = BannedWordSerializer
-    permission_classes = [IsAuthenticated, IsEmployer]
+    permission_classes = [IsAuthenticated]
 
 
 def contains_banned_words(text):
     return BannedWord.objects.filter(word__in=text.lower().split()).exists()
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_notifications(request):
+    notifications = Notification.objects.filter(recipient=request.user).order_by('-timestamp')
+    serializer = NotificationSerializer(notifications, many=True)
+    return Response(serializer.data)
+
+@api_view(["PATCH"])
+def mark_notification_read(request, notification_id):
+    try:
+        notification = Notification.objects.get(id=notification_id)
+        notification.is_read = True
+        notification.save()
+        return Response({"message": "Notification marked as read"}, status=status.HTTP_200_OK)
+    except Notification.DoesNotExist:
+        return Response({"error": "Notification not found"}, status=status.HTTP_404_NOT_FOUND)
+    
+@api_view(["PATCH"])
+def mark_all_notifications_read(request):
+    try:
+        Notification.objects.filter(is_read=False).update(is_read=True)
+        return Response({"message": "All notifications marked as read"}, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

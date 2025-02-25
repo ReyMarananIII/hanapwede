@@ -1,3 +1,4 @@
+# UNUSED FILE KASI PINALTAN ANG PERMISSION FROM EMPLOYER ONLY FORUM TO ALL
 from rest_framework.permissions import BasePermission
 
 class IsEmployer(BasePermission):

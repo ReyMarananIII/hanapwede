@@ -5,19 +5,20 @@ import Header from "./Header"
 export default function EditProfile() {
   const [activeTab, setActiveTab] = useState("about")
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const userId =  localStorage.getItem('userId')
   
     useEffect(() => {
       const token = localStorage.getItem("authToken"); 
       setIsLoggedIn(!!token);
     }, []);
   const [formData, setFormData] = useState({
-    fullName: "",
-    professionalHeadline: "",
-    aboutMe: "",
-    disabilityType: "",
+    full_name: "",
+    pro_headline: "",
+    bio: "",
     email: "",
-    phone: "",
+    contact_no: "",
     location: "",
+    user:userId,
   })
 
   const handleChange = (e) => {
@@ -28,9 +29,34 @@ export default function EditProfile() {
     }))
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-  }
+  const handleSubmit = async (e) => {
+    
+    e.preventDefault();
+    try {
+
+      const response = await fetch("http://localhost:8000/api/edit_profile/", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Token ${localStorage.getItem("authToken")}`, 
+        },
+        body: JSON.stringify(formData),
+      });
+  
+      if (response.ok) {
+      
+        
+     
+        alert("Employee profile updated successfully!");
+      } else {
+        console.error("Error submitting profile:", response.statusText);
+        alert("Failed to submit profile");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("An error occurred. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
@@ -84,8 +110,8 @@ export default function EditProfile() {
                 <label className="block text-sm mb-2">Full Name</label>
                 <input
                   type="text"
-                  name="fullName"
-                  value={formData.fullName}
+                  name="full_name"
+                  value={formData.full_name}
                   onChange={handleChange}
                   placeholder="Enter your full name"
                   className="w-full p-2 border rounded-md"
@@ -96,8 +122,8 @@ export default function EditProfile() {
                 <label className="block text-sm mb-2">Professional Headline</label>
                 <input
                   type="text"
-                  name="professionalHeadline"
-                  value={formData.professionalHeadline}
+                  name="pro_headline"
+                  value={formData.pro_headline}
                   onChange={handleChange}
                   placeholder="E.g., Frontend Developer at Tech Company"
                   className="w-full p-2 border rounded-md"
@@ -107,8 +133,8 @@ export default function EditProfile() {
               <div>
                 <label className="block text-sm mb-2">About Me</label>
                 <textarea
-                  name="aboutMe"
-                  value={formData.aboutMe}
+                  name="bio"
+                  value={formData.bio}
                   onChange={handleChange}
                   placeholder="Write a brief summary about yourself..."
                   className="w-full p-2 border rounded-md h-32"
@@ -150,8 +176,8 @@ export default function EditProfile() {
                   <label className="block text-sm mb-2">Phone</label>
                   <input
                     type="tel"
-                    name="phone"
-                    value={formData.phone}
+                    name="contact_no"
+                    value={formData.contact_no}
                     onChange={handleChange}
                     placeholder="Phone number"
                     className="w-full p-2 border rounded-md"

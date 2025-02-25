@@ -21,7 +21,7 @@ from hanapwedeApp.views import get_disability_tags,get_job,apply_job,employer_da
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from hanapwedeApp.views import PostViewSet, CommentViewSet, ReportViewSet, BannedWordViewSet
-
+from hanapwedeApp.views import edit_profile,get_notifications,mark_notification_read,mark_all_notifications_read
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'comments', CommentViewSet)
@@ -44,6 +44,10 @@ urlpatterns = [
     path("api/job/<int:post_id>/", get_job, name="get_job"),
     path("api/submit-application/", apply_job, name="apply_job"),
     path("api/employer-dashboard/", employer_dashboard, name="employer-dashboard"),
+    path("api/edit_profile/", edit_profile,name="edit_profile"),
+    path("api/get-notifications/",get_notifications,name="get_notifications"),
+      path("api/mark-notification-read/<int:notification_id>/", mark_notification_read, name="mark-notification-read"),
+    path("api/mark-all-notifications-read/", mark_all_notifications_read, name="mark-all-notifications-read"),
 
 
 ]
