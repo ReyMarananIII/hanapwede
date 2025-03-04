@@ -17,7 +17,7 @@ import Preferences from "./Preferences";
 import TextToSpeech from "./TextToSpeech";
 import JobApplication from "./JobApplication";
 import ForumPage from "./ForumPage";
-
+import ChatRoom from "./ChatRoom";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -28,6 +28,7 @@ function App() {
         <Route path="/job-seeker/signup" element={<EmployeeSignUpPage />} />
         <Route path="/employer/signup" element={<EmployerSignUpPage />} />
         <Route path="/hanapwede/forum" element={<ForumPage />} />
+        <Route path="/chat/:roomId" element={<ChatRoom />} />
         <Route path="/" element={<LandingPage />} />
 
         {/* Employee Routes */}

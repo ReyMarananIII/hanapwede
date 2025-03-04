@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     'corsheaders',
     'rest_framework',
     'rest_framework.authtoken',
@@ -60,9 +61,9 @@ MIDDLEWARE = [
 ]
  #papaltan pa  to ( FOR DEV LANG )
 
-CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1']
+CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1',"https://161.248.25.136"]
 CORS_ORIGIN_WHITELIST = [
-    "http://localhost:5173", 
+    "http://localhost:5173","http://161.248.25.136", 
 ]
 ROOT_URLCONF = 'hanapwede.urls'
 

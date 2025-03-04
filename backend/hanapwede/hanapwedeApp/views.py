@@ -25,6 +25,7 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import viewsets
 
+
 from .serializer import PostSerializer, CommentSerializer, ReportSerializer, BannedWordSerializer
 from .serializer import EmployeeProfileSerializer,NotificationSerializer
 User = get_user_model()
@@ -76,11 +77,8 @@ def login_view(request):
 
     if user is not None:
         token, _ = Token.objects.get_or_create(user=user)
-        print(token)
-        print(token.key)
-        print(user.user_type)
-        print(user.id)
-        return JsonResponse({"token": token.key, "message": "Login successful.","user_type":user.user_type,'userId':user.id}, status=200)
+       
+        return JsonResponse({"token": token.key, "message": "Login successful.","user_type":user.user_type,'userId':user.id,'username':user.username}, status=200)
     else:
         return JsonResponse({"error": "Invalid credentials."}, status=400)
     
@@ -218,6 +216,7 @@ def get_user_preferences(request, user_id):
 def recommend_jobs(request):
     user_id = request.GET.get("user_id")  
     user = User.objects.get(id=user_id)
+    
 
     preferred_tags = user.preferences.all()
     preferred_tag_names = [tag.name for tag in preferred_tags]
@@ -233,7 +232,8 @@ def recommend_jobs(request):
             "tags": ", ".join(tag.name for tag in job.tags.all()),
             "comp_name":job.get_company_name(),
             "category":job.category,
-            "comp_location":job.get_company_location()
+            "comp_location":job.get_company_location(),
+            "posted_by": job.posted_by.id if job.posted_by else None
         }
         for job in job_posts
     ]
@@ -427,3 +427,52 @@ def mark_all_notifications_read(request):
         return Response({"message": "All notifications marked as read"}, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+
+from hanapwedeApp.models import ChatRooms , Messages
+#Chat views
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_chat(request):
+    employer_id = request.data.get("employer_id")
+    employee = request.user
+    employer = User.objects.get(id=employer_id)
+
+   
+    chat_room, created = ChatRooms.objects.get_or_create(employee=employee, employer=employer)
+
+    return Response({"room_id": chat_room.id})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_chat_messages(request, room_id):
+    messages = Messages.objects.filter(room_id=room_id).order_by("timestamp")
+    return Response([{"sender": msg.sender.username, "content": msg.content, "timestamp": msg.timestamp} for msg in messages])
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def send_message(request):
+    """
+    Create a message and store it in the associated chat room.
+    """
+    room_id = request.data.get("room_id")
+    content = request.data.get("content")
+
+    if not room_id or not content:
+        return Response({"error": "Room ID and content are required."}, status=400)
+
+    try:
+        chat_room = ChatRooms.objects.get(id=room_id)
+    except ChatRooms.DoesNotExist:
+        return Response({"error": "Chat room not found."}, status=404)
+
+    message = Messages.objects.create(room=chat_room, sender=request.user, content=content)
+
+    return Response({
+        "message_id": message.id,
+        "sender": message.sender.username,
+        "content": message.content,
+        "timestamp": message.timestamp
+    }, status=201)

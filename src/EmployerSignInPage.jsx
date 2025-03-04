@@ -30,6 +30,7 @@ export default function EmployerSignIn() {
     localStorage.setItem("userType", data.user_type);
     localStorage.setItem("authToken",data.token);
     localStorage.setItem("userId", data.userId);
+    localStorage.setItem("username", data.username);
     navigate("/employer/profile");
   }
   else {

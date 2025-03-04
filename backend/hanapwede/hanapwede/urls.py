@@ -22,6 +22,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from hanapwedeApp.views import PostViewSet, CommentViewSet, ReportViewSet, BannedWordViewSet
 from hanapwedeApp.views import edit_profile,get_notifications,mark_notification_read,mark_all_notifications_read
+from hanapwedeApp.views import get_chat_messages, create_chat,send_message
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'comments', CommentViewSet)
@@ -46,8 +47,9 @@ urlpatterns = [
     path("api/employer-dashboard/", employer_dashboard, name="employer-dashboard"),
     path("api/edit_profile/", edit_profile,name="edit_profile"),
     path("api/get-notifications/",get_notifications,name="get_notifications"),
-      path("api/mark-notification-read/<int:notification_id>/", mark_notification_read, name="mark-notification-read"),
+    path("api/mark-notification-read/<int:notification_id>/", mark_notification_read, name="mark-notification-read"),
     path("api/mark-all-notifications-read/", mark_all_notifications_read, name="mark-all-notifications-read"),
-
-
+    path('chat/messages/<int:room_id>/', get_chat_messages, name='get_chat_messages'),
+    path('api/create_chat/', create_chat, name='create_chat'),   
+    path("api/send_message/", send_message, name="send_message"),
 ]
