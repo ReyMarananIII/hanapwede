@@ -23,7 +23,7 @@ const Preferences = ({ onPreferencesSaved }) => {
   const handleSubmit = async () => {
     const authToken = localStorage.getItem("authToken");
     if (!authToken) {
-        alert("You must be logged in to post a job.");
+        alert("User not logged in");
         return;
       }
 

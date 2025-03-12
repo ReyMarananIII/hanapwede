@@ -1,9 +1,11 @@
 import { useState,useEffect } from "react"
 import LoggedInHeader from "./LoggedInHeader"
 import Header from "./Header"
+import { useNavigate } from "react-router-dom"
 
 export default function EditProfile() {
   const [activeTab, setActiveTab] = useState("about")
+  const navigate = useNavigate();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const userId =  localStorage.getItem('userId')
   
@@ -44,10 +46,8 @@ export default function EditProfile() {
       });
   
       if (response.ok) {
-      
-        
-     
         alert("Employee profile updated successfully!");
+        navigate("/job-seeker/profile")
       } else {
         console.error("Error submitting profile:", response.statusText);
         alert("Failed to submit profile");

@@ -18,6 +18,10 @@ import TextToSpeech from "./TextToSpeech";
 import JobApplication from "./JobApplication";
 import ForumPage from "./ForumPage";
 import ChatRoom from "./ChatRoom";
+import UserChats from "./UserChats";
+import EmployeeProfile from "./EmployeeProfile";
+import FAQPage from "./FAQPage";
+import FAQSection from "./FAQSection";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -29,7 +33,9 @@ function App() {
         <Route path="/employer/signup" element={<EmployerSignUpPage />} />
         <Route path="/hanapwede/forum" element={<ForumPage />} />
         <Route path="/chat/:roomId" element={<ChatRoom />} />
+        <Route path="/user-chats" element={<UserChats />} />
         <Route path="/" element={<LandingPage />} />
+        <Route path="/FAQS" element={<FAQPage />} />
 
         {/* Employee Routes */}
         <Route 
@@ -37,6 +43,16 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Employee"]}>
               <EmployeeDashboard />
+              
+            </ProtectedRoute>
+          } 
+        />
+
+<Route 
+          path="/job-seeker/profile" 
+          element={
+            <ProtectedRoute allowedRoles={["Employee"]}>
+              <EmployeeProfile />
               
             </ProtectedRoute>
           } 
@@ -61,7 +77,7 @@ function App() {
           } 
         />
         <Route 
-          path="/job-seeker/profile" 
+          path="/job-seeker/edit-profile" 
           element={
             <ProtectedRoute allowedRoles={["Employee"]}>
               <EditProfile />

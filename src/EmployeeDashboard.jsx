@@ -121,7 +121,7 @@
                 <div className="space-y-4">
                   {jobs.map((job, index) => {
                     
-                    console.log(job.posted_by);
+              
 
                     return (
                       <div

@@ -24,6 +24,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import viewsets
+from hanapwedeApp.models import ChatRooms , Messages
 
 
 from .serializer import PostSerializer, CommentSerializer, ReportSerializer, BannedWordSerializer
@@ -39,8 +40,7 @@ def signup(request):
             email = data.get("email")
             password = data.get("password")
             user_type = data.get("user_type")   
-            print(user_type)
-
+        
             if not all([first_name, last_name, email, password]):
                 return JsonResponse({"error": "All fields are required."}, status=400)
 
@@ -109,20 +109,20 @@ def employer_profile(request):
 
 @api_view(["POST"])
 def post_job(request):
-    print("Request Data:", request.data)
+  
 
     
     if not request.user.is_authenticated:
         return Response({"error": "User is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
 
-    print("User Type:", request.user.user_type)  
+   
 
     serializer = JobPostSerializer(data=request.data)
 
     if serializer.is_valid():
         try:
             job_post = serializer.save(posted_by=request.user)
-            print("Job Post Created:", job_post.post_id)
+       
 
         
             disability_tags = request.data.get('disabilitytag', [])
@@ -131,15 +131,15 @@ def post_job(request):
                 if not tags.exists():
                     return Response({"error": "Invalid disability tags provided"}, status=status.HTTP_400_BAD_REQUEST)
                 job_post.disabilitytag.set(tags)
-                print("Disability Tags Set:", [tag.id for tag in tags])
+        
 
             return Response(JobPostSerializer(job_post).data, status=status.HTTP_201_CREATED)
 
         except Exception as e:
-            print("Error while saving job post:", str(e))
+          
             return Response({"error": f"Error while saving job post: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    print("Serializer Errors:", serializer.errors)
+  
     return Response({"error": "Invalid data", "details": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -158,11 +158,14 @@ def save_preferences(request):
     return Response({"message": "Preferences saved successfully"})
 
 
+
+
+
 @api_view(['PUT'])
 @permission_classes([IsAuthenticated])
 def edit_profile(request):
     id = request.user.id
-    print(id)
+
     
     try:
         user_profile = EmployeeProfile.objects.get(user_id=id)
@@ -186,6 +189,16 @@ def edit_profile(request):
         return Response({"message": "Account edited successfully"}, status=201)
     
     return Response(serializer.errors, status=400)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_details(request,user_id):
+    print(user_id)
+    user = User.objects.get(id=user_id)
+    user_profile = EmployeeProfile.objects.get(user_id=user_id)
+    print(user_profile)
+    return Response({"user": User.objects.get(id=user_id).username, "profile": EmployeeProfileSerializer(user_profile).data})
 
 
 
@@ -245,7 +258,7 @@ def recommend_jobs(request):
     df["combined_text"] = df["job_description"] + " " + df["skills_required"] + " " + df["tags"] +df["category"]
 
     user_profile = " ".join(preferred_tag_names)
-    print(user_profile)
+
     
 
     tfidf_vectorizer = TfidfVectorizer(stop_words="english")
@@ -295,7 +308,7 @@ def apply_job(request):
         Notification.objects.create(
             recipient=employer,  
             title="New Job Application",
-            action=f"{job_application.applicant_name} applied for {job.job_title}.",
+            action=f"New applicant for {job.job_title}.",
             is_read=False
         )
 
@@ -364,7 +377,7 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         post_id = self.request.query_params.get('post_id')
-        print("POST ID TO" ,post_id)
+     
         if post_id:
             return self.queryset.filter(post__id=post_id)
         return self.queryset
@@ -373,7 +386,7 @@ class CommentViewSet(viewsets.ModelViewSet):
             raise serializers.ValidationError({"error": "Comment contains profanity/banned words"})
 
         parent_id = self.request.data.get("parent")
-        print("PARENT ID TO" ,parent_id)
+    
         parent_comment = None
 
         if parent_id!=None:
@@ -430,8 +443,8 @@ def mark_all_notifications_read(request):
     
 
 
-from hanapwedeApp.models import ChatRooms , Messages
-#Chat views
+
+#g views
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -476,3 +489,26 @@ def send_message(request):
         "content": message.content,
         "timestamp": message.timestamp
     }, status=201)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_chats(request):
+    user = request.user
+
+   
+    chat_rooms = ChatRooms.objects.filter(employee=user) | ChatRooms.objects.filter(employer=user)
+
+    chat_list = []
+    for chat in chat_rooms:
+        other_user = chat.employer if chat.employee == user else chat.employee  
+        last_message = chat.messages.last()  
+        chat_list.append({
+            "room_id": chat.id,
+            "other_user": other_user.username,
+            "other_user_type": other_user.user_type,
+            "last_message": last_message.content if last_message else "No messages yet",
+            "last_timestamp": last_message.timestamp if last_message else None,
+        })
+
+    return Response(chat_list)

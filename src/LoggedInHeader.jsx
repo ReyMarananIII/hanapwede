@@ -1,6 +1,7 @@
 import { useState,useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Bell } from "lucide-react"
+import { Bell,Mail } from "lucide-react"
+
 export default function LoggedInHeader() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
@@ -120,6 +121,17 @@ export default function LoggedInHeader() {
         <img src="/hanapwedelogo.png" alt="Logo" className="h-8 w-auto" />
       </Link>
       <div className="flex items-center gap-4">
+      <div className="relative">
+          <button
+            onClick={()=>navigate("/user-chats")}
+            className="relative p-2 text-gray-600 hover:text-gray-800 rounded-full hover:bg-gray-100"
+          >
+            <Mail className="h-5 w-5" />
+           
+            
+          </button>
+          </div>
+
      {/* Notifications */}
      <div className="relative">
           <button
@@ -140,12 +152,12 @@ export default function LoggedInHeader() {
               <div className="fixed inset-0 z-10" onClick={() => setShowNotifications(false)} />
 
               {/* Notifications dropdown */}
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border z-20">
+              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border z-100">
                 <div className="p-4 border-b">
                   <div className="flex justify-between items-center">
                     <h3 className="font-semibold">Notifications</h3>
                     {unreadCount > 0 && (
-                      <button onClick={markAllAsRead} className="text-sm text-[#4CAF50] hover:text-[#45a049]">
+                      <button onClick={markAllAsRead} className="text-sm text-[#4CAF50] hover:text-[#45a049</button>]">
                         Mark all as read
                       </button>
                     )}
@@ -210,7 +222,7 @@ export default function LoggedInHeader() {
 
           {/* Dropdown Menu */}
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg">
+            <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-100">
               <ul className="py-2 text-sm text-gray-700">
                 <li>
                   <Link
@@ -221,6 +233,8 @@ export default function LoggedInHeader() {
                     Profile
                   </Link>
                 </li>
+
+  
                 
 
                 {userRole !== "Employee!" && (
@@ -241,6 +255,15 @@ export default function LoggedInHeader() {
                     onClick={() => setIsDropdownOpen(false)}
                   >
                     Dashboard
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to={"/faqs/"}
+                    className="block px-4 py-2 hover:bg-gray-100"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    FAQs
                   </Link>
                 </li>
                 <li>

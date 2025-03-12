@@ -1,4 +1,3 @@
-"use client"
 
 import { useEffect, useState, useRef } from "react"
 import { useParams } from "react-router-dom"
@@ -15,12 +14,12 @@ export default function ChatRoom() {
   const authToken = localStorage.getItem("authToken")
   const username = localStorage.getItem("username")
 
-  // Auto-scroll to bottom when new messages arrive
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages]) //Corrected dependency
+  }, [messages]) 
 
-  // Fetch previous chat messages when the component mounts
+
   useEffect(() => {
     setIsLoading(true)
     setError(null)
@@ -39,7 +38,7 @@ export default function ChatRoom() {
         return response.json()
       })
       .then((data) => {
-        setMessages(data) // ✅ Store previous messages in state
+        setMessages(data) 
         setIsLoading(false)
       })
       .catch((error) => {
@@ -49,7 +48,7 @@ export default function ChatRoom() {
       })
   }, [roomId, authToken])
 
-  // WebSocket connection for real-time messages
+
   useEffect(() => {
     const ws = new WebSocket(`ws://127.0.0.1:8000/ws/chat/${roomId}/`)
     setSocket(ws)
