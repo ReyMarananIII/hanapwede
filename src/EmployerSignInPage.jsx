@@ -31,7 +31,8 @@ export default function EmployerSignIn() {
     localStorage.setItem("authToken",data.token);
     localStorage.setItem("userId", data.userId);
     localStorage.setItem("username", data.username);
-    navigate("/employer/profile");
+    console.log(data.has_profile)
+    navigate(data.has_profile ? "/employer/dashboard" : "/employer/profile");
   }
   else {
     setError(data.error || "Invalid email or password.");

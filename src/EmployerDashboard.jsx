@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react"; 
 import LoggedInHeader from "./LoggedInHeader";
+import { useNavigate } from "react-router-dom";
 
 export default function EmployerDashboard() {
+  const navigate = useNavigate(); 
   const authToken = localStorage.getItem("authToken");
   const [dashboardData, setDashboardData] = useState({
     active_jobs_count: 0,
@@ -42,7 +44,8 @@ export default function EmployerDashboard() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold">Employer Dashboard</h1>
-          <button className="bg-[#4CAF50] text-white px-4 py-2 rounded hover:bg-[#45a049]">
+          <button 
+          onClick={() => navigate("/employer/post-job")} className="bg-[#4CAF50] text-white px-4 py-2 rounded hover:bg-[#45a049]">
             Post New Job
           </button>
         </div>

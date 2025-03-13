@@ -56,6 +56,9 @@ def signup(request):
                 user_type=user_type
             )
 
+            if user_type == "Employee":
+                EmployeeProfile.objects.create(user_id = user.id)
+
             return JsonResponse({"message": "User created successfully."}, status=201)
 
         except json.JSONDecodeError:
@@ -74,11 +77,17 @@ def login_view(request):
         return JsonResponse({"error": "Invalid credentials."}, status=400)
 
     user = authenticate(username=user.username, password=password)
-
+   
+    has_profile=False
+    if user.user_type == "Employer":
+        profile = EmployerProfile.objects.filter(user_id=user.id).first()
+        if profile:
+            has_profile=True
+        
     if user is not None:
         token, _ = Token.objects.get_or_create(user=user)
        
-        return JsonResponse({"token": token.key, "message": "Login successful.","user_type":user.user_type,'userId':user.id,'username':user.username}, status=200)
+        return JsonResponse({"token": token.key, "message": "Login successful.","user_type":user.user_type,'userId':user.id,'username':user.username,'has_profile':has_profile}, status=200)
     else:
         return JsonResponse({"error": "Invalid credentials."}, status=400)
     
@@ -165,7 +174,8 @@ def save_preferences(request):
 @permission_classes([IsAuthenticated])
 def edit_profile(request):
     id = request.user.id
-
+    print("nakaabot ka dito")
+    print(id)
     
     try:
         user_profile = EmployeeProfile.objects.get(user_id=id)

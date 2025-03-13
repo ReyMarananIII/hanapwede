@@ -10,6 +10,7 @@ export default function EmployeeProfile() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const userId = localStorage.getItem("userId")
+  console.log(userId)
 
   useEffect(() => {
     const token = localStorage.getItem("authToken")
@@ -39,7 +40,7 @@ export default function EmployeeProfile() {
         setError("Failed to load user profile. Please try again.")
         setIsLoading(false)
       })
-  }, [userId]) // Added dependency array to prevent infinite calls
+  }, [userId]) 
 
   if (isLoading) {
     return (
