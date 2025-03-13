@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Header from "./Header";
-
+import PwdCardOCR from "./PWDCardOCR";
+import { useEffect } from "react";
 export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -10,11 +11,14 @@ export default function SignUpPage() {
     email: "",
     password: "",
     confirmPassword: "",
-
+    user_disability: "",
+    ID_number: "",
   });
+
+
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
-
+  useEffect(() => {console.log(formData);}, [formData]);
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -23,7 +27,10 @@ export default function SignUpPage() {
     e.preventDefault();
     setError(null);
     setSuccess(null);
-
+    if (!formData.user_disability || !formData.ID_number) {
+      setError("Please upload your PWD card to fill in the required fields.");
+      return;
+    }
 
     if (formData.password !== formData.confirmPassword) {
       setError("Passwords do not match.");
@@ -31,7 +38,7 @@ export default function SignUpPage() {
     }
 
     try {
-
+      console.log("FORM DATA BEFORE SENDING", formData);
       const response = await fetch("http://127.0.0.1:8000/api/signup/", {
         method: "POST",
         headers: {
@@ -43,16 +50,29 @@ export default function SignUpPage() {
           email: formData.email,
           password: formData.password,
           user_type: "Employee",
+          user_disability: formData.user_disability,
+          ID_number: formData.ID_number
         }),
       });
 
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess("Account created successfully! You can now log in.");
-        setFormData({ first_name: "", last_name: "", email: "", password: "", confirmPassword: "" });
+    
+        setSuccess("Registration Successful. Account pending approval.");
+        alert(success);
+        setFormData({
+          first_name: "",
+          last_name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+          user_disability: formData.user_disability, 
+          ID_number: formData.ID_number
+        });
       } else {
         setError(data.error || "Signup failed.");
+      
       }
     } catch (error) {
       setError("Something went wrong. Please try again.");
@@ -67,6 +87,8 @@ export default function SignUpPage() {
           <div className="space-y-2 text-center">
             <h1 className="text-2xl font-semibold tracking-tight">Job Seeker Sign Up</h1>
             <p className="text-sm text-muted-foreground">Create an account to apply for jobs and track applications</p>
+
+
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
@@ -133,9 +155,12 @@ export default function SignUpPage() {
             </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
             {success && <p className="text-green-500 text-sm">{success}</p>}
+            <PwdCardOCR formData={formData} setFormData={setFormData} />
             <button type="submit" className="w-full bg-[#4CAF50] hover:bg-[#45a049] text-white py-2 rounded-md">
               Sign Up
             </button>
+
+         
             <div className="text-center text-sm text-muted-foreground">
               Already have an account?{" "}
               <Link to="/job-seeker/signin" className="font-medium text-primary hover:underline">

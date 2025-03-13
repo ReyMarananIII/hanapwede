@@ -39,8 +39,11 @@ def signup(request):
             last_name = data.get("last_name")
             email = data.get("email")
             password = data.get("password")
-            user_type = data.get("user_type")   
-        
+            user_type = data.get("user_type")
+            
+            user_disability = data.get("user_disability")
+            ID_number = data.get("ID_number")   
+            print(user_disability,ID_number)
             if not all([first_name, last_name, email, password]):
                 return JsonResponse({"error": "All fields are required."}, status=400)
 
@@ -53,11 +56,14 @@ def signup(request):
                 first_name=first_name,
                 last_name=last_name,
                 password=make_password(password),
-                user_type=user_type
+                user_type=user_type,
+                
             )
 
             if user_type == "Employee":
-                EmployeeProfile.objects.create(user_id = user.id)
+                EmployeeProfile.objects.create(user_id = user.id,
+                                               user_disability=user_disability,
+                ID_no=ID_number)
 
             return JsonResponse({"message": "User created successfully."}, status=201)
 
@@ -81,8 +87,14 @@ def login_view(request):
     has_profile=False
     if user.user_type == "Employer":
         profile = EmployerProfile.objects.filter(user_id=user.id).first()
+       
         if profile:
             has_profile=True
+    else:
+        profile = EmployeeProfile.objects.filter(user_id=user.id).first()
+        print(profile.activated)
+        if not profile.activated:
+            return JsonResponse({"error": "Registration Pending Approval"}, status=400)
         
     if user is not None:
         token, _ = Token.objects.get_or_create(user=user)

@@ -22,6 +22,7 @@ import UserChats from "./UserChats";
 import EmployeeProfile from "./EmployeeProfile";
 import FAQPage from "./FAQPage";
 import FAQSection from "./FAQSection";
+import PWDCardOCR from "./PWDCardOCR";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -43,6 +44,17 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Employee"]}>
               <EmployeeDashboard />
+              
+            </ProtectedRoute>
+          } 
+        />
+
+
+<Route 
+          path="/job-seeker/pwd" 
+          element={
+            <ProtectedRoute allowedRoles={["Employee"]}>
+              <PWDCardOCR />
               
             </ProtectedRoute>
           } 

@@ -41,10 +41,12 @@ class EmployeeProfile(models.Model):
     pro_headline = models.CharField(max_length=255, blank=True, null=True)
     full_name=models.CharField(max_length=100,blank=True,null=True)
     bio = models.TextField(blank=True, null=True)
+    ID_no = models.CharField(max_length=100, blank=True, null=True)
+    user_disability = models.CharField(max_length=100, blank=True, null=True)
     user_disablitytag = models.ManyToManyField(UserDisabilityTag, blank=True)
     contact_no = models.CharField(max_length=20, blank=True, null=True)
     location = models.CharField(max_length=255, blank=True, null=True)
-
+    activated = models.BooleanField(default=False)
     def __str__(self):
         return self.user.username
 

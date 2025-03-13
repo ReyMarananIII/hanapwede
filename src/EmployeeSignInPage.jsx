@@ -36,7 +36,7 @@ export default function EmployeeSignIn() {
         localStorage.setItem("userType", data.user_type);
         localStorage.setItem("username", data.username);
   
-        // Check if the employee has preferences set
+        
         const preferencesResponse = await fetch(`http://127.0.0.1:8000/api/user-preferences/${data.userId}/`, {
           method: "GET",
           headers: { 
@@ -49,15 +49,17 @@ export default function EmployeeSignIn() {
        
   
         if (preferencesData.has_preferences) {
-          navigate("/job-seeker/dashboard");  // Redirect to dashboard
+          navigate("/job-seeker/dashboard");  
         } else {
-          navigate("/job-seeker/preferences");  // Redirect to preferences setup
+          navigate("/job-seeker/preferences");  
         }
       } else {
         setError(data.error || "Invalid email or password.");
+        alert(error);
       }
     } catch (error) {
       console.error("Error:", error);
+      alert(error);
       setError("Something went wrong. Please try again.");
     }
   };
