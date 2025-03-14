@@ -23,6 +23,7 @@ import EmployeeProfile from "./EmployeeProfile";
 import FAQPage from "./FAQPage";
 import FAQSection from "./FAQSection";
 import PWDCardOCR from "./PWDCardOCR";
+import AdminUserApprovalPage from "./AdminUserApprovalPage";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -37,6 +38,19 @@ function App() {
         <Route path="/user-chats" element={<UserChats />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="/FAQS" element={<FAQPage />} />
+       
+
+        <Route 
+        path="admin/user-approval"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <AdminUserApprovalPage />
+              
+            </ProtectedRoute>
+          } 
+        />
+
+
 
         {/* Employee Routes */}
         <Route 

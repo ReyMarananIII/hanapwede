@@ -534,3 +534,42 @@ def get_user_chats(request):
         })
 
     return Response(chat_list)
+
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_pending_users (request):
+    users =  EmployeeProfile.objects.filter(activated=False)
+    serializer = EmployeeProfileSerializer(users, many=True)
+    return Response(serializer.data)
+
+
+
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def approve_user(request, id):
+    try:
+        user = EmployeeProfile.objects.get(user_id=id)
+        user.activated=  True
+        user.save()
+        return Response({"message": "User approved successfully"}, status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def reject_user(request, id):
+    try:
+        user = EmployeeProfile.objects.get(user_id=id)
+        user.status = "False"  
+        user.save()
+        return Response({"message": "User rejected successfully"}, status=status.HTTP_200_OK)
+    except User.DoesNotExist:
+        return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
