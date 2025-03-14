@@ -42,8 +42,12 @@ export default function EmployerSignIn() {
         localStorage.setItem("authToken", data.token)
         localStorage.setItem("userId", data.userId)
         localStorage.setItem("username", data.username)
-
+        if(data.user_type === "Admin"){
+          navigate("/admin/user-approval");
+        }
+        else{
         navigate(data.has_profile ? "/employer/dashboard" : "/employer/profile")
+        }
       } else {
         setError(data.error || "Invalid email or password.")
       }

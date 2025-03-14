@@ -90,7 +90,7 @@ def login_view(request):
        
         if profile:
             has_profile=True
-    else:
+    elif user.user_type == "Employee":
         profile = EmployeeProfile.objects.filter(user_id=user.id).first()
         print(profile.activated)
         if not profile.activated:
