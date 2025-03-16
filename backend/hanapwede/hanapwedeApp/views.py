@@ -573,3 +573,14 @@ def reject_user(request, id):
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_preferences(request):
+
+    user = request.user  
+    print(user) 
+    preferences = user.preferences.all()
+    serializer = TagSerializer(preferences, many=True)
+    return Response(serializer.data)

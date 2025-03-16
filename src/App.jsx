@@ -21,6 +21,7 @@ import ChatRoom from "./ChatRoom";
 import UserChats from "./UserChats";
 import EmployeeProfile from "./EmployeeProfile";
 import FAQPage from "./FAQPage";
+import PreferencesPage from "./PreferencesPage";
 import FAQSection from "./FAQSection";
 import PWDCardOCR from "./PWDCardOCR";
 import AdminUserApprovalPage from "./AdminUserApprovalPage";
@@ -89,6 +90,17 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Employee"]}>
               <Preferences />
+              
+            </ProtectedRoute>
+          } 
+        />
+
+
+<Route 
+          path="/job-seeker/job-preferences" 
+          element={
+            <ProtectedRoute allowedRoles={["Employee"]}>
+              <PreferencesPage />
               
             </ProtectedRoute>
           } 

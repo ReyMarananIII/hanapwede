@@ -23,7 +23,7 @@ from rest_framework.routers import DefaultRouter
 from hanapwedeApp.views import PostViewSet, CommentViewSet, ReportViewSet, BannedWordViewSet
 from hanapwedeApp.views import edit_profile,get_notifications,mark_notification_read,mark_all_notifications_read
 from hanapwedeApp.views import get_chat_messages, create_chat,send_message,get_user_chats,get_user_details
-from hanapwedeApp.views import get_pending_users,approve_user,reject_user
+from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_preferences
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'comments', CommentViewSet)
@@ -58,5 +58,7 @@ urlpatterns = [
     path("api/admin/pending-users/",get_pending_users,name="get_pending_users"),
     path("api/admin/approve-user/<int:id>/",approve_user,name="approve_user"),
     path("api/admin/reject-user/<int:id>/",reject_user,name="reject_user"),
+    path("api/preferences/", get_preferences, name="get_preferences"),
+
 
 ]
