@@ -24,7 +24,7 @@ from sklearn.metrics.pairwise import cosine_similarity
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import viewsets
-from hanapwedeApp.models import ChatRooms , Messages
+from hanapwedeApp.models import ChatRooms , Messages, Application
 
 
 from .serializer import PostSerializer, CommentSerializer, ReportSerializer, BannedWordSerializer
@@ -43,7 +43,7 @@ def signup(request):
             
             user_disability = data.get("user_disability")
             ID_number = data.get("ID_number")   
-            print(user_disability,ID_number)
+           
             if not all([first_name, last_name, email, password]):
                 return JsonResponse({"error": "All fields are required."}, status=400)
 
@@ -92,7 +92,7 @@ def login_view(request):
             has_profile=True
     elif user.user_type == "Employee":
         profile = EmployeeProfile.objects.filter(user_id=user.id).first()
-        print(profile.activated)
+    
         if not profile.activated:
             return JsonResponse({"error": "Registration Pending Approval"}, status=400)
         
@@ -186,9 +186,7 @@ def save_preferences(request):
 @permission_classes([IsAuthenticated])
 def edit_profile(request):
     id = request.user.id
-    print("nakaabot ka dito")
-    print(id)
-    
+
     try:
         user_profile = EmployeeProfile.objects.get(user_id=id)
     except EmployeeProfile.DoesNotExist:
@@ -216,10 +214,10 @@ def edit_profile(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_user_details(request,user_id):
-    print(user_id)
+
     user = User.objects.get(id=user_id)
     user_profile = EmployeeProfile.objects.get(user_id=user_id)
-    print(user_profile)
+  
     return Response({"user": User.objects.get(id=user_id).username, "profile": EmployeeProfileSerializer(user_profile).data})
 
 
@@ -257,7 +255,7 @@ def recommend_jobs(request):
     preferred_tag_names = [tag.name for tag in preferred_tags]
     emp_profile = EmployeeProfile.objects.get(user_id=user_id)
     user_disability = emp_profile.user_disability
-    print(user_disability)
+
     job_posts = JobPost.objects.all()
   
     job_data = [
@@ -283,7 +281,7 @@ def recommend_jobs(request):
     df["combined_text"] = df["job_description"] + " " + df["skills_required"] + " " + df["tags"] +" " + df["category"] + ", " +  (df["disabilitytag"] + " ") * 2
 
     user_profile = " ".join(preferred_tag_names) + ", " + (user_disability + " ") * 2
-    print("!!!",user_profile)
+  
 
     tfidf_vectorizer = TfidfVectorizer(stop_words="english")
     tfidf_matrix = tfidf_vectorizer.fit_transform(df["combined_text"])
@@ -320,27 +318,30 @@ def get_job(request, post_id):
     return JsonResponse(job_data, safe=False)
 
 @api_view(["POST"])
-@parser_classes([MultiPartParser, FormParser])  # Allows file uploads
+@parser_classes([MultiPartParser, FormParser]) 
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def apply_job(request):
     serializer = JobApplicationSerializer(data=request.data)
-
+   
     if serializer.is_valid():
-        job_application= serializer.save()
+ 
+        job_application = serializer.save(applicant=request.user)  
 
-        job= job_application.job_post
+        job = job_application.job_post
         employer = job.posted_by
+
+   
         Notification.objects.create(
-            recipient=employer,  
+            recipient=employer,
             title="New Job Application",
             action=f"New applicant for {job.job_title}.",
             is_read=False
         )
 
-
         return Response({"message": "Application submitted successfully!"}, status=201)
 
     return Response(serializer.errors, status=400)
-
 
 @api_view(["GET"])
 @authentication_classes([TokenAuthentication])
@@ -368,7 +369,9 @@ def employer_dashboard(request):
         "applicant_role",
         "applicant_experience",
         "applicant_location",
-        "application_action"
+        "application_action",
+        "application_status",
+        "application_id",
     ))
 
     return JsonResponse({
@@ -554,6 +557,7 @@ def get_pending_users (request):
 @permission_classes([IsAuthenticated])
 def approve_user(request, id):
     try:
+       
         user = EmployeeProfile.objects.get(user_id=id)
         user.activated=  True
         user.save()
@@ -582,7 +586,7 @@ def reject_user(request, id):
 def get_preferences(request):
 
     user = request.user  
-    print(user) 
+  
     preferences = user.preferences.all()
     serializer = TagSerializer(preferences, many=True)
     return Response(serializer.data)
@@ -629,3 +633,54 @@ def delete_user(request, id):
     emp_profile.delete()
     user.delete()
     return Response({"message": "User deleted successfully"}, status=status.HTTP_200_OK)
+
+
+#Accept at decline ng job
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def approve_application(request, application_id):
+    try:
+        application = Application.objects.get(applicaton_id=application_id)
+        application.application_status = "Approved"
+        application.save()
+
+       
+        Notification.objects.create(
+            recipient=application.applicant, 
+            title="Application Approved",
+            action=f"Your application for {application.job_post.job_title} has been approved!",
+            target_content_type=ContentType.objects.get_for_model(Application),
+            target_object_id=application.application_id
+        )
+
+        return JsonResponse({"message": "Application approved successfully"}, status=200)
+
+    except Application.DoesNotExist:
+        return JsonResponse({"error": "Application not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
+    
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def decline_application(request, application_id):
+    try:
+        application = Application.objects.get(application_id=application_id)
+        application.application_status = "Declined"
+        application.save()
+
+     
+        Notification.objects.create(
+            recipient=application.applicant, 
+            title="Application Declined",
+            action=f"Your application for {application.job_post.job_title} has been declined.",
+            target_content_type=ContentType.objects.get_for_model(Application),
+            target_object_id=application.application_id
+        )
+
+        return JsonResponse({"message": "Application declined successfully"}, status=200)
+
+    except Application.DoesNotExist:
+        return JsonResponse({"error": "Application not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

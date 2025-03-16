@@ -99,7 +99,13 @@ class JobPost(models.Model):
 
 
 class Application(models.Model):
+    applicant = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        limit_choices_to={'user_type': 'Employee'},
+        null=True)
     application_id = models.AutoField(primary_key=True)
+    application_status = models.CharField(max_length=100, default="Pending")
     applicant_name = models.CharField(max_length=100)
     applicant_role = models.CharField(max_length=100)
     applicant_experience = models.TextField(blank=True, null=True)
@@ -111,7 +117,7 @@ class Application(models.Model):
     JobPost, 
     on_delete=models.CASCADE, 
     related_name="applications",
-    null=True,  # Temporary to allow migration
+    null=True,  
     
 )
     

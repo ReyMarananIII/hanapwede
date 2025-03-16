@@ -93,7 +93,7 @@ export default function JobApplication() {
     formDataToSend.append("applicant_role", formData.applicant_role);
     formDataToSend.append("applicant_experience", formData.applicant_experience);
     formDataToSend.append("applicant_location", formData.applicant_location);
-    formDataToSend.append("applicant_skills", skills.join(",")); // Convert array to a comma-separated string
+    formDataToSend.append("applicant_skills", skills.join(",")); 
     formDataToSend.append("job_post", jobId);
 
     formDataToSend.append("application_action", "For Approval");
@@ -105,6 +105,9 @@ export default function JobApplication() {
   
     try {
       const response = await fetch("http://127.0.0.1:8000/api/submit-application/", {
+        headers: {
+          "Authorization": `Token ${localStorage.getItem("authToken")}`, 
+        },
         method: "POST",
         body: formDataToSend,
       });
