@@ -22,9 +22,10 @@ import UserChats from "./UserChats";
 import EmployeeProfile from "./EmployeeProfile";
 import FAQPage from "./FAQPage";
 import PreferencesPage from "./PreferencesPage";
-import FAQSection from "./FAQSection";
 import PWDCardOCR from "./PWDCardOCR";
+import AdminManageUsersPage from "./AdminManageUsersPage";
 import AdminUserApprovalPage from "./AdminUserApprovalPage";
+import PrivacyPolicyPage from "./PrivacyPolicyPage";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -39,6 +40,7 @@ function App() {
         <Route path="/user-chats" element={<UserChats />} />
         <Route path="/" element={<LandingPage />} />
         <Route path="/FAQS" element={<FAQPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
        
 
         <Route 
@@ -46,6 +48,15 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Admin"]}>
               <AdminUserApprovalPage />
+              
+            </ProtectedRoute>
+          } 
+        />
+             <Route 
+        path="admin/manage-users"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <AdminManageUsersPage />
               
             </ProtectedRoute>
           } 
@@ -156,9 +167,9 @@ function App() {
         <Route path="*" element={<NotFound />} />
       </Routes>
 
-       {/* Floating Button for TTS */}
+
        <button
-        className="fixed bottom-5 right-5 bg-blue-500 text-white p-3 rounded-full shadow-lg"
+        className="fixed bottom-5 right-5 bg-[#7cd1ed] text-white p-3 rounded-full shadow-lg"
         onClick={() => setIsOpen(!isOpen)}
       >
         🗣️

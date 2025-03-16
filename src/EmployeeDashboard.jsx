@@ -14,6 +14,9 @@
     const authToken = localStorage.getItem("authToken");
     const navigate = useNavigate();
 
+    const [activeTab, setActiveTab] = useState("recommended");
+    const[ allJobs, setAllJobs] = useState([]);
+
     
     const handleChat = async (employerId) => {
       try {
@@ -67,15 +70,47 @@
         });
     }, [authToken]);
 
+    useEffect(() => {
+      if (activeTab === "all") {
+        fetch("http://127.0.0.1:8000/api/all-jobs/", {
+          method: "GET",
+          headers: {
+            Authorization: `Token ${authToken}`,
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => setAllJobs(data))
+          .catch((error) => console.error("Error fetching all jobs:", error));
+      }
+    }, [activeTab, authToken]);
+    
+
+
+
     return (
       <div className="min-h-screen bg-[#F8FBFF]">
         <LoggedInHeader />
 
         <div className="container mx-auto px-4 py-8">
           <h1 className="text-2xl font-bold mb-8">Your Job Feed</h1>
+          <div className="flex gap-4 mb-6 border-b">
+  <button
+    className={`pb-2 ${activeTab === "recommended" ? "border-b-2 border-blue-600 font-semibold" : "text-gray-500"}`}
+    onClick={() => setActiveTab("recommended")}
+  >
+    Recommended Jobs
+  </button>
+  <button
+    className={`pb-2 ${activeTab === "all" ? "border-b-2 border-blue-600 font-semibold" : "text-gray-500"}`}
+    onClick={() => setActiveTab("all")}
+  >
+    All Jobs
+  </button>
+</div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            {/* Filters Sidebar */}
+         
             <div className="space-y-6">
               <h2 className="text-sm font-semibold text-gray-500">Filters</h2>
 
@@ -109,69 +144,60 @@
 
             {/* Job Listings */}
             <div className="md:col-span-3">
-              <h2 className="text-sm font-semibold text-gray-500 mb-4">Recommended for You</h2>
+            <h2 className="text-sm font-semibold text-gray-500 mb-4">
+  {activeTab === "recommended" ? "Recommended for You" : "All Available Jobs"}
+</h2>
 
-              {loading ? (
-                <p className="text-gray-500">Loading jobs...</p>
-              ) : error ? (
-                <p className="text-red-500">{error}</p>
-              ) : jobs.length === 0 ? (
-                <p className="text-gray-500">No job recommendations available.</p>
-              ) : (
-                <div className="space-y-4">
-                  {jobs.map((job, index) => {
-                    
-              
+{loading ? (
+  <p className="text-gray-500">Loading jobs...</p>
+) : error ? (
+  <p className="text-red-500">{error}</p>
+) : (activeTab === "recommended" ? jobs : allJobs).length === 0 ? (
+  <p className="text-gray-500">No jobs available.</p>
+) : (
+  <div className="space-y-4">
+    {(activeTab === "recommended" ? jobs : allJobs).map((job, index) => (
+      <div key={index} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+        <h3 className="text-xl font-semibold mb-2">{job.job_title}</h3>
+        <div className="flex items-center text-gray-600 mb-4">
+          <span>{job.comp_name || "Unknown Company"}</span>
+          <span className="mx-2">•</span>
+          <span>{job.comp_location || "Location not specified"}</span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+  {job.tags?.split(", ").map((tag, tagIndex) => (
+    <span key={tagIndex} className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
+      {tag}
+    </span>
+  ))}
+</div>
 
-                    return (
-                      <div
-                        key={index}
-                        className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                      >
-                        <h3 className="text-xl font-semibold mb-2">{job.job_title}</h3>
-                        <div className="flex items-center text-gray-600 mb-4">
-                          <span>{job.comp_name || "Unknown Company"}</span>
-                          <span className="mx-2">•</span>
-                          <span>{job.comp_location || "Location not specified"}</span>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {job.tags?.split(", ").map((tag, tagIndex) => (
-                            <span
-                              key={tagIndex}
-                              className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full"
-                            >
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
+<div className="flex mt-3 flex-wrap gap-2">
+  {job.disabilitytag?.split(", ").map((disabilitytag, disabilitytagIndex) => (
+    <span key={disabilitytagIndex} className="bg-purple-100 text-purple-800 text-xs px-3 py-1 rounded-full">
+      {disabilitytag}
+    </span>
+  ))}
+</div>
+        <div className="mt-4 flex gap-4">
+          <button
+            onClick={() => navigate(`/job-seeker/apply?post_id=${job.post_id}`)}
+            className="bg-[#7cd1ed] text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
+          >
+            Apply Now
+          </button>
+          <button
+            onClick={() => handleChat(job.posted_by)}
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
+          >
+            Chat with Employer
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+)}
 
-                        {/* Buttons */}
-                        <div className="mt-4 flex gap-4">
-                          {/* Apply Button */}
-                          <button
-                            onClick={() =>
-                              navigate(`/job-seeker/apply?post_id=${job.post_id}`)
-                            }
-                            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition"
-                          >
-                            Apply Now
-                          </button>
-
-                          <button
-    onClick={() => handleChat(job.posted_by)}
-    className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition"
-  >
-    Chat with Employer
-  </button>
-                        </div>
-
-                        {/* Show ChatRooms when clicked */}
-                      
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           </div>
         </div>

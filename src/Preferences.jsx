@@ -3,8 +3,8 @@ import LoggedInHeader from "./LoggedInHeader";
 import { useNavigate } from "react-router-dom";
 
 const Preferences = ({ onPreferencesSaved }) => {
-  const [tags, setTags] = useState([]); // All available tags
-  const [selectedTags, setSelectedTags] = useState([]); // User's selected tags
+  const [tags, setTags] = useState([]); 
+  const [selectedTags, setSelectedTags] = useState([]); 
   const authToken = localStorage.getItem("authToken");
   const navigate = useNavigate();
   useEffect(() => {
@@ -36,7 +36,7 @@ const Preferences = ({ onPreferencesSaved }) => {
         if (!response.ok) throw new Error("Failed to fetch preferences");
 
         const data = await response.json();
-        setSelectedTags(data.map((pref) => pref.id)); // Set user's saved preferences
+        setSelectedTags(data.map((pref) => pref.id)); 
       } catch (error) {
         console.error("Error fetching preferences:", error);
       }
@@ -47,9 +47,16 @@ const Preferences = ({ onPreferencesSaved }) => {
   }, [authToken]);
 
   const toggleTag = (tagId) => {
-    setSelectedTags((prev) =>
-      prev.includes(tagId) ? prev.filter((id) => id !== tagId) : [...prev, tagId]
-    );
+    setSelectedTags((prev) => {
+      if (prev.includes(tagId)) {
+        return prev.filter((id) => id !== tagId); 
+      } else if (prev.length < 5) {
+        return [...prev, tagId]; 
+      } else {
+        alert("You can select up to 5 preferences only.");
+        return prev; 
+      }
+    });
   };
 
   const handleSubmit = async () => {
@@ -93,33 +100,34 @@ const Preferences = ({ onPreferencesSaved }) => {
         </div>
 
         <div className="mb-4 text-sm text-muted-foreground">
-          Selected: {selectedTags.length} / {tags.length}
-        </div>
-
+  Selected: {selectedTags.length} / 5
+</div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 mb-8">
           {tags.map((tag) => {
             const isSelected = selectedTags.includes(tag.id);
             return (
               <button
-                key={tag.id}
-                onClick={() => toggleTag(tag.id)}
-                className={`
-                  px-4 py-3 rounded-lg border-2 text-left
-                  transition-all duration-200 ease-in-out
-                  hover:border-[#4CAF50] hover:shadow-md
-                  focus:outline-none focus:ring-2 focus:ring-[#4CAF50] focus:ring-opacity-50
-                  ${isSelected ? "border-[#4CAF50] bg-[#E8F5E9] text-[#2E7D32]" : "border-gray-200 bg-white hover:bg-gray-50"}
-                `}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-medium">{tag.name}</span>
-                  {isSelected && (
-                    <svg className="w-5 h-5 text-[#4CAF50]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                </div>
-              </button>
+              key={tag.id}
+              onClick={() => toggleTag(tag.id)}
+              disabled={!selectedTags.includes(tag.id) && selectedTags.length >= 5}
+              className={`
+                px-4 py-3 rounded-lg border-2 text-left transition-all duration-200 ease-in-out
+                ${selectedTags.includes(tag.id) 
+                  ? "border-[#4CAF50] bg-[#E8F5E9] text-[#2E7D32]" 
+                  : selectedTags.length >= 5 
+                    ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed" 
+                    : "border-gray-200 bg-white hover:bg-gray-50"}
+              `}
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-medium">{tag.name}</span>
+                {selectedTags.includes(tag.id) && (
+                  <svg className="w-5 h-5 text-[#4CAF50]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                )}
+              </div>
+            </button>
             );
           })}
         </div>

@@ -17,12 +17,7 @@ export default function FAQPage() {
 
         <FrequentlyAskedQuestions />
 
-        <div className="mt-12 text-center">
-          <p className="text-gray-600 mb-4">Can't find what you're looking for?</p>
-          <button className="px-6 py-3 bg-green-600 text-white rounded-md shadow-sm hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors">
-            Contact Support
-          </button>
-        </div>
+
       </div>
     </div>
   )

@@ -255,7 +255,9 @@ def recommend_jobs(request):
 
     preferred_tags = user.preferences.all()
     preferred_tag_names = [tag.name for tag in preferred_tags]
-
+    emp_profile = EmployeeProfile.objects.get(user_id=user_id)
+    user_disability = emp_profile.user_disability
+    print(user_disability)
     job_posts = JobPost.objects.all()
   
     job_data = [
@@ -265,6 +267,7 @@ def recommend_jobs(request):
             "job_description": job.job_desc,
             "skills_required": job.skills_req if job.skills_req else "",
             "tags": ", ".join(tag.name for tag in job.tags.all()),
+            "disabilitytag": ", ".join(tag.name for tag in job.disabilitytag.all()),
             "comp_name":job.get_company_name(),
             "category":job.category,
             "comp_location":job.get_company_location(),
@@ -277,11 +280,10 @@ def recommend_jobs(request):
         return JsonResponse({"message": "No jobs found"}, status=404)
 
     df = pd.DataFrame(job_data)
-    df["combined_text"] = df["job_description"] + " " + df["skills_required"] + " " + df["tags"] +df["category"]
+    df["combined_text"] = df["job_description"] + " " + df["skills_required"] + " " + df["tags"] +" " + df["category"] + ", " +  (df["disabilitytag"] + " ") * 2
 
-    user_profile = " ".join(preferred_tag_names)
-
-    
+    user_profile = " ".join(preferred_tag_names) + ", " + (user_disability + " ") * 2
+    print("!!!",user_profile)
 
     tfidf_vectorizer = TfidfVectorizer(stop_words="english")
     tfidf_matrix = tfidf_vectorizer.fit_transform(df["combined_text"])
@@ -291,7 +293,7 @@ def recommend_jobs(request):
     similarity_scores = cosine_similarity(user_vector, tfidf_matrix).flatten()
 
     df["similarity_score"] = similarity_scores
-    recommended_jobs = df.sort_values(by="similarity_score", ascending=False).head(5) #count nung irereturn na jobs, ranked by similarity score
+    recommended_jobs = df.sort_values(by="similarity_score", ascending=False).head(3) #count nung irereturn na jobs, ranked by similarity score
 
     return JsonResponse(recommended_jobs.to_dict(orient="records"), safe=False)
 
@@ -584,3 +586,46 @@ def get_preferences(request):
     preferences = user.preferences.all()
     serializer = TagSerializer(preferences, many=True)
     return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])  
+def get_all_jobs(request):
+    job_posts = JobPost.objects.all()
+
+    job_data = [
+        {
+            "post_id": job.post_id,
+            "job_title": job.job_title,
+            "job_description": job.job_desc,
+            "skills_required": job.skills_req if job.skills_req else "",
+            "tags": ", ".join(tag.name for tag in job.tags.all()),
+            "disabilitytag": ", ".join(tag.name for tag in job.disabilitytag.all()), 
+            "comp_name": job.get_company_name(),
+            "category": job.category,
+            "comp_location": job.get_company_location(),
+            "posted_by": job.posted_by.id if job.posted_by else None
+        }
+        for job in job_posts
+    ]
+
+    if not job_data:
+        return JsonResponse({"message": "No jobs found"}, status=404)
+
+    return JsonResponse(job_data, safe=False)
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_all_users (request):
+    users =  EmployeeProfile.objects.all()
+    serializer = EmployeeProfileSerializer(users, many=True)
+    return Response(serializer.data)
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_user(request, id):
+    user = User.objects.get(id=id)
+    emp_profile = EmployeeProfile.objects.get(user_id=id)
+    emp_profile.delete()
+    user.delete()
+    return Response({"message": "User deleted successfully"}, status=status.HTTP_200_OK)

@@ -1,58 +1,31 @@
 "use client"
 
 import { useState } from "react"
-import { Link, useLocation,useNavigate } from "react-router-dom"
-import {
-  Users,
-  LayoutDashboard,
-  Briefcase,
-  Settings,
-  LogOut,
-  Menu,
-  X,
-  BadgeCheck,
-  MessageSquare,
-  FileText,
-  HelpCircle,
-} from "lucide-react"
+import { Link, useLocation } from "react-router-dom"
+import { Users, LayoutDashboard, LogOut, Menu, X, BadgeCheck } from "lucide-react"
 
 export default function AdminLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
-    const navigate = useNavigate()
+
+  // Update the navigation array to include only dashboard, user approval, and manage users
   const navigation = [
-
+    { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
     { name: "User Approval", href: "/admin/user-approval", icon: Users },
-
+    { name: "Manage Users", href: "/admin/manage-users", icon: Users },
   ]
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch("http://localhost:8000/api/logout/", {
-        method: "POST",
-       
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (response.ok) {
-     
-        localStorage.removeItem('authToken'); 
-        localStorage.clear();
-        navigate("/"); 
-        window.location.reload();
-      } else {
-        console.error("Logout failed");
-      }
-    } catch (error) {
-      console.error("Error during logout:", error);
-    }
-  };
+  const handleLogout = () => {
+    localStorage.removeItem("authToken")
+    localStorage.removeItem("userId")
+    localStorage.removeItem("userType")
+    localStorage.removeItem("username")
+    window.location.href = "/"
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
-   
+      {/* Mobile sidebar */}
       <div className={`fixed inset-0 flex z-40 md:hidden ${sidebarOpen ? "" : "hidden"}`}>
         <div className="fixed inset-0 bg-gray-600 bg-opacity-75" onClick={() => setSidebarOpen(false)}></div>
 
@@ -102,7 +75,7 @@ export default function AdminLayout({ children }) {
         </div>
       </div>
 
-
+      {/* Static sidebar for desktop */}
       <div className="hidden md:flex md:w-64 md:flex-col md:fixed md:inset-y-0">
         <div className="flex-1 flex flex-col min-h-0 bg-indigo-800">
           <div className="flex-1 flex flex-col pt-5 pb-4 overflow-y-auto">
@@ -137,7 +110,7 @@ export default function AdminLayout({ children }) {
         </div>
       </div>
 
-
+      {/* Main content */}
       <div className="md:pl-64 flex flex-col flex-1">
         <div className="sticky top-0 z-10 md:hidden pl-1 pt-1 sm:pl-3 sm:pt-3 bg-gray-100">
           <button
