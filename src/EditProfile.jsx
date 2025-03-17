@@ -36,7 +36,7 @@ export default function EditProfile() {
     e.preventDefault();
     try {
 
-      const response = await fetch("http://localhost:8000/api/edit-profile/", {
+      const response = await fetch("http://194.163.40.84/api/edit-profile/", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

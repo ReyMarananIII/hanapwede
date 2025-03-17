@@ -27,7 +27,7 @@ export default function EmployerProfile() {
     
   
     try {
-      const response = await fetch("http://localhost:8000/api/employer-profile/", {
+      const response = await fetch("http://194.163.40.84/api/employer-profile/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

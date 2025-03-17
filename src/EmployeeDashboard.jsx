@@ -20,7 +20,7 @@
     
     const handleChat = async (employerId) => {
       try {
-        const response = await fetch("http://localhost:8000/api/create_chat/", {
+        const response = await fetch("http://194.163.40.84/api/create_chat/", {
           method: "POST",
           headers: {
             Authorization: `Token ${authToken}`,
@@ -46,7 +46,7 @@
         return;
       }
 
-      fetch(`http://127.0.0.1:8000/api/recommend_jobs/?user_id=${userId}`, {
+      fetch(`http://194.163.40.84/api/recommend_jobs/?user_id=${userId}`, {
         method: "GET",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -72,7 +72,7 @@
 
     useEffect(() => {
       if (activeTab === "all") {
-        fetch("http://127.0.0.1:8000/api/all-jobs/", {
+        fetch("http://194.163.40.84/api/all-jobs/", {
           method: "GET",
           headers: {
             Authorization: `Token ${authToken}`,

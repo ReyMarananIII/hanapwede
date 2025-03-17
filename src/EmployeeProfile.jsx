@@ -22,7 +22,7 @@ export default function EmployeeProfile() {
     setIsLoading(true)
     setError(null)
 
-    fetch(`http://localhost:8000/api/get-user-details/${userId}/`, {
+    fetch(`http://194.163.40.84/api/get-user-details/${userId}/`, {
       headers: token ? { Authorization: `Token ${token}` } : {},
     })
       .then((res) => {

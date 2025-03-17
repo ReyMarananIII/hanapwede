@@ -29,7 +29,7 @@ export default function UserChats() {
     setIsLoading(true)
     setError(null)
 
-    fetch("http://127.0.0.1:8000/api/user-chats/", {
+    fetch("http://194.163.40.84/api/user-chats/", {
       method: "GET",
       headers: {
         Authorization: `Token ${authToken}`,

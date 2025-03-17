@@ -22,7 +22,7 @@ export default function ManageUsers() {
 
       try {
         const token = localStorage.getItem("authToken")
-        const response = await fetch("http://127.0.0.1:8000/api/admin/users/", {
+        const response = await fetch("http://194.163.40.84/api/admin/users/", {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -63,7 +63,7 @@ export default function ManageUsers() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://127.0.0.1:8000/api/admin/delete-user/${userId}/`, {
+      const response = await fetch(`http://194.163.40.84/api/admin/delete-user/${userId}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Token ${token}`,
