@@ -50,7 +50,7 @@ export default function ChatRoom() {
 
 
   useEffect(() => {
-    const ws = new WebSocket(`ws://194.163.40.84/ws/chat/${roomId}/`)
+    const ws = new WebSocket(`ws://194.163.40.84:8001/ws/chat/${roomId}/`)
     setSocket(ws)
 
     ws.onmessage = (event) => {
