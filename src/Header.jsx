@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom"
-
+import { useNavigate } from "react-router-dom"
 export default function Header() {
+  const navigate = useNavigate();
   return (
     <header className="flex h-16 items-center justify-between  px-4 lg:px-16">
       <Link to="/" className="flex items-center">
@@ -17,7 +18,10 @@ export default function Header() {
         <Link to="/employer/signin" className="text-sm text-muted-foreground hover:text-foreground">
           Employer Login
         </Link>
-        <button className="bg-[#4CAF50] hover:bg-[#45a049] px-4 py-2 text-sm text-white rounded">Post a Job</button>
+        <button 
+        onClick={()=>navigate("/employer/signin")}
+        
+        className="bg-[#4CAF50] hover:bg-[#45a049] px-4 py-2 text-sm text-white rounded">Post a Job</button>
       </div>
     </header>
   )

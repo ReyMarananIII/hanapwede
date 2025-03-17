@@ -2,15 +2,42 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Header from "./Header";
 import LoggedInHeader from "./LoggedInHeader"; 
+import { useNavigate } from "react-router-dom";
 
 export default function LandingPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const token = localStorage.getItem("authToken"); 
     setIsLoggedIn(!!token);
   }, []);
+  const handleJoinAsCandidate = () => {
+    const authToken = localStorage.getItem("authToken"); 
+    if (authToken) {
+      navigate("/job-seeker/dashboard");
+    } else {
+      navigate("/job-seeker/signup");
+    }
+  };
 
+  const handlePostJobUpdate = () => {
+    const authToken = localStorage.getItem("authToken");
+    if (authToken) {
+      navigate("/hanapwede/forum");
+    } else {
+      navigate("/job-seeker/signin");
+    }
+  };
+
+  const handlePostAJob = () => {  
+    const authToken = localStorage.getItem("authToken");
+    if (authToken) {
+      navigate("/employer/post-job");
+    } else {
+      navigate("/employer/signup");
+    }
+  }
   const featuredJobs = [
     {
       title: "Software Developer",
@@ -62,10 +89,14 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="flex gap-4">
-              <button className="bg-[#4CAF50] text-white px-6 py-2 rounded hover:bg-[#45a049]">
+              <button 
+              onClick={handleJoinAsCandidate}
+              className="bg-[#4CAF50] text-white px-6 py-2 rounded hover:bg-[#45a049]">
                 Join as Candidate
               </button>
-              <button className="border border-[#4CAF50] text-[#4CAF50] px-6 py-2 rounded hover:bg-gray-50">
+              <button 
+              onClick={handlePostAJob}
+              className="border border-[#4CAF50] text-[#4CAF50] px-6 py-2 rounded hover:bg-gray-50">
                 Post a Job
               </button>
             </div>
@@ -109,7 +140,10 @@ export default function LandingPage() {
         <div className="bg-white p-6 rounded-lg shadow-sm">
           <h2 className="text-2xl font-bold mb-4">Latest Company Updates</h2>
           <p className="text-gray-600 mb-4">Stay updated with company news and featured opportunities</p>
-          <button className="text-[#4CAF50] hover:text-[#45a049] font-medium">Post Update</button>
+          <button 
+          onClick={handlePostJobUpdate}
+          
+          className="text-[#4CAF50] hover:text-[#45a049] font-medium">See Updates</button>
         </div>
       </section>
 
@@ -142,7 +176,7 @@ export default function LandingPage() {
                   </Link>
                 </li>
                 <li>
-                  <Link to="/privacy" className="hover:text-[#4CAF50]">
+                  <Link to="/privacy-policy" className="hover:text-[#4CAF50]">
                     Privacy Policy
                   </Link>
                 </li>
@@ -152,8 +186,8 @@ export default function LandingPage() {
               <h3 className="font-bold mb-4">Contact</h3>
               <ul className="space-y-2 text-gray-600">
                 <li>
-                  <Link to="/support" className="hover:text-[#4CAF50]">
-                    Support
+                  <Link to="/FAQS" className="hover:text-[#4CAF50]">
+                    Frequently Asked Questions
                   </Link>
                 </li>
                 <li>
