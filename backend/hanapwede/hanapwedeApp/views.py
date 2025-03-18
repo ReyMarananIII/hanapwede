@@ -268,7 +268,7 @@ def recommend_jobs(request):
             "disabilitytag": ", ".join(tag.name for tag in job.disabilitytag.all()),
             "comp_name":job.get_company_name(),
             "category":job.category,
-            "comp_location":job.get_company_location(),
+            "location":job.location,
             "posted_by": job.posted_by.id if job.posted_by else None
         }
         for job in job_posts
@@ -607,7 +607,7 @@ def get_all_jobs(request):
             "disabilitytag": ", ".join(tag.name for tag in job.disabilitytag.all()), 
             "comp_name": job.get_company_name(),
             "category": job.category,
-            "comp_location": job.get_company_location(),
+            "location": job.location,
             "posted_by": job.posted_by.id if job.posted_by else None
         }
         for job in job_posts

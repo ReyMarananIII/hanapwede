@@ -4,7 +4,7 @@
 
 
   export default function EmployeeDashboard() {
-    const [jobType, setJobType] = useState("All Types");
+
     const [location, setLocation] = useState("");
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -87,7 +87,9 @@
     
 
 
-
+const filteredJobs = (activeTab === "recommended" ? jobs : allJobs).filter((job) =>
+    location ? job.location?.toLowerCase().includes(location.toLowerCase()) : true
+  );
     return (
       <div className="min-h-screen bg-[#F8FBFF]">
         <LoggedInHeader />
@@ -112,22 +114,10 @@
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
          
             <div className="space-y-6">
-              <h2 className="text-sm font-semibold text-gray-500">Filters</h2>
+ 
 
               <div className="space-y-4">
-                <div>
-                  <label className="block text-sm text-gray-600 mb-2">Job Type</label>
-                  <select
-                    value={jobType}
-                    onChange={(e) => setJobType(e.target.value)}
-                    className="w-full p-2 border rounded-md bg-white appearance-none pr-8"
-                  >
-                    <option>All Types</option>
-                    <option>Full-time</option>
-                    <option>Part-time</option>
-                    <option>Contract</option>
-                  </select>
-                </div>
+         
 
                 <div>
                   <label className="block text-sm text-gray-600 mb-2">Location</label>
@@ -156,13 +146,13 @@
   <p className="text-gray-500">No jobs available.</p>
 ) : (
   <div className="space-y-4">
-    {(activeTab === "recommended" ? jobs : allJobs).map((job, index) => (
+    {filteredJobs.map((job, index) => (
       <div key={index} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
         <h3 className="text-xl font-semibold mb-2">{job.job_title}</h3>
         <div className="flex items-center text-gray-600 mb-4">
           <span>{job.comp_name || "Unknown Company"}</span>
           <span className="mx-2">•</span>
-          <span>{job.comp_location || "Location not specified"}</span>
+          <span>{job.location || "Location not specified"}</span>
         </div>
         <div className="flex flex-wrap gap-2">
   {job.tags?.split(", ").map((tag, tagIndex) => (
