@@ -88,7 +88,7 @@ export default function EmployerProfile() {
                 value={formData.comp_site}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-md"
-                required
+             
               />
             </div>
 
