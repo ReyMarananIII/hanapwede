@@ -116,7 +116,7 @@ class Application(models.Model):
     applicant_location = models.CharField(max_length=100, blank=True, null=True)
     application_action = models.TextField(blank=True, null=True)  
     applicant_skills = models.TextField(blank=True, null=True)  
-    resume = models.FileField(upload_to='resumes/', null=True, blank=True)
+    resume = models.CharField(max_length=100, null=True, blank=True)
     job_post = models.ForeignKey(
     JobPost, 
     on_delete=models.CASCADE, 
