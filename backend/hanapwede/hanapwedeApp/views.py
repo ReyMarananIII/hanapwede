@@ -220,6 +220,15 @@ def get_user_details(request,user_id):
   
     return Response({"user": User.objects.get(id=user_id).username, "profile": EmployeeProfileSerializer(user_profile).data})
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_employer_details(request,user_id):
+
+    user = User.objects.get(id=user_id)
+    user_profile = EmployerProfile.objects.get(user_id=user_id)
+  
+    return Response({"user": User.objects.get(id=user_id).username, "profile": EmployerProfileSerializer(user_profile).data})
+
 
 
 
