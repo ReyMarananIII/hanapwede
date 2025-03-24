@@ -237,6 +237,17 @@ export default function LoggedInHeader() {
   
                 
 
+                <li>
+                  <Link
+                    to={userRole === "Employee" ? "/job-seeker/dashboard" : "/employer/dashboard"}
+                    className="block px-4 py-2 hover:bg-gray-100"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Dashboard
+                  </Link>
+                </li>
+
+                
                 {userRole !== "Employee!" && (
   <li>
     <Link
@@ -250,20 +261,21 @@ export default function LoggedInHeader() {
 )}
                 <li>
                   <Link
-                    to={userRole === "Employee" ? "/job-seeker/dashboard" : "/employer/dashboard"}
-                    className="block px-4 py-2 hover:bg-gray-100"
-                    onClick={() => setIsDropdownOpen(false)}
-                  >
-                    Dashboard
-                  </Link>
-                </li>
-                <li>
-                  <Link
                     to={"/faqs/"}
                     className="block px-4 py-2 hover:bg-gray-100"
                     onClick={() => setIsDropdownOpen(false)}
                   >
                     FAQs
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    to={"/privacy-policy/"}
+                    className="block px-4 py-2 hover:bg-gray-100"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Privacy Policy
                   </Link>
                 </li>
                 <li>
