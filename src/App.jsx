@@ -5,9 +5,10 @@ import EmployerSignUpPage from "./EmployerSignUpPage";
 import EmployeeSignIn from "./EmployeeSignInPage";
 import EmployerSignIn from "./EmployerSignInPage";
 import LandingPage from "./LandingPage";
+import EmployerProfile from "./EmployerProfile";
 import { useState } from "react";
 import EmployeeDashboard from "./EmployeeDashboard";
-import EmployerProfile from "./EmployerProfile";
+import EditEmployerProfile from "./EditEmployerProfile";
 import Unauthorized from "./Unauthorized"; 
 import NotFound from "./NotFound";
 import EditProfile from "./EditProfile"; 
@@ -137,6 +138,14 @@ function App() {
 
         {/* Employer Routes */}
         <Route 
+          path="/employer/edit-profile" 
+          element={
+            <ProtectedRoute allowedRoles={["Employer"]}>
+              <EditEmployerProfile />
+            </ProtectedRoute>
+          } 
+        />
+           <Route 
           path="/employer/profile" 
           element={
             <ProtectedRoute allowedRoles={["Employer"]}>

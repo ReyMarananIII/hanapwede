@@ -46,7 +46,7 @@ export default function EmployerSignIn() {
           navigate("/admin/user-approval");
         }
         else{
-        navigate(data.has_profile ? "/employer/dashboard" : "/employer/profile")
+        navigate(data.has_profile ? "/employer/dashboard" : "/employer/edit-profile")
         }
       } else {
         setError(data.error || "Invalid email or password.")
