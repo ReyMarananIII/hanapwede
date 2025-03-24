@@ -428,20 +428,7 @@ const handleSubmit = async (e) => {
             </form>
           </div>
 
-          {/* Quick Stats */}
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="font-semibold mb-4">Quick Stats</h2>
-            <div className="space-y-4">
-              <div>
-                <div className="text-sm text-gray-500">Profile Views</div>
-                <div className="text-2xl font-semibold">24</div>
-              </div>
-              <div>
-                <div className="text-sm text-gray-500">Job Applications</div>
-                <div className="text-2xl font-semibold">5</div>
-              </div>
-            </div>
-          </div>
+      
         </div>
       </div>
     </div>
