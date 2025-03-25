@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password
 from django.contrib.contenttypes.models import ContentType
+from django.db.models import Count
 from hanapwedeApp.models import EmployeeProfile,Notification
 import json
 from django.contrib.auth import authenticate
@@ -72,6 +73,35 @@ def signup(request):
 
     return JsonResponse({"error": "Invalid request method."}, status=405)
 
+@api_view(["POST"])
+def admin_login(request):
+    email = request.data.get("email")
+    
+    password = request.data.get("password")
+
+    try:
+        user = User.objects.get(email=email)
+    except User.DoesNotExist:
+        return JsonResponse({"error": "Invalid credentials."}, status=400)
+
+    user = authenticate(username=user.username, password=password) 
+    if user is None:
+        return JsonResponse({"error": "Invalid credentials."}, status=400)
+
+
+    if user.user_type != "Admin":
+        return JsonResponse({"error": "Unauthorized. Only admins can access this endpoint."}, status=403)
+
+
+    token, _ = Token.objects.get_or_create(user=user)
+
+    return JsonResponse({
+        "token": token.key,
+        "message": "Login successful.",
+        "user_type": user.user_type,
+        "userId": user.id,
+        "username": user.username
+    }, status=200)
 @api_view(["POST"])
 def login_view(request):
     email = request.data.get("email")
@@ -277,7 +307,7 @@ def recommend_jobs(request):
             "disabilitytag": ", ".join(tag.name for tag in job.disabilitytag.all()),
             "comp_name":job.get_company_name(),
             "category":job.category,
-            "comp_location":job.get_company_location(),
+            "location":job.location,
             "posted_by": job.posted_by.id if job.posted_by else None
         }
         for job in job_posts
@@ -616,7 +646,7 @@ def get_all_jobs(request):
             "disabilitytag": ", ".join(tag.name for tag in job.disabilitytag.all()), 
             "comp_name": job.get_company_name(),
             "category": job.category,
-            "comp_location": job.get_company_location(),
+            "location": job.location,
             "posted_by": job.posted_by.id if job.posted_by else None
         }
         for job in job_posts
@@ -693,3 +723,29 @@ def decline_application(request, application_id):
         return JsonResponse({"error": "Application not found"}, status=404)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+
+User = get_user_model()
+
+def platform_statistics(request):
+
+    employee_count = User.objects.filter(user_type="employee").count()
+
+   
+    employer_count = User.objects.filter(user_type="employer").count()
+
+
+    jobs_posted_count = JobPost.objects.count()
+
+    disability_types = (
+        DisabilityTag.objects.filter(jobpost__isnull=False) 
+        .annotate(job_count=Count("jobpost"))
+        .values("name", "job_count")
+    )
+
+    return JsonResponse({
+        "employee_count": employee_count,
+        "employer_count": employer_count,
+        "jobs_posted_count": jobs_posted_count,
+        "disability_types": list(disability_types)
+    })
