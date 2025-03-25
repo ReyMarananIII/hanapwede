@@ -23,9 +23,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-3tx(s48#1os6585e!=1c#x8^%vvt#x4@yt%n#u+f*nnng7+-w%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['194.163.40.84']
 
 
 # Application definition
@@ -61,10 +61,12 @@ MIDDLEWARE = [
 ]
  #papaltan pa  to ( FOR DEV LANG )
 
-CSRF_TRUSTED_ORIGINS = ['https://*.localhost',"https://161.248.25.136"]
+CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1',"https://161.248.25.136","http://194.163.40.84"]
 CORS_ORIGIN_WHITELIST = [
-    "http://localhost:5173","http://161.248.25.136", 
+    "http://localhost:5173","http://161.248.25.136","http://194.163.40.84" 
 ]
+
+CORS_ALLOWED_ORIGINS= ['https://*.127.0.0.1',"https://161.248.25.136","http://194.163.40.84"]
 ROOT_URLCONF = 'hanapwede.urls'
 
 TEMPLATES = [
@@ -142,8 +144,9 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
-
+import os 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static') 
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
