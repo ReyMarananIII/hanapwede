@@ -23,7 +23,7 @@ from rest_framework.routers import DefaultRouter
 from hanapwedeApp.views import PostViewSet, CommentViewSet, ReportViewSet, BannedWordViewSet
 from hanapwedeApp.views import edit_profile,get_notifications,mark_notification_read,mark_all_notifications_read
 from hanapwedeApp.views import get_chat_messages, create_chat,send_message,get_user_chats,get_user_details
-from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_preferences,get_all_jobs,get_all_users,delete_user,approve_application,decline_application
+from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_preferences,get_all_jobs,get_all_users,delete_user,approve_application,decline_application,platform_statistics,admin_login
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'comments', CommentViewSet)
@@ -64,4 +64,6 @@ urlpatterns = [
     path("api/admin/delete-user/<int:id>/", delete_user, name="delete_user"),
     path("api/applications/<int:application_id>/approve/", approve_application, name="approve_application"),
     path("api/applications/<int:application_id>/decline/", decline_application, name="decline_application"),
+    path("api/platform-statistics/", platform_statistics, name="platform-statistics"),
+    path("api/admin-login/", admin_login, name="admin-login"),
 ]

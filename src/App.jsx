@@ -26,6 +26,7 @@ import PWDCardOCR from "./PWDCardOCR";
 import AdminManageUsersPage from "./AdminManageUsersPage";
 import AdminUserApprovalPage from "./AdminUserApprovalPage";
 import PrivacyPolicyPage from "./PrivacyPolicyPage";
+import AdminLoginPage from "./AdminLoginPage";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -41,6 +42,7 @@ function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/FAQS" element={<FAQPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+        <Route path="/admin/signin" element={<AdminLoginPage />} />
        
 
         <Route 
