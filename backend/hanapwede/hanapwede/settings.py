@@ -61,7 +61,7 @@ MIDDLEWARE = [
 ]
  #papaltan pa  to ( FOR DEV LANG )
 
-CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1',"https://161.248.25.136"]
+CSRF_TRUSTED_ORIGINS = ['https://*.localhost',"https://161.248.25.136"]
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:5173","http://161.248.25.136", 
 ]

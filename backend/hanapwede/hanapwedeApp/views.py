@@ -243,12 +243,26 @@ def edit_profile(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_user_details(request,user_id):
+def get_user_details(request, user_id=None):  # user_id is optional
+    if user_id:
+        user = get_object_or_404(User, id=user_id)  # Fetch user by ID
+    else:
+        user = request.user  # Fetch the logged-in user
 
-    user = User.objects.get(id=user_id)
-    user_profile = EmployeeProfile.objects.get(user_id=user_id)
-  
-    return Response({"user": User.objects.get(id=user_id).username, "profile": EmployeeProfileSerializer(user_profile).data})
+    user_profile = get_object_or_404(EmployeeProfile, user=user)  # Get profile
+    
+    return Response({
+        "user": user.username,
+        "profile": EmployeeProfileSerializer(user_profile).data
+    })
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_user_details_redirect(request):
+    user = request.user
+    print(user)
+    user_profile = EmployeeProfile.objects.get(user_id=user.id)
+    return Response({"user": user.username, "profile": EmployeeProfileSerializer(user_profile).data})
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
@@ -404,6 +418,7 @@ def employer_dashboard(request):
     applications = Application.objects.filter(job_post__in=jobs)
 
     applicants_data = list(applications.values(
+        "applicant__id",
         "applicant_name",
         "applicant_role",
         "applicant_experience",
@@ -411,6 +426,7 @@ def employer_dashboard(request):
         "application_action",
         "application_status",
         "application_id",
+        "job_post__job_title" 
     ))
 
     return JsonResponse({

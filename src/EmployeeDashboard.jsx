@@ -70,7 +70,7 @@ export default function EmployeeDashboard() {
       return
     }
 
-    fetch(`http://127.0.0.1:8000/api/recommend_jobs/?user_id=${userId}`, {
+    fetch(`http://localhost:8000/api/recommend_jobs/?user_id=${userId}`, {
       method: "GET",
       headers: {
         Authorization: `Token ${authToken}`,
@@ -97,7 +97,7 @@ export default function EmployeeDashboard() {
   // Fetch all jobs when tab changes
   useEffect(() => {
     if (activeTab === "all") {
-      fetch("http://127.0.0.1:8000/api/all-jobs/", {
+      fetch("http://localhost:8000/api/all-jobs/", {
         method: "GET",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -114,7 +114,7 @@ export default function EmployeeDashboard() {
   useEffect(() => {
     setStatsLoading(true)
 
-    fetch("http://127.0.0.1:8000/api/platform-statistics/", {
+    fetch("http://localhost:8000/api/platform-statistics/", {
       method: "GET",
       headers: {
         Authorization: `Token ${authToken}`,

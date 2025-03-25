@@ -26,6 +26,7 @@ from hanapwedeApp.views import get_chat_messages, create_chat,send_message,get_u
 from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_preferences,get_all_jobs,get_all_users,delete_user,approve_application,decline_application
 from hanapwedeApp.views import get_employer_details
 from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_preferences,get_all_jobs,get_all_users,delete_user,approve_application,decline_application,platform_statistics,admin_login
+from hanapwedeApp.views import get_user_details_redirect
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'comments', CommentViewSet)
@@ -44,6 +45,7 @@ urlpatterns = [
     path("api/save-preferences/", save_preferences, name="save_preferences"),
     path("api/recommend_jobs/", recommend_jobs, name="recommend_jobs"),
     path('api/user-preferences/<int:user_id>/', get_user_preferences, name='user-preferences'),
+    path('api/user-details-redirect', get_user_details_redirect, name='user-details-redirect'),
     path('api/disability-tags/', get_disability_tags, name='get-disability-tags'),
     path("api/job/<int:post_id>/", get_job, name="get_job"),
     path("api/submit-application/", apply_job, name="apply_job"),
@@ -56,6 +58,7 @@ urlpatterns = [
     path('api/create_chat/', create_chat, name='create_chat'),   
     path("api/send_message/", send_message, name="send_message"),
     path("api/user-chats/", get_user_chats, name="get_user_chats"),
+    path('api/get-user-details/', get_user_details, name='logged-in-user-details'), 
     path("api/get-user-details/<int:user_id>/", get_user_details, name="get_user_details"),
     path("api/get-employer-details/<int:user_id>/", get_employer_details, name="get_employer_details"),
     path("api/admin/pending-users/",get_pending_users,name="get_pending_users"),

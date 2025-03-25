@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react"
 import LoggedInHeader from "./LoggedInHeader"
+import { useParams } from "react-router-dom";
+
 import Header from "./Header"
 import {
   User,
@@ -25,7 +27,7 @@ export default function EmployeeProfile() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState("about")
-  const userId = localStorage.getItem("userId")
+  const { userId } = useParams(); // Get userId from URL if present
 
   useEffect(() => {
     const token = localStorage.getItem("authToken")
@@ -33,30 +35,32 @@ export default function EmployeeProfile() {
   }, [])
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken")
-    setIsLoading(true)
-    setError(null)
+    const token = localStorage.getItem("authToken");  
+    setIsLoading(true);
+    setError(null);
 
-    fetch(`http://194.163.40.84/api/get-user-details/${userId}/`, {
+    // If userId is in the URL, fetch that user's details; otherwise, fetch the logged-in user
+    const apiUrl = userId
+      ? `http://localhost:8000/api/get-user-details/${userId}/`
+      : `http://localhost:8000/api/get-user-details/`; // API should handle returning the logged-in user
+
+    fetch(apiUrl, {
       headers: token ? { Authorization: `Token ${token}` } : {},
     })
       .then((res) => {
-        if (!res.ok) {
-          throw new Error("Failed to fetch user details")
-        }
-        return res.json()
+        if (!res.ok) throw new Error("Failed to fetch user details");
+        return res.json();
       })
       .then((data) => {
-        setUserDetails(data)
-        setIsLoading(false)
-        console.log(data.profile)
+        setUserDetails(data);
+        setIsLoading(false);
       })
       .catch((error) => {
-        console.error("Error fetching user details:", error)
-        setError("Failed to load user profile. Please try again.")
-        setIsLoading(false)
-      })
-  }, [userId])
+        console.error("Error fetching user details:", error);
+        setError("Failed to load profile. Please try again.");
+        setIsLoading(false);
+      });
+  }, [userId]);
 
   const tabs = [
     { id: "about", label: "About" },

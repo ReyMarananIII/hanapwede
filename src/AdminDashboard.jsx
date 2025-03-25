@@ -34,7 +34,7 @@ export default function AdminDashboard() {
 
       try {
         const token = localStorage.getItem("authToken")
-        const response = await fetch("http://194.163.40.84/api/admin/pending-users/", {
+        const response = await fetch("http://localhost:8000/api/admin/pending-users/", {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -71,7 +71,7 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://194.163.40.84/api/admin/approve-user/${userId}/`, {
+      const response = await fetch(`http://localhost:8000/api/admin/approve-user/${userId}/`, {
         method: "POST",
         headers: {
           Authorization: `Token ${token}`,
@@ -104,7 +104,7 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://194.163.40.84/api/admin/reject-user/${userId}/`, {
+      const response = await fetch(`http://localhost:8000/api/admin/reject-user/${userId}/`, {
         method: "POST",
         headers: {
           Authorization: `Token ${token}`,

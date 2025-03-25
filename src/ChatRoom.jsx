@@ -24,7 +24,7 @@ export default function ChatRoom() {
     setIsLoading(true)
     setError(null)
 
-    fetch(`http://194.163.40.84/api/chat/messages/${roomId}/`, {
+    fetch(`http://localhost:8000/api/chat/messages/${roomId}/`, {
       method: "GET",
       headers: {
         Authorization: `Token ${authToken}`,
@@ -50,7 +50,7 @@ export default function ChatRoom() {
 
 
   useEffect(() => {
-    const ws = new WebSocket(`ws://194.163.40.84:8001/ws/chat/${roomId}/`)
+    const ws = new WebSocket(`ws://localhost:8001/ws/chat/${roomId}/`)
     setSocket(ws)
 
     ws.onmessage = (event) => {

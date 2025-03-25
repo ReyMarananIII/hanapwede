@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import LoggedInHeader from "./LoggedInHeader"
 import { useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom";
 import { CheckCircle, XCircle, Eye, Briefcase, MapPin, Clock, User, AlertCircle, Loader } from "lucide-react"
 
 export default function EmployerDashboard() {
@@ -25,7 +26,7 @@ export default function EmployerDashboard() {
   useEffect(() => {
     const fetchDashboardData = async () => {
       try {
-        const response = await fetch("http://194.163.40.84/api/employer-dashboard", {
+        const response = await fetch("http://localhost:8000/api/employer-dashboard", {
           method: "GET",
           headers: {
             Authorization: `Token ${authToken}`,
@@ -39,6 +40,7 @@ export default function EmployerDashboard() {
 
         const data = await response.json()
         setDashboardData(data)
+        console.log(data)
       } catch (error) {
         console.error("Error fetching dashboard data:", error)
       }
@@ -74,7 +76,7 @@ export default function EmployerDashboard() {
     try {
       console.log(selectedApplicant.application_id)
       const response = await fetch(
-        `http://194.163.40.84/api/applications/${selectedApplicant.application_id}/approve/`,
+        `http://localhost:8000/api/applications/${selectedApplicant.application_id}/approve/`,
         {
           method: "POST",
           headers: {
@@ -127,7 +129,7 @@ export default function EmployerDashboard() {
 
     try {
       const response = await fetch(
-        `http://194.163.40.84/api/applications/${selectedApplicant.application_id}/decline/`,
+        `http://localhost:8000/api/applications/${selectedApplicant.application_id}/decline/`,
         {
           method: "POST",
           headers: {
@@ -174,7 +176,7 @@ export default function EmployerDashboard() {
   // Fetch dashboard data (for refreshing after actions)
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch("http://194.163.40.84/api/employer-dashboard", {
+      const response = await fetch("http://localhost:8000/api/employer-dashboard", {
         method: "GET",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -239,8 +241,10 @@ export default function EmployerDashboard() {
                     <th className="text-left p-4 font-medium text-gray-600">Name</th>
                     <th className="text-left p-4 font-medium text-gray-600">Role</th>
                     <th className="text-left p-4 font-medium text-gray-600">Experience</th>
+                    <th className="text-left p-4 font-medium text-gray-600">Applied For</th>
                     <th className="text-left p-4 font-medium text-gray-600">Location</th>
                     <th className="text-left p-4 font-medium text-gray-600">Status</th>
+                   
                     <th className="text-left p-4 font-medium text-gray-600">Actions</th>
                   </tr>
                 </thead>
@@ -248,13 +252,22 @@ export default function EmployerDashboard() {
                   {dashboardData.applicants.length > 0 ? (
                     dashboardData.applicants.map((candidate, index) => (
                       <tr key={index} className="border-b last:border-b-0 hover:bg-gray-50">
-                        <td className="p-4 font-medium">{candidate.applicant_name}</td>
+                        <td className="p-4 font-medium">
+  <Link
+    to={`/job-seeker/profile/${candidate.applicant__id}`} 
+    className="text-blue-600 hover:underline"
+  >
+    {candidate.applicant_name}
+  </Link>
+</td>
                         <td className="p-4">{candidate.applicant_role}</td>
                         <td className="p-4">{candidate.applicant_experience}</td>
+                        <td className="p-4">{candidate.job_post__job_title}</td>
                         <td className="p-4 flex items-center">
                           <MapPin className="w-4 h-4 mr-1 text-gray-400" />
                           {candidate.applicant_location}
                         </td>
+                        
                         <td className="p-4">
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(candidate.application_status)}`}

@@ -40,30 +40,31 @@ export default function LandingPage() {
   }
   const featuredJobs = [
     {
-      title: "Software Developer",
-      company: "Tech Solutions Inc.",
-      location: "Manila, Philippines",
-      tags: ["Full-time", "Flexible Hours", "Screen Reader Compatible"],
+        title: "Software Developer",
+        company: "Batangas Tech Solutions",
+        location: "Batangas City, Philippines",
+        tags: ["Full-time", "Flexible Hours", "Screen Reader Compatible"],
     },
     {
-      title: "Customer Support Specialist",
-      company: "AccessWare Solutions",
-      location: "Cebu, Philippines",
-      tags: ["Full-time", "Wheelchair Accessible", "Sign Language Interpreter"],
+        title: "Customer Support Specialist",
+        company: "Batangas AccessWare",
+        location: "Batangas City, Philippines",
+        tags: ["Full-time", "Wheelchair Accessible", "Sign Language Interpreter"],
     },
     {
-      title: "Data Analyst",
-      company: "DataCore Inc.",
-      location: "Makati, Philippines",
-      tags: ["Full-time", "Flexible Schedule", "Assistive Technology"],
+        title: "Data Analyst",
+        company: "DataCore Batangas",
+        location: "Batangas City, Philippines",
+        tags: ["Full-time", "Flexible Schedule", "Assistive Technology"],
     },
     {
-      title: "Frontend Developer",
-      company: "WebPH Solutions",
-      location: "Quezon City, Philippines",
-      tags: ["Full-time", "Remote Work", "Flexible Hours"],
+        title: "Frontend Developer",
+        company: "WebPH Batangas",
+        location: "Batangas City, Philippines",
+        tags: ["Full-time", "Remote Work", "Flexible Hours"],
     },
-  ];
+];
+
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
@@ -160,24 +161,17 @@ export default function LandingPage() {
             <div>
               <h3 className="font-bold mb-4">Quick Links</h3>
               <ul className="space-y-2 text-gray-600">
-                <li>
-                  <Link to="/find-jobs" className="hover:text-[#4CAF50]">
-                    Find Jobs
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/for-employers" className="hover:text-[#4CAF50]">
-                    For Employers
-                  </Link>
-                </li>
-                <li>
-                  <Link to="/accessibility" className="hover:text-[#4CAF50]">
-                    Accessibility
-                  </Link>
-                </li>
+               
+           
                 <li>
                   <Link to="/privacy-policy" className="hover:text-[#4CAF50]">
                     Privacy Policy
+                  </Link>
+                </li>
+
+                <li>
+                  <Link to="/accessibility" className="hover:text-[#4CAF50]">
+                    Accessibility
                   </Link>
                 </li>
               </ul>
@@ -185,21 +179,27 @@ export default function LandingPage() {
             <div>
               <h3 className="font-bold mb-4">Contact</h3>
               <ul className="space-y-2 text-gray-600">
+                
                 <li>
                   <Link to="/FAQS" className="hover:text-[#4CAF50]">
                     Frequently Asked Questions
                   </Link>
                 </li>
+                 {/* 
                 <li>
                   <Link to="/feedback" className="hover:text-[#4CAF50]">
                     Feedback
                   </Link>
                 </li>
+
+               
                 <li>
                   <Link to="/help" className="hover:text-[#4CAF50]">
                     Help Center
                   </Link>
                 </li>
+
+                */}
               </ul>
             </div>
           </div>

@@ -44,6 +44,7 @@ function App() {
         <Route path="/FAQS" element={<FAQPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/admin/signin" element={<AdminLoginPage />} />
+        <Route path="job-seeker/profile/:userId" element={<EmployeeProfile />} />
        
 
         <Route 

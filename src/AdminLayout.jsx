@@ -10,7 +10,7 @@ export default function AdminLayout({ children }) {
 
   // Update the navigation array to include only dashboard, user approval, and manage users
   const navigation = [
-    { name: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+ 
     { name: "User Approval", href: "/admin/user-approval", icon: Users },
     { name: "Manage Users", href: "/admin/manage-users", icon: Users },
   ]

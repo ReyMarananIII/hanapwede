@@ -13,7 +13,7 @@ export default function LoggedInHeader() {
     const fetchNotifications = async () => {
       try {
         const token = localStorage.getItem("authToken");
-        const response = await fetch("http://194.163.40.84/api/get-notifications/", {
+        const response = await fetch("http://localhost:8000/api/get-notifications/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -39,7 +39,7 @@ export default function LoggedInHeader() {
   const markAsRead = async (id) => {
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch(`http://194.163.40.84/api/mark-notification-read/${id}/`, {
+      const response = await fetch(`http://localhost:8000/api/mark-notification-read/${id}/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -65,7 +65,7 @@ export default function LoggedInHeader() {
   const markAllAsRead = async () => {
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch("http://194.163.40.84/api/mark-all-notifications-read/", {
+      const response = await fetch("http://localhost:8000/api/mark-all-notifications-read/", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -93,7 +93,7 @@ export default function LoggedInHeader() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://194.163.40.84/api/logout/", {
+      const response = await fetch("http://localhost:8000/api/logout/", {
         method: "POST",
        
         headers: {

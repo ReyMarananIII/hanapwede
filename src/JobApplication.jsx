@@ -103,7 +103,7 @@ export default function JobApplication() {
       return
     }
 
-    fetch(`http://194.163.40.84/api/job/${jobId}`)
+    fetch(`http://localhost:8000/api/job/${jobId}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch job details")
         return res.json()
@@ -146,7 +146,7 @@ export default function JobApplication() {
     }
 
     try {
-      const response = await fetch("http://194.163.40.84/api/submit-application/", {
+      const response = await fetch("http://localhost:8000/api/submit-application/", {
         headers: {
           Authorization: `Token ${localStorage.getItem("authToken")}`,
         },
