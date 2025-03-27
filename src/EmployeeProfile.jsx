@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from "react"
 import LoggedInHeader from "./LoggedInHeader"
-import { useParams } from "react-router-dom";
-
 import Header from "./Header"
 import {
   User,
@@ -18,6 +16,7 @@ import {
   Brain,
   Loader,
   AlertCircle,
+  Trash2,
 } from "lucide-react"
 import { Link } from "react-router-dom"
 
@@ -27,7 +26,9 @@ export default function EmployeeProfile() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState("about")
-  const { userId } = useParams(); // Get userId from URL if present
+  const userId = localStorage.getItem("userId")
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   useEffect(() => {
     const token = localStorage.getItem("authToken")
@@ -35,39 +36,67 @@ export default function EmployeeProfile() {
   }, [])
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");  
-    setIsLoading(true);
-    setError(null);
+    const token = localStorage.getItem("authToken")
+    setIsLoading(true)
+    setError(null)
 
-    // If userId is in the URL, fetch that user's details; otherwise, fetch the logged-in user
-    const apiUrl = userId
-      ? `http://localhost:8000/api/get-user-details/${userId}/`
-      : `http://localhost:8000/api/get-user-details/`; // API should handle returning the logged-in user
-
-    fetch(apiUrl, {
+    fetch(`http://localhost:8000/api/get-user-details/${userId}/`, {
       headers: token ? { Authorization: `Token ${token}` } : {},
     })
       .then((res) => {
-        if (!res.ok) throw new Error("Failed to fetch user details");
-        return res.json();
+        if (!res.ok) {
+          throw new Error("Failed to fetch user details")
+        }
+        return res.json()
       })
       .then((data) => {
-        setUserDetails(data);
-        setIsLoading(false);
+        setUserDetails(data)
+        setIsLoading(false)
+
       })
       .catch((error) => {
-        console.error("Error fetching user details:", error);
-        setError("Failed to load profile. Please try again.");
-        setIsLoading(false);
-      });
-  }, [userId]);
+        console.error("Error fetching user details:", error)
+        setError("Failed to load user profile. Please try again.")
+        setIsLoading(false)
+      })
+  }, [userId])
 
   const tabs = [
     { id: "about", label: "About" },
     { id: "experience", label: "Experience" },
     { id: "skills", label: "Skills" },
-    { id: "announcements", label: "Announcements" },
+
   ]
+
+  const handleDeleteProfile = async () => {
+    setIsDeleting(true)
+    try {
+      const token = localStorage.getItem("authToken")
+      const response = await fetch("http://localhost:8000/api/delete-account/", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
+
+      if (response.ok) {
+        // Clear local storage and redirect to home page
+        localStorage.removeItem("authToken")
+        localStorage.removeItem("userId")
+        localStorage.removeItem("userType")
+        localStorage.removeItem("username")
+        window.location.href = "/"
+      } else {
+        throw new Error("Failed to delete profile")
+      }
+    } catch (error) {
+      console.error("Error deleting profile:", error)
+      alert("Failed to delete profile. Please try again.")
+    } finally {
+      setIsDeleting(false)
+      setShowDeleteModal(false)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -149,13 +178,22 @@ export default function EmployeeProfile() {
           </div>
 
           {isLoggedIn && (
-            <Link
-              to="/job-seeker/edit-profile"
-              className="mt-4 px-4 py-2 bg-white text-[#4CAF50] border border-[#4CAF50] rounded-md shadow-sm hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
-            >
-              <Edit className="w-4 h-4 inline mr-2" />
-              Edit Profile
-            </Link>
+            <div className="flex gap-3 mt-4">
+              <Link
+                to="/job-seeker/edit-profile"
+                className="px-4 py-2 bg-white text-[#4CAF50] border border-[#4CAF50] rounded-md shadow-sm hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
+              >
+                <Edit className="w-4 h-4 inline mr-2" />
+                Edit Profile
+              </Link>
+              <button
+                onClick={() => setShowDeleteModal(true)}
+                className="px-4 py-2 bg-white text-red-600 border border-red-600 rounded-md shadow-sm hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+              >
+                <Trash2 className="w-4 h-4 inline mr-2" />
+                Delete Profile
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -283,15 +321,56 @@ export default function EmployeeProfile() {
               </div>
             )}
 
-            {activeTab === "announcements" && (
-              <div className="text-gray-500 italic">No announcements at this time.</div>
-            )}
+    
           </div>
 
           {/* Quick Stats Sidebar */}
-   
+       
         </div>
       </div>
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="text-center mb-6">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Delete Your Profile</h3>
+              <p className="text-sm text-gray-500">
+                Are you sure you want to delete your profile? This action cannot be undone and all your data will be
+                permanently removed.
+              </p>
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteProfile}
+                disabled={isDeleting}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="-ml-1 mr-2 h-4 w-4" />
+                    Delete Profile
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

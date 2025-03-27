@@ -84,7 +84,7 @@ export default function PwdCardOCR({ formData, setFormData }) {
     Tesseract.recognize(file, "eng", {
       logger: (m) => console.log(m),
     }).then(({ data: { text } }) => {
-      console.log("🔍 Extracted Text:", text);
+
       extractFields(text);
       setLoading(false);
     });

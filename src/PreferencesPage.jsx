@@ -8,7 +8,7 @@ const PreferencesPage = () => {
   const navigate = useNavigate();  // Initialize navigation
 
   useEffect(() => {
-    console.log("Fetching preferences...");
+    
 
     const fetchPreferences = async () => {
       try {
@@ -36,7 +36,7 @@ const PreferencesPage = () => {
     fetchPreferences();
   }, []);
 
-  console.log("Component rendered!");
+
 
   return (
     <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">

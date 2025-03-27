@@ -40,7 +40,7 @@ export default function EmployerDashboard() {
 
         const data = await response.json()
         setDashboardData(data)
-        console.log(data)
+  
       } catch (error) {
         console.error("Error fetching dashboard data:", error)
       }
@@ -74,7 +74,7 @@ export default function EmployerDashboard() {
     setActionMessage({ type: "", message: "" })
 
     try {
-      console.log(selectedApplicant.application_id)
+   
       const response = await fetch(
         `http://localhost:8000/api/applications/${selectedApplicant.application_id}/approve/`,
         {

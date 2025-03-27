@@ -26,7 +26,7 @@ from hanapwedeApp.views import get_chat_messages, create_chat,send_message,get_u
 from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_preferences,get_all_jobs,get_all_users,delete_user,approve_application,decline_application
 from hanapwedeApp.views import get_employer_details
 from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_preferences,get_all_jobs,get_all_users,delete_user,approve_application,decline_application,platform_statistics,admin_login
-from hanapwedeApp.views import get_user_details_redirect
+from hanapwedeApp.views import get_user_details_redirect, delete_account
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'comments', CommentViewSet)
@@ -68,6 +68,7 @@ urlpatterns = [
     path("api/all-jobs/", get_all_jobs, name="get_all_jobs"),
     path("api/admin/users/", get_all_users, name="get_all_users"),
     path("api/admin/delete-user/<int:id>/", delete_user, name="delete_user"),
+    path("api/delete-account/", delete_account, name="delete_account"),
     path("api/applications/<int:application_id>/approve/", approve_application, name="approve_application"),
     path("api/applications/<int:application_id>/decline/", decline_application, name="decline_application"),
     path("api/platform-statistics/", platform_statistics, name="platform-statistics"),

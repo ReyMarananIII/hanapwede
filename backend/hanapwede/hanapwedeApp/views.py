@@ -243,13 +243,13 @@ def edit_profile(request):
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
-def get_user_details(request, user_id=None):  # user_id is optional
+def get_user_details(request, user_id=None): 
     if user_id:
-        user = get_object_or_404(User, id=user_id)  # Fetch user by ID
+        user = get_object_or_404(User, id=user_id)  
     else:
-        user = request.user  # Fetch the logged-in user
+        user = request.user  
 
-    user_profile = get_object_or_404(EmployeeProfile, user=user)  # Get profile
+    user_profile = get_object_or_404(EmployeeProfile, user=user)  
     
     return Response({
         "user": user.username,
@@ -260,7 +260,7 @@ def get_user_details(request, user_id=None):  # user_id is optional
 @permission_classes([IsAuthenticated])
 def get_user_details_redirect(request):
     user = request.user
-    print(user)
+
     user_profile = EmployeeProfile.objects.get(user_id=user.id)
     return Response({"user": user.username, "profile": EmployeeProfileSerializer(user_profile).data})
 
@@ -688,6 +688,18 @@ def delete_user(request, id):
     emp_profile.delete()
     user.delete()
     return Response({"message": "User deleted successfully"}, status=status.HTTP_200_OK)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_account(request):
+    user = request.user
+    user_obj = User.objects.get(id=user.id)
+    emp_profile = EmployeeProfile.objects.get(user_id=user.id)
+
+    user_obj.delete()
+    emp_profile.delete()
+    return Response({"message": "Account deleted successfully"}, status=status.HTTP_200_OK)
 
 
 #Accept at decline ng job

@@ -181,7 +181,7 @@ function App() {
 
 
        <button
-        className="fixed bottom-5 right-5 bg-[#7cd1ed] text-white p-3 rounded-full shadow-lg"
+        className="fixed bottom-22 right-5 bg-[#7cd1ed] text-white p-3 rounded-full shadow-lg"
         onClick={() => setIsOpen(!isOpen)}
       >
         🗣️
@@ -189,7 +189,7 @@ function App() {
 
       {/* Show TTS when button is clicked */}
       {isOpen && (
-        <div className="fixed bottom-16 right-5 bg-white p-4 rounded-lg shadow-md">
+        <div className="fixed bottom-36 right-5 bg-white p-4 rounded-lg shadow-md">
           <TextToSpeech />
         </div>
       )}
