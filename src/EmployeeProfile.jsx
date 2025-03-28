@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import LoggedInHeader from "./LoggedInHeader"
+import PreferencesPage from "./PreferencesPage"
 import Header from "./Header"
 import {
   User,
@@ -297,29 +298,38 @@ export default function EmployeeProfile() {
               </div>
             )}
 
-            {activeTab === "skills" && (
-              <div className="space-y-6">
-                <div>
-                  <h2 className="text-lg font-semibold mb-4">Skills</h2>
-                  <div className="flex items-start">
-                    <Brain className="w-5 h-5 text-gray-500 mt-0.5 mr-3" />
-                    <div>
-                      <div className="flex flex-wrap gap-2 mt-1">
-                        {userDetails.profile?.skills ? (
-                          userDetails.profile.skills.split(",").map((skill, index) => (
-                            <span key={index} className="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full">
-                              {skill.trim()}
-                            </span>
-                          ))
-                        ) : (
-                          <p className="text-gray-500">No skills listed</p>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+{activeTab === "skills" && (
+  <div className="flex flex-wrap gap-6">
+    {/* Skills Section */}
+    <div className="w-full md:w-1/2">
+      <h2 className="text-lg font-semibold mb-4">Skills</h2>
+      <div className="flex items-start">
+        <Brain className="w-5 h-5 text-gray-500 mt-0.5 mr-3" />
+        <div>
+          <div className="flex flex-wrap gap-2 mt-1">
+            {userDetails.profile?.skills ? (
+              userDetails.profile.skills.split(",").map((skill, index) => (
+                <span
+                  key={index}
+                  className="bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full"
+                >
+                  {skill.trim()}
+                </span>
+              ))
+            ) : (
+              <p className="text-gray-500">No skills listed</p>
             )}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Preferences Section */}
+    <div className="w-full md:w-1/2">
+      <PreferencesPage />
+    </div>
+  </div>
+)}
 
     
           </div>
