@@ -299,10 +299,9 @@ def get_user_preferences(request, user_id):
 
 
 
-#request
-def recommend_jobs(user_id):
-    #user_id = request.GET.get("user_id")
- 
+@permission_classes([IsAuthenticated]) 
+def recommend_jobs(request):
+    user_id = request.GET.get("user_id")  
     user = User.objects.get(id=user_id)
     
 
