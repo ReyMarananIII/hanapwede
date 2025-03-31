@@ -31,10 +31,9 @@ export default function SignUpPage() {
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [agreeToPolicy, setAgreeToPolicy] = useState(false)
 
-  useEffect(() => {
-    console.log(formData)
-  }, [formData])
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -58,9 +57,15 @@ export default function SignUpPage() {
       return
     }
 
+    if (!agreeToPolicy) {
+      setError("You must agree to the Privacy Policy to create an account.")
+      setIsLoading(false)
+      return
+    }
+
     try {
-      console.log("FORM DATA BEFORE SENDING", formData)
-      const response = await fetch("http://localhost:8000/api/signup/", {
+     
+      const response = await fetch("http://127.0.0.1:8000/api/signup/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -167,7 +172,7 @@ export default function SignUpPage() {
                     value={formData.first_name}
                     onChange={handleChange}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                    placeholder="John"
+                    placeholder="Juan"
                   />
                 </div>
               </div>
@@ -189,7 +194,7 @@ export default function SignUpPage() {
                     value={formData.last_name}
                     onChange={handleChange}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm"
-                    placeholder="Doe"
+                    placeholder="Dela Cruz"
                   />
                 </div>
               </div>
@@ -313,6 +318,32 @@ export default function SignUpPage() {
                     />
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div className="flex items-start mt-4">
+              <div className="flex items-center h-5">
+                <input
+                  id="privacy-policy"
+                  name="privacy-policy"
+                  type="checkbox"
+                  checked={agreeToPolicy}
+                  onChange={(e) => setAgreeToPolicy(e.target.checked)}
+                  className="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded"
+                />
+              </div>
+              <div className="ml-3 text-sm">
+                <label htmlFor="privacy-policy" className="text-gray-600">
+                  I agree to the{" "}
+                  <a
+                    href="/privacy-policy"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-green-600 hover:text-green-500 underline"
+                  >
+                    Privacy Policy
+                  </a>
+                </label>
               </div>
             </div>
 

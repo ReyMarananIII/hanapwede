@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";  // Import useNavigate
+import { User, UserCog } from "lucide-react";
 
 const PreferencesPage = () => {
   const [preferences, setPreferences] = useState([]);
@@ -8,7 +9,7 @@ const PreferencesPage = () => {
   const navigate = useNavigate();  // Initialize navigation
 
   useEffect(() => {
-    console.log("Fetching preferences...");
+    
 
     const fetchPreferences = async () => {
       try {
@@ -36,11 +37,14 @@ const PreferencesPage = () => {
     fetchPreferences();
   }, []);
 
-  console.log("Component rendered!");
+
 
   return (
-    <div className="max-w-lg mx-auto mt-10 p-6 bg-white shadow-lg rounded-lg">
-      <h2 className="text-2xl font-bold mb-4">Your Preferences</h2>
+    <div className="max-w-lg mr-20 mt-2 p-6 bg-white ">
+      <div className="flex items-start">
+          <UserCog className="w-5 h-5 text-gray-500 mt-0.5 mr-3" />
+      <h2 className="text-lg font-semibold mb-4">Preferences</h2>
+      </div>
       {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
       {!loading && !error && (
@@ -57,10 +61,10 @@ const PreferencesPage = () => {
             )}
           </ul>
 
-          {/* Edit Button */}
+
           <button
             onClick={() => navigate("/job-seeker/preferences")}
-            className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+            className="mt-4 px-4 py-2 bg-[#7cd1ed] text-white rounded hover:bg-blue-600 transition"
           >
             Edit
           </button>

@@ -10,7 +10,7 @@ export default function EditProfile() {
   const navigate = useNavigate()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const userId = localStorage.getItem("userId")
-
+  const [skills, setSkills] = useState([])
   useEffect(() => {
     const token = localStorage.getItem("authToken")
     setIsLoggedIn(!!token)
@@ -18,7 +18,7 @@ export default function EditProfile() {
     // Fetch user profile data if available
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/user-profile/${userId}/`, {
+        const response = await fetch(`http://localhost:8000/api/get-user-details`, {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -26,21 +26,23 @@ export default function EditProfile() {
 
         if (response.ok) {
           const data = await response.json()
+      
           setFormData({
-            full_name: data.full_name || "",
-            pro_headline: data.pro_headline || "",
-            bio: data.bio || "",
-            email: data.email || "",
-            contact_no: data.contact_no || "",
-            location: data.location || "",
-            experience: data.experience || "",
-            role: data.role || "",
+            full_name: data.profile.full_name || "",
+            pro_headline: data.profile.pro_headline || "",
+            bio: data.profile.bio || "",
+            email: data.profile.email || "",
+            contact_no: data.profile.contact_no || "",
+            location: data.profile.location || "",
+            experience: data.profile.experience || "",
+            role: data.profile.role || "",
             user: userId,
           })
 
           // Set skills if available
-          if (data.skills) {
-            setSkills(data.skills.split(",").filter((skill) => skill.trim()))
+          if (data.profile.skills) {
+            setSkills(data.profile.skills.split(",").filter((skill) => skill.trim()))
+   
           }
         }
       } catch (error) {
@@ -65,7 +67,7 @@ export default function EditProfile() {
     user: userId,
   })
 
-  const [skills, setSkills] = useState([])
+
   const [currentSkill, setCurrentSkill] = useState("")
   const [resume, setResume] = useState(null)
 
@@ -214,14 +216,7 @@ const handleSubmit = async (e) => {
               >
                 Experience
               </button>
-              <button
-                className={`pb-2 px-1 ${
-                  activeTab === "announcements" ? "border-b-2 border-[#4CAF50] text-[#4CAF50]" : "text-gray-500"
-                }`}
-                onClick={() => setActiveTab("announcements")}
-              >
-                Announcements
-              </button>
+        
             </div>
 
             {/* Form */}
@@ -263,21 +258,7 @@ const handleSubmit = async (e) => {
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-sm mb-2">Type of Disability</label>
-                    <select
-                      name="disabilityType"
-                      value={formData.disabilityType}
-                      onChange={handleChange}
-                      className="w-full p-2 border rounded-md bg-white"
-                    >
-                      <option value="">Select disability type</option>
-                      <option value="visual">Visual Impairment</option>
-                      <option value="hearing">Hearing Impairment</option>
-                      <option value="physical">Physical Disability</option>
-                      <option value="cognitive">Cognitive Disability</option>
-                    </select>
-                  </div>
+             
 
                   <div className="space-y-4">
                     <h3 className="font-semibold">Contact Information</h3>
@@ -418,9 +399,7 @@ const handleSubmit = async (e) => {
                 </div>
               )}
 
-              {activeTab === "announcements" && (
-                <div className="text-gray-500 italic">No announcements at this time.</div>
-              )}
+            
 
               <button type="submit" className="bg-[#4CAF50] text-white px-6 py-2 rounded hover:bg-[#45a049]">
                 Save Changes

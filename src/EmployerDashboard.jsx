@@ -3,8 +3,19 @@
 import { useEffect, useState } from "react"
 import LoggedInHeader from "./LoggedInHeader"
 import { useNavigate } from "react-router-dom"
-import { Link } from "react-router-dom";
-import { CheckCircle, XCircle, Eye, Briefcase, MapPin, Clock, User, AlertCircle, Loader } from "lucide-react"
+import {
+  CheckCircle,
+  XCircle,
+  Eye,
+  Briefcase,
+  MapPin,
+  Clock,
+  User,
+  AlertCircle,
+  Loader,
+  Edit,
+  Trash2,
+} from "lucide-react"
 
 export default function EmployerDashboard() {
   const navigate = useNavigate()
@@ -16,40 +27,45 @@ export default function EmployerDashboard() {
     job_posts: [],
   })
 
-  // Modal states
+ 
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState("") // "approve", "decline", "view"
   const [selectedApplicant, setSelectedApplicant] = useState(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [actionMessage, setActionMessage] = useState({ type: "", message: "" })
 
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [selectedJob, setSelectedJob] = useState(null)
+  const [isJobProcessing, setIsJobProcessing] = useState(false)
+  const [jobActionMessage, setJobActionMessage] = useState({ type: "", message: "" })
+
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/api/employer-dashboard", {
-          method: "GET",
-          headers: {
-            Authorization: `Token ${authToken}`,
-            "Content-Type": "application/json",
-          },
-        })
-
-        if (!response.ok) {
-          throw new Error("Failed to fetch dashboard data")
-        }
-
-        const data = await response.json()
-        setDashboardData(data)
-        console.log(data)
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error)
-      }
-    }
-
     fetchDashboardData()
   }, [authToken])
 
-  // Open modal with appropriate type
+
+  const fetchDashboardData = async () => {
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/employer-dashboard", {
+        method: "GET",
+        headers: {
+          Authorization: `Token ${authToken}`,
+          "Content-Type": "application/json",
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch dashboard data")
+      }
+
+      const data = await response.json()
+      setDashboardData(data)
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error)
+    }
+  }
+
   const openModal = (type, applicant) => {
     setModalType(type)
     setSelectedApplicant(applicant)
@@ -57,7 +73,7 @@ export default function EmployerDashboard() {
     setActionMessage({ type: "", message: "" })
   }
 
-  // Close modal and reset states
+
   const closeModal = () => {
     setShowModal(false)
     setSelectedApplicant(null)
@@ -66,7 +82,7 @@ export default function EmployerDashboard() {
     setActionMessage({ type: "", message: "" })
   }
 
-  // Handle application approval
+
   const handleApprove = async () => {
     if (!selectedApplicant) return
 
@@ -74,9 +90,8 @@ export default function EmployerDashboard() {
     setActionMessage({ type: "", message: "" })
 
     try {
-      console.log(selectedApplicant.application_id)
       const response = await fetch(
-        `http://localhost:8000/api/applications/${selectedApplicant.application_id}/approve/`,
+        `http://127.0.0.1:8000/api/applications/${selectedApplicant.application_id}/approve/`,
         {
           method: "POST",
           headers: {
@@ -90,7 +105,7 @@ export default function EmployerDashboard() {
         throw new Error("Failed to approve application")
       }
 
- 
+
       setDashboardData((prev) => ({
         ...prev,
         applicants: prev.applicants.map((app) =>
@@ -103,10 +118,10 @@ export default function EmployerDashboard() {
         message: "Application approved successfully! The candidate will be notified.",
       })
 
-      // Close modal after a delay
+  
       setTimeout(() => {
         closeModal()
-        // Refresh data
+ 
         fetchDashboardData()
       }, 2000)
     } catch (error) {
@@ -129,7 +144,7 @@ export default function EmployerDashboard() {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/applications/${selectedApplicant.application_id}/decline/`,
+        `http://127.0.0.1:8000/api/applications/${selectedApplicant.application_id}/decline/`,
         {
           method: "POST",
           headers: {
@@ -173,11 +188,32 @@ export default function EmployerDashboard() {
     }
   }
 
-  // Fetch dashboard data (for refreshing after actions)
-  const fetchDashboardData = async () => {
+  // Open delete confirmation modal
+  const openDeleteModal = (job) => {
+    setSelectedJob(job)
+    setShowDeleteModal(true)
+    setJobActionMessage({ type: "", message: "" })
+  }
+
+  // Close delete modal
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false)
+    setSelectedJob(null)
+    setIsJobProcessing(false)
+    setJobActionMessage({ type: "", message: "" })
+  }
+
+  // Handle job deletion
+  const handleDeleteJob = async () => {
+    if (!selectedJob) return
+
+    setIsJobProcessing(true)
+    setJobActionMessage({ type: "", message: "" })
+
     try {
-      const response = await fetch("http://localhost:8000/api/employer-dashboard", {
-        method: "GET",
+
+      const response = await fetch(`http://localhost:8000/api/delete-job/${selectedJob.post_id}/`, {
+        method: "DELETE",
         headers: {
           Authorization: `Token ${authToken}`,
           "Content-Type": "application/json",
@@ -185,17 +221,43 @@ export default function EmployerDashboard() {
       })
 
       if (!response.ok) {
-        throw new Error("Failed to fetch dashboard data")
+        throw new Error("Failed to delete job posting")
       }
 
-      const data = await response.json()
-      setDashboardData(data)
+      setDashboardData((prev) => ({
+        ...prev,
+        job_posts: prev.job_posts.filter((job) => job.post_id !== selectedJob.post_id),
+        active_jobs_count: prev.active_jobs_count - 1,
+      }))
+
+      setJobActionMessage({
+        type: "success",
+        message: "Job posting deleted successfully!",
+      })
+
+
+      setTimeout(() => {
+        closeDeleteModal()
+
+        fetchDashboardData()
+      }, 2000)
     } catch (error) {
-      console.error("Error fetching dashboard data:", error)
+      console.error("Error deleting job:", error)
+      setJobActionMessage({
+        type: "error",
+        message: "Failed to delete job posting. Please try again.",
+      })
+    } finally {
+      setIsJobProcessing(false)
     }
   }
 
-  // Get status badge color
+
+  const navigateToEditJob = (jobId) => {
+    navigate(`/employer/edit-job/${jobId}`)
+  }
+
+
   const getStatusBadge = (status) => {
     switch (status) {
       case "Pending":
@@ -241,10 +303,8 @@ export default function EmployerDashboard() {
                     <th className="text-left p-4 font-medium text-gray-600">Name</th>
                     <th className="text-left p-4 font-medium text-gray-600">Role</th>
                     <th className="text-left p-4 font-medium text-gray-600">Experience</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Applied For</th>
                     <th className="text-left p-4 font-medium text-gray-600">Location</th>
                     <th className="text-left p-4 font-medium text-gray-600">Status</th>
-                   
                     <th className="text-left p-4 font-medium text-gray-600">Actions</th>
                   </tr>
                 </thead>
@@ -252,22 +312,13 @@ export default function EmployerDashboard() {
                   {dashboardData.applicants.length > 0 ? (
                     dashboardData.applicants.map((candidate, index) => (
                       <tr key={index} className="border-b last:border-b-0 hover:bg-gray-50">
-                        <td className="p-4 font-medium">
-  <Link
-    to={`/job-seeker/profile/${candidate.applicant__id}`} 
-    className="text-blue-600 hover:underline"
-  >
-    {candidate.applicant_name}
-  </Link>
-</td>
+                        <td className="p-4 font-medium">{candidate.applicant_name}</td>
                         <td className="p-4">{candidate.applicant_role}</td>
                         <td className="p-4">{candidate.applicant_experience}</td>
-                        <td className="p-4">{candidate.job_post__job_title}</td>
                         <td className="p-4 flex items-center">
                           <MapPin className="w-4 h-4 mr-1 text-gray-400" />
                           {candidate.applicant_location}
                         </td>
-                        
                         <td className="p-4">
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(candidate.application_status)}`}
@@ -336,6 +387,7 @@ export default function EmployerDashboard() {
                     <th className="text-left p-4 font-medium text-gray-600">Location</th>
                     <th className="text-left p-4 font-medium text-gray-600">Salary</th>
                     <th className="text-left p-4 font-medium text-gray-600">Posted On</th>
+                    <th className="text-left p-4 font-medium text-gray-600">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -353,11 +405,29 @@ export default function EmployerDashboard() {
                           <Clock className="w-4 h-4 mr-1 text-gray-400" />
                           {new Date(job.created_at).toLocaleDateString()}
                         </td>
+                        <td className="p-4">
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => navigateToEditJob(job.post_id)}
+                              className="p-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100"
+                              title="Edit Job"
+                            >
+                              <Edit className="w-4 h-4" />
+                            </button>
+                            <button
+                              onClick={() => openDeleteModal(job)}
+                              className="p-1 bg-red-50 text-red-600 rounded hover:bg-red-100"
+                              title="Delete Job"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </td>
                       </tr>
                     ))
                   ) : (
                     <tr>
-                      <td colSpan="5" className="text-center p-6 text-gray-500">
+                      <td colSpan="6" className="text-center p-6 text-gray-500">
                         <div className="flex flex-col items-center">
                           <Briefcase className="w-8 h-8 text-gray-300 mb-2" />
                           <p>No job postings yet</p>
@@ -542,6 +612,93 @@ export default function EmployerDashboard() {
                   )}
                 </button>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Job Confirmation Modal */}
+      {showDeleteModal && selectedJob && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
+            {/* Modal Header */}
+            <div className="p-4 border-b">
+              <h3 className="text-lg font-medium text-gray-900">Delete Job Posting</h3>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6">
+              {jobActionMessage.type && (
+                <div
+                  className={`mb-4 p-3 rounded ${
+                    jobActionMessage.type === "success" ? "bg-green-50 text-green-800" : "bg-red-50 text-red-800"
+                  }`}
+                >
+                  <div className="flex">
+                    {jobActionMessage.type === "success" ? (
+                      <CheckCircle className="h-5 w-5 mr-2" />
+                    ) : (
+                      <AlertCircle className="h-5 w-5 mr-2" />
+                    )}
+                    <p>{jobActionMessage.message}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-4">
+                <div className="flex items-center">
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold mr-3">
+                    <Briefcase className="h-6 w-6" />
+                  </div>
+                  <div>
+                    <h4 className="font-medium text-gray-900">{selectedJob.job_title}</h4>
+                    <p className="text-sm text-gray-500">{selectedJob.category || "No category"}</p>
+                  </div>
+                </div>
+
+                <div className="mt-4">
+                  <p className="text-gray-700">
+                    Are you sure you want to delete this job posting? This action cannot be undone.
+                  </p>
+                  <div className="bg-gray-50 p-3 rounded mt-3">
+                    <p className="text-sm font-medium text-gray-700">Job details:</p>
+                    <ul className="mt-2 text-sm text-gray-600 space-y-1">
+                      <li>Location: {selectedJob.location || "N/A"}</li>
+                      <li>Salary: {selectedJob.salary_range ? `₱${selectedJob.salary_range}` : "Negotiable"}</li>
+                      <li>Posted on: {new Date(selectedJob.created_at).toLocaleDateString()}</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 border-t bg-gray-50 flex justify-end space-x-3">
+              <button
+                onClick={closeDeleteModal}
+                disabled={isJobProcessing}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={handleDeleteJob}
+                disabled={isJobProcessing}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+              >
+                {isJobProcessing ? (
+                  <>
+                    <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="-ml-1 mr-2 h-4 w-4" />
+                    Delete Job
+                  </>
+                )}
+              </button>
             </div>
           </div>
         </div>

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import Tesseract from "tesseract.js";
+
 
 export default function PwdCardOCR({ formData, setFormData }) {
   const [image, setImage] = useState(null);
@@ -33,25 +33,40 @@ export default function PwdCardOCR({ formData, setFormData }) {
     img.onload = () => {
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d");
-
+  
       canvas.width = img.width;
       canvas.height = img.height;
       ctx.drawImage(img, 0, 0);
-
+  
       const imageData = ctx.getImageData(0, 0, img.width, img.height);
       const grayData = getGrayScale(imageData);
-      const variance = computeVarianceOfLaplacian(grayData);
+      const sharpness = computeVarianceOfLaplacian(grayData);
+  
 
-      if (variance < 500) {
-        setError("Image is too blurry. Please upload a clearer image.");
-        setImage(null);
-      } else {
-        setError("");
-        setImage(imgURL);
-        processOCR(file);
+  
+      // Set a threshold for sharpness (adjust as needed)
+      const threshold = 140; 
+      if (sharpness < threshold) {
+        console.log("Applying Grayscale for OCR...");
+        for (let i = 0; i < imageData.data.length; i += 4) {
+          const gray = grayData[i / 4];
+          imageData.data[i] = gray;
+          imageData.data[i + 1] = gray;
+          imageData.data[i + 2] = gray;
+        }
+        ctx.putImageData(imageData, 0, 0);
       }
+  
+      canvas.toBlob((blob) => {
+        if (blob) {
+          setError("");
+          setImage(canvas.toDataURL()); // Display processed image
+          processOCR(blob); // Use the enhanced image for OCR
+        }
+      }, "image/png");
     };
   };
+  
 
   
   const getGrayScale = (imageData) => {
@@ -79,48 +94,114 @@ export default function PwdCardOCR({ formData, setFormData }) {
   };
 
   
-  const processOCR = (file) => {
+  const processOCR = async (file) => {
     setLoading(true);
-    Tesseract.recognize(file, "eng", {
-      logger: (m) => console.log(m),
-    }).then(({ data: { text } }) => {
-      console.log("🔍 Extracted Text:", text);
-      extractFields(text);
+  
+    const formData = new FormData();
+    formData.append("image", file);
+  
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/ocr/", {
+        method: "POST",
+        body: formData,
+      });
+  
+      const data = await response.json();
+      console.log("🔍 Extracted Text:", data.text);
+  
+      extractFields(data.text);
+    } catch (error) {
+      console.error("OCR Error:", error);
+      setError("Failed to process image.");
+    } finally {
       setLoading(false);
-    });
+    }
   };
 
   // kunin mga details
   const extractFields = (text) => {
-    const lines = text.split("\n").map(line => line.trim()).filter(line => line !== "");
-
     let extractedData = {
       disability: "",
       idNumber: "",
     };
-
-    for (let i = 0; i < lines.length; i++) {
-      const currLine = lines[i];
-
-      // kunin disability type
-      if (/type of disability/i.test(currLine) && i > 0) {
-        extractedData.disability = lines[i - 1];
+  
+    let cleanedText = text.replace(/[_]/g, " ").replace(/\.+/g, "").toLowerCase();
+  
+    // List of disabilities with flexible matching
+    const disabilityRegexList = [
+      { name: "Deaf or Hard of Hearing", pattern: /\b(deaf|d[ea]{2}f|hard\s*of\s*hearing|hear\w*|h[ea]{2}r\w*)\b/i },
+      { name: "Learning Disability", pattern: /\b(learning|lear\w*\s*(disabil\w*|impair\w*)|lea)\b/i },
+      { name: "Mental Disability", pattern: /\b(mental|ment\w*\s*(disabil\w*|impair\w*)|men)\b/i },
+      { name: "Physical Disability (Orthopedic)", pattern: /\b(physical|phy\w*\s*(disabil\w*|impair\w*|ortho\w*)|phy)\b/i },
+      { name: "Psychosocial Disability", pattern: /\b(psychosocial|\w*chosocial|\w*hosocial|\w*osocial|psych\w*\s*(disabil\w*|impair\w*)|pscho\w*|psy)\b/i },
+      { name: "Speech and Language Impairment", pattern: /\b(speech|spe\w*\s*(impair\w*|disabil\w*)|spe)\b/i },
+      { name: "Visual Disability", pattern: /\b(visual|vis\w*\s*(disabil\w*|impair\w*)|vis)/i },  // Removed \b at the end
+      { name: "Intellectual Disability", pattern: /\b(intellectual|intel\w*\s*(disabil\w*|impair\w*)|intelectual|int)\b/i },
+     
+      { name: "Cancer (RA11215)", pattern: /\b(cancer|canc\w*\s*\(?r[ao]?t?\s*[01il!]{1}[0-9]{3,4}[il1]?\)?)\b/i },
+      { name: "Rare Disease (RA10747)", pattern: /\b(rare disease|rare\s*dise\w*\s*\(?ra?\s*10747\)?)\b/i },
+  ];
+  
+  
+  
+  
+    // Find the first matching disability
+    for (let { name, pattern } of disabilityRegexList) {
+      if (pattern.test(cleanedText)) {
+        extractedData.disability = name;
+        break;
       }
     }
+  
+    // Extract ID Number
+    const idMatch = cleanedText.match(/id no[.:_]*\s*([\d\s-]+)/i);
+if (idMatch) {
+  let extractedID = idMatch[1].replace(/\D/g, "").trim();
 
-
-    const idMatch = text.match(/\b\d{6,}(?:-\d{2,})*\b/);
-    if (idMatch) {
-      extractedData.idNumber = idMatch[0];
+  if (extractedID) {
+    extractedData.idNumber = extractedID;
+    console.log("ID Number Match:", extractedData.idNumber);
+  } else {
+    console.log("ID Match Found, but Empty - Falling Back");
+    
+    // Get all number matches and find the longest one
+    const allNumbers = cleanedText.match(/\b\d[\d\s-]*\d\b/g);
+    if (allNumbers) {
+      extractedData.idNumber = allNumbers
+        .map(num => num.replace(/\D/g, "").trim()) // Remove non-digits
+        .reduce((a, b) => (a.length >= b.length ? a : b), ""); // Pick longest
     }
+  }
+} else {
+  console.log("No ID NO. Found - Using Fallback");
 
-   
+  // Get all number matches and find the longest one
+  const allNumbers = cleanedText.match(/\b\d[\d\s-]*\d\b/g);
+  if (allNumbers) {
+    extractedData.idNumber = allNumbers
+      .map(num => num.replace(/\D/g, "").trim()) // Remove non-digits
+      .reduce((a, b) => (a.length >= b.length ? a : b), ""); // Pick longest
+  }
+}
+
+    
+  
     setFormData({
       ...formData,
       user_disability: extractedData.disability,
       ID_number: extractedData.idNumber,
     });
+  
+    console.log("Extracted Data:", extractedData);
   };
+  
+  
+  
+  
+  
+  
+  
+  
 
   
   const handleCapture = () => {

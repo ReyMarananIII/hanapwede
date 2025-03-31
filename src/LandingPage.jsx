@@ -78,17 +78,7 @@ export default function LandingPage() {
               Connect with employers who value diversity and create opportunities for everyone. Your next career move
               starts here.
             </p>
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <div className="font-semibold">1000+ Candidates</div>
-              </div>
-              <div>
-                <div className="font-semibold">500+ Companies</div>
-              </div>
-              <div>
-                <div className="font-semibold">2000+ Jobs</div>
-              </div>
-            </div>
+       
             <div className="flex gap-4">
               <button 
               onClick={handleJoinAsCandidate}

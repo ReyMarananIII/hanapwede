@@ -133,7 +133,7 @@ export default function EmployerSignUpPage() {
                     value={formData.first_name}
                     onChange={handleChange}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="John"
+                    placeholder="Juan"
                   />
                 </div>
               </div>
@@ -155,7 +155,7 @@ export default function EmployerSignUpPage() {
                     value={formData.last_name}
                     onChange={handleChange}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    placeholder="Doe"
+                    placeholder="Dela Cruz"
                   />
                 </div>
               </div>

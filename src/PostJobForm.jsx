@@ -68,7 +68,7 @@ export default function PostJobForm() {
     };
 
     const handleSubmit = async (e) => {
-      console.log(selectedJobTags)
+  
         e.preventDefault();
 
         const token = localStorage.getItem("authToken");

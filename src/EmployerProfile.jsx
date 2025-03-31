@@ -41,9 +41,9 @@ export default function EmployerProfile() {
         }
 
         const data = await response.json()
-        console.log(data.profile.comp_name)
+    
         setProfileData(data.profile)
-        console.log(profileData)
+       
       } catch (error) {
         console.error("Error fetching profile:", error)
         setError("Failed to load profile information. Please try again later.")

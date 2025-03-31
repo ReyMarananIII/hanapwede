@@ -18,7 +18,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data = json.loads(text_data)
         message = data["message"]
         sender_username = data["sender"]
-        print (sender_username)
+      
         sender = await sync_to_async(User.objects.get)(username=sender_username)
         chat_room = await sync_to_async(ChatRooms.objects.get)(id=self.room_name)
 
