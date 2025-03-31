@@ -302,7 +302,7 @@ def get_user_preferences(request, user_id):
 #request
 def recommend_jobs(user_id):
     #user_id = request.GET.get("user_id")
-    print(user_id)  
+ 
     user = User.objects.get(id=user_id)
     
 
@@ -356,7 +356,25 @@ def get_disability_tags(request):
     serializer = DisabilityTagSerializer(tags, many=True)
     return Response(serializer.data)
 
+@api_view(["GET"])
+def job_post_disability_tags(request, jobId): 
+    try:
+        job_post = JobPost.objects.get(post_id=jobId) 
+        disability_tags = job_post.disabilitytag.all()
+        serializer = DisabilityTagSerializer(disability_tags, many=True)
+        return Response(serializer.data)
+    except JobPost.DoesNotExist:
+        return Response({"error": "Job post not found"}, status=404)
 
+@api_view(["GET"])
+def job_post_tags(request, jobId): 
+    try:
+        job_post = JobPost.objects.get(post_id=jobId) 
+        tags = job_post.tags.all()
+        serializer = TagSerializer(tags, many=True)
+        return Response(serializer.data)
+    except JobPost.DoesNotExist:
+        return Response({"error": "Job post not found"}, status=404)
 
 def get_job(request, post_id):
     job = get_object_or_404(JobPost, post_id=post_id)
@@ -367,6 +385,7 @@ def get_job(request, post_id):
         "job_desc": job.job_desc,
         "job_type": job.job_type,
         "location": job.location,
+        "category": job.category,
         "salary_range": job.salary_range,
     }
     
@@ -779,3 +798,64 @@ def platform_statistics(request):
         "jobs_posted_count": jobs_posted_count,
         "disability_types": list(disability_types)
     })
+
+
+import easyocr
+from PIL import Image
+import numpy as np
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+reader = easyocr.Reader(["en"])  # Load English model
+
+@csrf_exempt
+def ocr_view(request):
+    if request.method == "POST" and request.FILES.get("image"):
+        image_file = request.FILES["image"]
+        image = Image.open(image_file)
+        image = np.array(image)
+
+        text = reader.readtext(image, detail=0)  # Extract text
+
+        return JsonResponse({"text": " ".join(text)})
+
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+
+@api_view(["PUT"])
+def edit_job_post(request, jobId):
+
+    if not request.user.is_authenticated:
+        return Response({"error": "User is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if not request.user.is_authenticated:
+        return Response({"error": "User is not authenticated"}, status=403)
+    
+    try:
+        job_post = JobPost.objects.get(post_id=jobId, posted_by=request.user)
+    except JobPost.DoesNotExist:
+        return Response({"error": "Job post not found or unauthorized"}, status=403)
+    
+    serializer = JobPostSerializer(job_post, data=request.data, partial=True)
+    if serializer.is_valid():
+        job_post = serializer.save()
+        return Response(JobPostSerializer(job_post).data, status=200)
+    
+    return Response({"error": "Invalid data", "details": serializer.errors}, status=400)
+
+@api_view(["DELETE"])
+def delete_job(request,jobId):
+    
+
+    if not request.user.is_authenticated:
+        return Response({"error": "User is not authenticated"}, status=status.HTTP_401_UNAUTHORIZED)
+
+    if not request.user.is_authenticated:
+        return Response({"error": "User is not authenticated"}, status=403)
+    try:
+        job_post = JobPost.objects.get(post_id=jobId, posted_by=request.user)
+        job_post.delete()
+        return Response({"message": "Job post deleted successfully"}, status=200)
+    except JobPost.DoesNotExist:
+        return Response({"error": "Job post not found or unauthorized"}, status=403)
+

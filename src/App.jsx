@@ -28,6 +28,7 @@ import AdminManageUsersPage from "./AdminManageUsersPage";
 import AdminUserApprovalPage from "./AdminUserApprovalPage";
 import PrivacyPolicyPage from "./PrivacyPolicyPage";
 import AdminLoginPage from "./AdminLoginPage";
+import EditJob from "./EditJob";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -145,6 +146,15 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Employer"]}>
               <EditEmployerProfile />
+            </ProtectedRoute>
+          } 
+        />
+
+<Route 
+          path="/employer/edit-job/:jobId" 
+          element={
+            <ProtectedRoute allowedRoles={["Employer"]}>
+              <EditJob />
             </ProtectedRoute>
           } 
         />

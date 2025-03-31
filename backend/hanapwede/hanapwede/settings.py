@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -61,7 +62,8 @@ MIDDLEWARE = [
 ]
  #papaltan pa  to ( FOR DEV LANG )
 
-CSRF_TRUSTED_ORIGINS = ['https://*.localhost',"https://161.248.25.136"]
+CSRF_TRUSTED_ORIGINS = ['https://*.localhost',"https://161.248.25.136",   "http://localhost:5173"]
+
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:5173","http://161.248.25.136", 
 ]
