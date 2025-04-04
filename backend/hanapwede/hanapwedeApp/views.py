@@ -438,6 +438,7 @@ def employer_dashboard(request):
     applications = Application.objects.filter(job_post__in=jobs)
 
     applicants_data = list(applications.values(
+        "applicant__employeeprofile__contact_no",
         "applicant__id",
         "applicant_name",
         "applicant_role",

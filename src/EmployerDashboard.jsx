@@ -60,6 +60,7 @@ export default function EmployerDashboard() {
       }
 
       const data = await response.json()
+      console.log(data)
       setDashboardData(data)
     } catch (error) {
       console.error("Error fetching dashboard data:", error)
@@ -305,6 +306,7 @@ export default function EmployerDashboard() {
                     <th className="text-left p-4 font-medium text-gray-600">Experience</th>
                     <th className="text-left p-4 font-medium text-gray-600">Location</th>
                     <th className="text-left p-4 font-medium text-gray-600">Status</th>
+                    <th className="text-left p-4 font-medium text-gray-600">Contact</th>
                     <th className="text-left p-4 font-medium text-gray-600">Actions</th>
                   </tr>
                 </thead>
@@ -319,6 +321,8 @@ export default function EmployerDashboard() {
                           <MapPin className="w-4 h-4 mr-1 text-gray-400" />
                           {candidate.applicant_location}
                         </td>
+
+                      
                         <td className="p-4">
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(candidate.application_status)}`}
@@ -326,6 +330,8 @@ export default function EmployerDashboard() {
                             {candidate.application_status || "Pending"}
                           </span>
                         </td>
+                        <td className="p-4">{candidate.applicant__employeeprofile__contact_no || "N/A"}</td>
+
                         <td className="p-4">
                           <div className="flex space-x-2">
                             <button
