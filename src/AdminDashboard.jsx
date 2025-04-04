@@ -26,7 +26,7 @@ export default function AdminDashboard() {
   const [showUserDetails, setShowUserDetails] = useState(false)
   const [processingId, setProcessingId] = useState(null)
 
-  // Fetch pending users
+
   useEffect(() => {
     const fetchPendingUsers = async () => {
       setIsLoading(true)

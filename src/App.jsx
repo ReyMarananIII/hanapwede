@@ -29,6 +29,8 @@ import AdminUserApprovalPage from "./AdminUserApprovalPage";
 import PrivacyPolicyPage from "./PrivacyPolicyPage";
 import AdminLoginPage from "./AdminLoginPage";
 import EditJob from "./EditJob";
+import NotificationsPage from "./NotificationsPage";
+import AccessibilityPage from "./AccessibilityPage";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -46,6 +48,8 @@ function App() {
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/admin/signin" element={<AdminLoginPage />} />
         <Route path="job-seeker/profile/:userId" element={<EmployeeProfile />} />
+        <Route path="/notifications" element={<NotificationsPage />} />
+        <Route path="/accessibility" element={<AccessibilityPage />} />
        
 
         <Route 
