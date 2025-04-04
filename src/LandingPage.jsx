@@ -85,11 +85,15 @@ export default function LandingPage() {
               className="bg-[#4CAF50] text-white px-6 py-2 rounded hover:bg-[#45a049]">
                 Join as Candidate
               </button>
-              <button 
-              onClick={handlePostAJob}
-              className="border border-[#4CAF50] text-[#4CAF50] px-6 py-2 rounded hover:bg-gray-50">
-                Post a Job
-              </button>
+
+              {isLoggedIn && (
+  <button 
+    onClick={handlePostAJob}
+    className="border border-[#4CAF50] text-[#4CAF50] px-6 py-2 rounded hover:bg-gray-50">
+      Post a Job
+  </button>
+)}
+
             </div>
           </div>
           <div>
@@ -167,7 +171,7 @@ export default function LandingPage() {
               </ul>
             </div>
             <div>
-              <h3 className="font-bold mb-4">Contact</h3>
+              <h3 className="font-bold mb-4">Help</h3>
               <ul className="space-y-2 text-gray-600">
                 
                 <li>

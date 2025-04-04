@@ -19,9 +19,10 @@ export default function Header() {
           Employer Login
         </Link>
         <button 
-        onClick={()=>navigate("/employer/signin")}
-        
-        className="bg-[#4CAF50] hover:bg-[#45a049] px-4 py-2 text-sm text-white rounded">Post a Job</button>
+   onClick={() => navigate("/employer/signin?redirect=/employer/post-job")}
+   className="bg-[#4CAF50] hover:bg-[#45a049] px-4 py-2 text-sm text-white rounded">
+   Post a Job
+</button>
       </div>
     </header>
   )

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
+import { Link, useNavigate,useLocation } from "react-router-dom"
 import Header from "./Header"
 import { Mail, Lock, Eye, EyeOff, Briefcase, AlertCircle, Loader } from "lucide-react"
 
@@ -10,7 +10,10 @@ export default function EmployerSignIn() {
   const [formData, setFormData] = useState({ email: "", password: "" })
   const [error, setError] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
+  const location = useLocation();
   const navigate = useNavigate()
+  const params = new URLSearchParams(location.search);
+  const redirectPath = params.get("redirect") || "/employer/dashboard";
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -42,15 +45,19 @@ export default function EmployerSignIn() {
         localStorage.setItem("authToken", data.token)
         localStorage.setItem("userId", data.userId)
         localStorage.setItem("username", data.username)
-        if(data.user_type === "Admin"){
+        if (data.user_type === "Admin") {
           navigate("/admin/user-approval");
-        }
-        else{
-        navigate(data.has_profile ? "/employer/dashboard" : "/employer/edit-profile")
-        }
       } else {
-        setError(data.error || "Invalid email or password.")
+          let finalRedirect = data.has_profile ? "/employer/dashboard" : "/employer/edit-profile";
+      
+        
+          if (redirectPath && redirectPath !== "/employer/signin") {
+              finalRedirect = redirectPath;
+          }
+      
+          navigate(finalRedirect);
       }
+    }
     } catch (error) {
       console.error("Error:", error)
       setError("Something went wrong. Please try again.")
