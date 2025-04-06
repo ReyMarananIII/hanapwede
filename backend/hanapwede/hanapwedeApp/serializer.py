@@ -93,3 +93,47 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model=Notification
         fields = ['id', 'title', 'action', 'is_read', 'timestamp']
+
+class JobApplicationSerializerv2(serializers.ModelSerializer):
+    job_title = serializers.CharField(source="job_post.job_title", read_only=True)
+    company_name = serializers.CharField(source="job_post.posted_by.employerprofile.comp_name", read_only=True)
+    job_type = serializers.CharField(source="job_post.job_type", read_only=True)
+    location = serializers.CharField(source="job_post.location", read_only=True)
+    posted_by_id = serializers.IntegerField(source="job_post.posted_by.id", read_only=True)
+
+    class Meta:
+        model = Application
+        fields = [
+            "application_id", 
+            "job_title", 
+            "company_name", 
+            "application_status", 
+            "job_type", 
+            "location", 
+            "posted_by_id",  # Include Employer's User ID
+        ]
+
+
+class ReportSerializerv2(serializers.ModelSerializer):
+    reported_by_username = serializers.CharField(source="reported_by.username", read_only=True)
+    post_content = serializers.CharField(source="post.content", read_only=True)
+    comment_content = serializers.CharField(source="comment.content", read_only=True)
+    post_author = serializers.CharField(source="post.user.username", read_only=True)
+    comment_author = serializers.CharField(source="comment.user.username", read_only=True)
+
+    class Meta:
+        model = Report
+        fields = [
+            "id",
+            "reported_by",
+            "reported_by_username",
+            "post",
+            "post_content",
+            "comment",
+            "comment_content",
+            "post_author",
+            "comment_author",
+            "reason",
+            "report_desc",
+            "created_at"
+        ]

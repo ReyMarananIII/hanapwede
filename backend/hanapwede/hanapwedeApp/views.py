@@ -16,7 +16,7 @@ from rest_framework.decorators import api_view, permission_classes,parser_classe
 from rest_framework.permissions import IsAuthenticated
 from .models import EmployerProfile, Post, Comment, Report, BannedWord
 from .serializer import EmployerProfileSerializer
-from .serializer import JobPostSerializer
+from .serializer import JobPostSerializer, ReportSerializerv2
 from .models import Tag, User, JobPost, DisabilityTag,Application
 from .serializer import TagSerializer, DisabilityTagSerializer,JobApplicationSerializer
 import pandas as pd
@@ -29,7 +29,7 @@ from hanapwedeApp.models import ChatRooms , Messages, Application
 
 
 from .serializer import PostSerializer, CommentSerializer, ReportSerializer, BannedWordSerializer
-from .serializer import EmployeeProfileSerializer,NotificationSerializer
+from .serializer import EmployeeProfileSerializer,NotificationSerializer, JobApplicationSerializerv2
 User = get_user_model()
 @csrf_exempt
 def signup(request):
@@ -859,3 +859,19 @@ def delete_job(request,jobId):
     except JobPost.DoesNotExist:
         return Response({"error": "Job post not found or unauthorized"}, status=403)
 
+@api_view(["GET"])
+def my_applications(request):
+    user = request.user
+    applications = Application.objects.filter(applicant=user).select_related(
+    "job_post", "job_post__posted_by__employerprofile"
+)
+    serializer = JobApplicationSerializerv2(applications, many=True)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+def all_reports(request):
+  
+    reports = Report.objects.select_related("reported_by", "post").order_by("-created_at")
+    serializer = ReportSerializerv2(reports, many=True)
+    return Response(serializer.data)

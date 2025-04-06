@@ -25,12 +25,14 @@ import FAQPage from "./FAQPage";
 import PreferencesPage from "./PreferencesPage";
 import PWDCardOCR from "./PWDCardOCR";
 import AdminManageUsersPage from "./AdminManageUsersPage";
+import AdminReportsPage from "./AdminReportsPage";
 import AdminUserApprovalPage from "./AdminUserApprovalPage";
 import PrivacyPolicyPage from "./PrivacyPolicyPage";
 import AdminLoginPage from "./AdminLoginPage";
 import EditJob from "./EditJob";
 import NotificationsPage from "./NotificationsPage";
 import AccessibilityPage from "./AccessibilityPage";
+import ApplicationTracker from "./ApplicationTracker";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -66,6 +68,16 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Admin"]}>
               <AdminManageUsersPage />
+              
+            </ProtectedRoute>
+          } 
+        />
+
+<Route 
+        path="admin/manage-reports"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <AdminReportsPage />
               
             </ProtectedRoute>
           } 
@@ -139,6 +151,16 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Employee"]}>
               <EditProfile />
+              
+            </ProtectedRoute>
+          } 
+        />
+
+<Route 
+          path="/job-seeker/track-job" 
+          element={
+            <ProtectedRoute allowedRoles={["Employee"]}>
+              <ApplicationTracker />
               
             </ProtectedRoute>
           } 

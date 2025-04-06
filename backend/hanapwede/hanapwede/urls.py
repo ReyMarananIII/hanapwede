@@ -27,6 +27,7 @@ from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_pr
 from hanapwedeApp.views import get_employer_details
 from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_preferences,get_all_jobs,get_all_users,delete_user,approve_application,decline_application,platform_statistics,admin_login
 from hanapwedeApp.views import get_user_details_redirect, delete_account, ocr_view,job_post_disability_tags, edit_job_post,job_post_tags,delete_job
+from hanapwedeApp.views import my_applications, all_reports
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'comments', CommentViewSet)
@@ -74,8 +75,10 @@ urlpatterns = [
     path("api/platform-statistics/", platform_statistics, name="platform-statistics"),
     path("api/admin-login/", admin_login, name="admin-login"),
     path("api/ocr/", ocr_view, name="ocr"),
+    path("api/admin/reports/", all_reports, name="all_reports"),
     path("api/job-post-disability-tags/<int:jobId>/", job_post_disability_tags, name="job_post_disability_tags"),
     path("api/job-post-tags/<int:jobId>/", job_post_tags, name="job_post_disability_tags"),
     path("api/edit-job-post/<int:jobId>/", edit_job_post, name="edit_job_post"),
+    path("api/my-applications/", my_applications, name="my_applications"),
     path("api/delete-job/<int:jobId>/", delete_job, name="delete-job"),
 ]

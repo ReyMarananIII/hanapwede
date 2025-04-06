@@ -8,11 +8,11 @@ export default function AdminLayout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const location = useLocation()
 
-  // Update the navigation array to include only dashboard, user approval, and manage users
   const navigation = [
  
     { name: "User Approval", href: "/admin/user-approval", icon: Users },
     { name: "Manage Users", href: "/admin/manage-users", icon: Users },
+    { name: "Manage Reports", href: "/admin/manage-reports", icon: Users },
   ]
 
   const handleLogout = () => {
