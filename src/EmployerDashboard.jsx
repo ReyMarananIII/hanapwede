@@ -36,6 +36,7 @@ export default function EmployerDashboard() {
 
 
   const [showDeleteModal, setShowDeleteModal] = useState(false)
+
   const [selectedJob, setSelectedJob] = useState(null)
   const [isJobProcessing, setIsJobProcessing] = useState(false)
   const [jobActionMessage, setJobActionMessage] = useState({ type: "", message: "" })
@@ -124,7 +125,7 @@ export default function EmployerDashboard() {
         closeModal()
  
         fetchDashboardData()
-      }, 2000)
+      }, 1000)
     } catch (error) {
       console.error("Error approving application:", error)
       setActionMessage({
@@ -136,7 +137,7 @@ export default function EmployerDashboard() {
     }
   }
 
-  // Handle application decline
+
   const handleDecline = async () => {
     if (!selectedApplicant) return
 
@@ -159,7 +160,7 @@ export default function EmployerDashboard() {
         throw new Error("Failed to decline application")
       }
 
-      // Update local state to reflect the change
+
       setDashboardData((prev) => ({
         ...prev,
         applicants: prev.applicants.map((app) =>
@@ -172,12 +173,12 @@ export default function EmployerDashboard() {
         message: "Application declined. The candidate will be notified.",
       })
 
-      // Close modal after a delay
+
       setTimeout(() => {
         closeModal()
-        // Refresh data
+
         fetchDashboardData()
-      }, 2000)
+      }, 1000)
     } catch (error) {
       console.error("Error declining application:", error)
       setActionMessage({
@@ -189,14 +190,14 @@ export default function EmployerDashboard() {
     }
   }
 
-  // Open delete confirmation modal
+
   const openDeleteModal = (job) => {
     setSelectedJob(job)
     setShowDeleteModal(true)
     setJobActionMessage({ type: "", message: "" })
   }
 
-  // Close delete modal
+
   const closeDeleteModal = () => {
     setShowDeleteModal(false)
     setSelectedJob(null)
@@ -204,7 +205,7 @@ export default function EmployerDashboard() {
     setJobActionMessage({ type: "", message: "" })
   }
 
-  // Handle job deletion
+
   const handleDeleteJob = async () => {
     if (!selectedJob) return
 
@@ -241,7 +242,7 @@ export default function EmployerDashboard() {
         closeDeleteModal()
 
         fetchDashboardData()
-      }, 2000)
+      }, 1000)
     } catch (error) {
       console.error("Error deleting job:", error)
       setJobActionMessage({
@@ -252,6 +253,71 @@ export default function EmployerDashboard() {
       setIsJobProcessing(false)
     }
   }
+
+
+
+
+
+
+
+const handleDeleteApplication = async () => {
+  if (!selectedApplicant) return;
+
+  setIsProcessing(true);
+  setActionMessage({ type: "", message: "" });
+
+  try {
+    const response = await fetch(
+      `http://localhost:8000/api/delete-application/${selectedApplicant.application_id}/`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Token ${authToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to delete application");
+    }
+
+    setDashboardData((prev) => ({
+      ...prev,
+      applicants: prev.applicants.filter(
+        (app) => app.application_id !== selectedApplicant.application_id
+      ),
+    }));
+
+    setActionMessage({
+      type: "success",
+      message: "Application deleted successfully!",
+    });
+
+    setTimeout(() => {
+       closeModal();
+      fetchDashboardData();
+    }, 1000);
+  } catch (error) {
+    console.error("Error deleting application:", error);
+    setActionMessage({
+      type: "error",
+      message: "Failed to delete application. Please try again.",
+    });
+  } finally {
+    setIsProcessing(false);
+  }
+};
+// end of delete application functions
+
+
+
+
+
+
+
+
+
 
 
   const navigateToEditJob = (jobId) => {
@@ -302,7 +368,7 @@ export default function EmployerDashboard() {
                 <thead>
                   <tr className="border-b bg-gray-50">
                     <th className="text-left p-4 font-medium text-gray-600">Name</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Role</th>
+                    <th className="text-left p-4 font-medium text-gray-600">Skills</th>
                     <th className="text-left p-4 font-medium text-gray-600">Experience</th>
                     <th className="text-left p-4 font-medium text-gray-600">Location</th>
                     <th className="text-left p-4 font-medium text-gray-600">Status</th>
@@ -315,7 +381,7 @@ export default function EmployerDashboard() {
                     dashboardData.applicants.map((candidate, index) => (
                       <tr key={index} className="border-b last:border-b-0 hover:bg-gray-50">
                         <td className="p-4 font-medium">{candidate.applicant_name}</td>
-                        <td className="p-4">{candidate.applicant_role}</td>
+                        <td className="p-4">{candidate.applicant_skills}</td>
                         <td className="p-4">{candidate.applicant_experience}</td>
                         <td className="p-4 flex items-center">
                           <MapPin className="w-4 h-4 mr-1 text-gray-400" />
@@ -356,7 +422,17 @@ export default function EmployerDashboard() {
                                   className="p-1 bg-red-50 text-red-600 rounded hover:bg-red-100"
                                   title="Decline Application"
                                 >
+                                  
                                   <XCircle className="w-4 h-4" />
+                                </button>
+
+                                <button
+                                  onClick={() => openModal("delete", candidate)}
+                                  className="p-1 bg-red-50 text-red-600 rounded hover:bg-red-100"
+                                  title="Delete Application"
+                                >
+                                  
+                                  <Trash2 className="w-4 h-4" />
                                 </button>
                               </>
                             )}
@@ -480,6 +556,7 @@ export default function EmployerDashboard() {
                 {modalType === "view" && "Applicant Details"}
                 {modalType === "approve" && "Approve Application"}
                 {modalType === "decline" && "Decline Application"}
+                {modalType === "delete" && "Delete Application"}
               </h3>
             </div>
 
@@ -537,7 +614,7 @@ export default function EmployerDashboard() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Applied For</p>
-                      <p className="font-medium">{selectedApplicant.job_title || "N/A"}</p>
+                      <p className="font-medium">{selectedApplicant.job_post__job_title || "N/A"}</p>
                     </div>
                   </div>
 
@@ -562,6 +639,14 @@ export default function EmployerDashboard() {
                     <div className="mt-4">
                       <p className="text-gray-700">
                         Are you sure you want to decline this application? The candidate will be notified.
+                      </p>
+                    </div>
+                  )}
+
+{modalType === "delete" && (
+                    <div className="mt-4">
+                      <p className="text-gray-700">
+                        Are you sure you want to delete this application? This action cannot be undone.
                       </p>
                     </div>
                   )}
@@ -614,6 +699,27 @@ export default function EmployerDashboard() {
                     <>
                       <XCircle className="-ml-1 mr-2 h-4 w-4" />
                       Decline
+                    </>
+                  )}
+                </button>
+              )}
+
+
+{modalType === "delete" && (
+                <button
+                  onClick={handleDeleteApplication}
+                  disabled={isProcessing}
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="-ml-1 mr-2 h-4 w-4" />
+                      Delete
                     </>
                   )}
                 </button>

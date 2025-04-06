@@ -94,7 +94,7 @@ export default function ChatRoom() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h2 className="text-lg font-bold">Chat Room {roomId}</h2>
+            <h2 className="text-lg font-bold">Chat</h2>
           </div>
         </div>
       </div>

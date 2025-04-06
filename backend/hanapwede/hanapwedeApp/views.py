@@ -447,6 +447,7 @@ def employer_dashboard(request):
         "application_action",
         "application_status",
         "application_id",
+        "applicant_skills",
         "job_post__job_title" 
     ))
 
@@ -875,3 +876,27 @@ def all_reports(request):
     reports = Report.objects.select_related("reported_by", "post").order_by("-created_at")
     serializer = ReportSerializerv2(reports, many=True)
     return Response(serializer.data)
+
+
+@api_view(["DELETE"])
+def cancel_application(request,application_id):
+    try:
+        application = Application.objects.get(application_id=application_id)
+        application.delete()
+        return Response({"message": "Application cancelled successfully"}, status=200)
+    except Application.DoesNotExist:
+        return Response({"error": "Application not found"}, status=404)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)
+    
+
+@api_view(["DELETE"])
+def delete_application(request,application_id):
+    try:
+        application = Application.objects.get(application_id=application_id)
+        application.delete()
+        return Response({"message": "Application deleted successfully"}, status=200)
+    except Application.DoesNotExist:
+        return Response({"error": "Application not found"}, status=404)
+    except Exception as e:
+        return Response({"error": str(e)}, status=500)

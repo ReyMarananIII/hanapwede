@@ -250,6 +250,33 @@ export default function LoggedInHeader() {
                   </Link>
                 </li>
 
+                {userRole === 'Employee' && (
+  <li>
+    <Link
+      to={"/job-seeker/preferences"}
+      className="block px-4 py-2 hover:bg-gray-100"
+      onClick={() => setIsDropdownOpen(false)}
+    >
+      Job Preferences
+    </Link>
+  </li>
+)}
+
+                {userRole === 'Employee' && (
+  <li>
+    <Link
+      to={"/job-seeker/track-job"}
+      className="block px-4 py-2 hover:bg-gray-100"
+      onClick={() => setIsDropdownOpen(false)}
+    >
+      Job Tracking
+    </Link>
+  </li>
+)}
+
+
+
+
                 
                 {userRole !== "Employee!" && (
   <li>

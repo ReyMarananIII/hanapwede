@@ -225,12 +225,26 @@ export default function EmployeeDashboard() {
                       {getDisabilityIcon(type.name)}
                       <div className="ml-3">
                         <p className="text-sm font-medium text-purple-800">{type.name}</p>
-                        <p className="text-xs text-gray-500">{type.count} users</p>
+   
                       </div>
                     </div>
                   ))}
                 </div>
               </div>
+
+<div>
+              <h3 className="text-md font-medium mb-3 flex items-center">
+              <Briefcase className="h-4 w-4 mr-2 text-blue-600" />
+                 Job Applications
+                </h3>
+              <button
+                        onClick={() => navigate(`/job-seeker/track-job`)}
+                        className="bg-[#7cd1ed] text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex mt-5 items-center"
+                      >
+                     
+                        Track Applications
+                      </button>
+                      </div>
             </>
           )}
         </div>

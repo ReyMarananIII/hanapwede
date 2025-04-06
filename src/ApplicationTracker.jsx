@@ -21,6 +21,7 @@ import {
   ChevronDown,
   ChevronUp,
   RefreshCw,
+  Delete,
 } from "lucide-react"
 
 export default function ApplicationTracker() {
@@ -121,6 +122,33 @@ export default function ApplicationTracker() {
       alert("Failed to start chat with employer. Please try again.")
     }
   }
+
+  const handleCancelApplication = async (applicationId) => {
+    if (window.confirm("Are you sure you want to cancel this application?")) {
+      try {
+        const token = localStorage.getItem("authToken");
+        const response = await fetch(`http://localhost:8000/api/cancel-application/${applicationId}/`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Token ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+  
+        if (!response.ok) {
+          throw new Error("Failed to delete application");
+        }
+        alert("Application cancelled successfully.");
+      } catch (error) {
+        console.error("Error deleting application:", error);
+        alert("Failed to delete application. Please try again.");
+      }
+    }
+  };
+  
+      
+
+
 
 
   const toggleExpandApplication = (id) => {
@@ -439,6 +467,19 @@ export default function ApplicationTracker() {
                             Contact Employer
                           </button>
                         </div>
+
+
+
+                        <div className="mt-6 flex flex-wrap gap-3">
+                   
+                   <button
+                     onClick={() => handleCancelApplication(application.application_id)}
+                     className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-500 hover:bg-red-600"
+                   >
+                     <XCircle className="h-4 w-4 mr-2" />
+                     Cancel Application
+                   </button>
+                 </div>
                       </div>
                     )}
                   </div>
