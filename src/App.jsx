@@ -33,6 +33,8 @@ import EditJob from "./EditJob";
 import NotificationsPage from "./NotificationsPage";
 import AccessibilityPage from "./AccessibilityPage";
 import ApplicationTracker from "./ApplicationTracker";
+import JobFairApplications from "./JobFairApplications";
+import JobFairMain from "./JobFairMain";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -52,7 +54,7 @@ function App() {
         <Route path="job-seeker/profile/:userId" element={<EmployeeProfile />} />
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/accessibility" element={<AccessibilityPage />} />
-       
+        <Route path="/job-fairs" element={<JobFairMain />} />
 
         <Route 
         path="admin/user-approval"
@@ -175,6 +177,18 @@ function App() {
             </ProtectedRoute>
           } 
         />
+
+<Route 
+          path="/job-fairs/:jobFairId/applications"
+          element={
+            <ProtectedRoute allowedRoles={["Employer"]}>
+              <JobFairApplications />
+            </ProtectedRoute>
+          } 
+        />
+
+
+
 
 <Route 
           path="/employer/edit-job/:jobId" 

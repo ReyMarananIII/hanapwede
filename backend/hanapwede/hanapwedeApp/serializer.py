@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from .models import EmployerProfile, JobPost,Tag ,User as CustomUser, DisabilityTag,Application
 from .models import Post,Comment, Report,BannedWord, EmployeeProfile,Notification
+from rest_framework import serializers
+from .models import JobFair, JobPost, JobFairRegistration
 
 class EmployerProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -137,3 +139,20 @@ class ReportSerializerv2(serializers.ModelSerializer):
             "report_desc",
             "created_at"
         ]
+
+#job fair serializer
+
+
+class JobFairSerializer(serializers.ModelSerializer):
+    jobs = serializers.PrimaryKeyRelatedField(queryset=JobPost.objects.all(), many=True)
+
+    class Meta:
+        model = JobFair
+        fields = ['id','title', 'description', 'date',  'contact_number', 'email', 'jobs']
+        read_only_fields = ['organizer']
+
+
+class JobFairRegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = JobFairRegistration
+        fields = ['job_fair']

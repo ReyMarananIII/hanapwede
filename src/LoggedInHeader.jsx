@@ -275,7 +275,15 @@ export default function LoggedInHeader() {
 )}
 
 
-
+<li>
+    <Link
+      to={"/job-fairs"}
+      className="block px-4 py-2 hover:bg-gray-100"
+      onClick={() => setIsDropdownOpen(false)}
+    >
+      Job Fairs
+    </Link>
+  </li>
 
                 
                 {userRole !== "Employee!" && (
@@ -289,6 +297,11 @@ export default function LoggedInHeader() {
     </Link>
   </li>
 )}
+
+
+
+
+
                 <li>
                   <Link
                     to={"/faqs/"}

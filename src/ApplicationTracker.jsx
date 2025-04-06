@@ -280,15 +280,7 @@ export default function ApplicationTracker() {
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-4 flex items-center">
-            <div className="rounded-full bg-blue-100 p-3 mr-4">
-              <Calendar className="h-5 w-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">Interviewed</p>
-              <p className="text-2xl font-bold">{stats.interviewed}</p>
-            </div>
-          </div>
+       
         </div>
 
         {/* Filters and Search */}
@@ -317,7 +309,7 @@ export default function ApplicationTracker() {
                   <option value="Pending">Pending</option>
                   <option value="Approved">Approved</option>
                   <option value="Declined">Declined</option>
-                  <option value="Interviewed">Interviewed</option>
+               
                 </select>
               </div>
 
@@ -334,9 +326,7 @@ export default function ApplicationTracker() {
               </div>
             </div>
 
-            <div className="text-sm text-gray-500">
-              Showing {filteredApplications.length} of {applications.length} applications
-            </div>
+        
           </div>
         </div>
 

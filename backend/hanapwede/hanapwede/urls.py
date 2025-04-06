@@ -27,12 +27,14 @@ from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_pr
 from hanapwedeApp.views import get_employer_details
 from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_preferences,get_all_jobs,get_all_users,delete_user,approve_application,decline_application,platform_statistics,admin_login
 from hanapwedeApp.views import get_user_details_redirect, delete_account, ocr_view,job_post_disability_tags, edit_job_post,job_post_tags,delete_job
-from hanapwedeApp.views import my_applications, all_reports,cancel_application,delete_application
+from hanapwedeApp.views import my_applications, all_reports,cancel_application,delete_application,JobFairJobListView,JobFairViewSet,JobFairRegistrationViewSet,EmployerJobListView,JobListDataView, EmployerJobFairJobListView
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'comments', CommentViewSet)
 router.register(r'reports', ReportViewSet)
 router.register(r'banned-words', BannedWordViewSet)
+router.register(r'jobfairs', JobFairViewSet, basename='jobfair')
+router.register(r'jobfair-registrations', JobFairRegistrationViewSet, basename='jobfair-registration')
 
 urlpatterns = [
     path('api/', include(router.urls)),
@@ -75,6 +77,8 @@ urlpatterns = [
     path("api/platform-statistics/", platform_statistics, name="platform-statistics"),
     path("api/admin-login/", admin_login, name="admin-login"),
     path("api/ocr/", ocr_view, name="ocr"),
+    path('api/jobfairs/<int:job_fair_id>/jobs/', JobFairJobListView.as_view(), name='jobfair-job-list'),
+    path('api/jobfairs/<int:job_fair_id>/employer/jobs/', EmployerJobFairJobListView.as_view(), name='jobfair-job-list'),
     path("api/admin/reports/", all_reports, name="all_reports"),
     path("api/job-post-disability-tags/<int:jobId>/", job_post_disability_tags, name="job_post_disability_tags"),
     path("api/job-post-tags/<int:jobId>/", job_post_tags, name="job_post_disability_tags"),
@@ -83,4 +87,6 @@ urlpatterns = [
     path("api/delete-job/<int:jobId>/", delete_job, name="delete-job"),
     path("api/cancel-application/<int:application_id>/", cancel_application, name="cancel-application"),
     path("api/delete-application/<int:application_id>/", delete_application, name="delete-application"),
+    path('api/employer-jobs/', EmployerJobListView.as_view(), name='employer-job-list'),
+    path('api/jobfairs/<int:jobfair_id>/jobs/', JobListDataView.as_view(), name='jobfair-jobs-list')
 ]

@@ -349,9 +349,7 @@ export default function AdminReportsPage() {
               </div>
             </div>
 
-            <div className="text-sm text-gray-500">
-              Showing {filteredReports.length} of {reports.length} reports
-            </div>
+     
           </div>
         </div>
 

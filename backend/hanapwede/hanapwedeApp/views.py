@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password
 from django.contrib.contenttypes.models import ContentType
 from django.db.models import Count
-from hanapwedeApp.models import EmployeeProfile,Notification
+from hanapwedeApp.models import EmployeeProfile,Notification , JobFairJobPost
 import json
 from django.contrib.auth import authenticate
 from rest_framework.authtoken.models import Token
@@ -25,11 +25,23 @@ from sklearn.metrics.pairwise import cosine_similarity
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.authentication import TokenAuthentication
 from rest_framework import viewsets
-from hanapwedeApp.models import ChatRooms , Messages, Application
-
+from hanapwedeApp.models import ChatRooms , Messages, Application, JobFairRegistration
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from .models import JobFair
+from .serializer import JobFairSerializer
 
 from .serializer import PostSerializer, CommentSerializer, ReportSerializer, BannedWordSerializer
-from .serializer import EmployeeProfileSerializer,NotificationSerializer, JobApplicationSerializerv2
+from .serializer import EmployeeProfileSerializer,NotificationSerializer, JobApplicationSerializerv2, JobFairRegistrationSerializer
+from rest_framework.views import APIView
+
+#OCR imports
+
+import easyocr
+from PIL import Image
+import numpy as np
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 User = get_user_model()
 @csrf_exempt
 def signup(request):
@@ -801,11 +813,7 @@ def platform_statistics(request):
     })
 
 
-import easyocr
-from PIL import Image
-import numpy as np
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+
 
 reader = easyocr.Reader(["en"])  # Load English model
 
@@ -900,3 +908,118 @@ def delete_application(request,application_id):
         return Response({"error": "Application not found"}, status=404)
     except Exception as e:
         return Response({"error": str(e)}, status=500)
+    
+#job fair view
+
+class JobFairViewSet(viewsets.ModelViewSet):
+    queryset = JobFair.objects.all()
+    serializer_class = JobFairSerializer
+    
+
+    def perform_create(self, serializer):
+
+        serializer.save(organizer=self.request.user)
+
+
+class JobFairRegistrationViewSet(viewsets.ModelViewSet):
+    queryset = JobFairRegistration.objects.all()
+    serializer_class = JobFairRegistrationSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        job_fair = serializer.validated_data['job_fair']
+        user = self.request.user  
+
+ 
+        if JobFairRegistration.objects.filter(job_fair=job_fair, user=user).exists():
+            raise serializers.ValidationError("You are already registered for this job fair.")
+
+        serializer.save(user=user)
+
+
+class JobFairJobListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, job_fair_id):
+        job_fair = JobFair.objects.get(id=job_fair_id)
+
+       
+        if not JobFairRegistration.objects.filter(job_fair=job_fair, user=request.user).exists():
+            return Response({"detail": "You must register for this job fair first."}, status=400)
+
+       
+        jobs = job_fair.jobs.all()
+
+   
+        job_data = [{"job_title": job.job_title, "job_desc": job.job_desc, "location":job.location,"company_name":job.get_company_name(),"post_id":job.post_id} for job in jobs]
+
+        return Response({"job_fair": job_fair.title, "jobs": job_data})
+    
+class EmployerJobFairJobListView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, job_fair_id):
+        job_fair = JobFair.objects.get(id=job_fair_id)
+
+       
+        
+       
+        jobs = job_fair.jobs.all()
+
+   
+        job_data = [{"job_title": job.job_title, "job_desc": job.job_desc, "location":job.location,"company_name":job.get_company_name(),"post_id":job.post_id} for job in jobs]
+
+        return Response({"job_fair": job_fair.title, "jobs": job_data})
+
+
+class EmployerJobListView(APIView):
+    permission_classes = [IsAuthenticated]  
+
+    def get(self, request):
+        
+        employer_jobs = JobPost.objects.filter(posted_by=request.user)
+
+        serializer = JobPostSerializer(employer_jobs, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+class JobListDataView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, jobfair_id):
+    
+        job_fair = JobFair.objects.filter(id=jobfair_id).first()
+
+        if not job_fair:
+            return Response({"detail": "Job fair not found."}, status=status.HTTP_404_NOT_FOUND)
+
+       
+        job_fair_job_posts = JobFairJobPost.objects.filter(jobfair=job_fair)
+
+    
+        job_posts = [job_fair_job_post.jobpost for job_fair_job_post in job_fair_job_posts]
+
+   
+        serializer = JobPostSerializer(job_posts, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class JobFairApplicationsView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, jobfair_id):
+        # Get job fair object
+        job_fair = JobFair.objects.filter(id=jobfair_id).first()
+
+        if not job_fair:
+            return Response({"detail": "Job fair not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Get all job applications associated with this job fair
+        job_applications = JobApplication.objects.filter(job_fair=job_fair)
+
+        # Serialize the job applications
+        serializer = JobApplicationSerializer(job_applications, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
