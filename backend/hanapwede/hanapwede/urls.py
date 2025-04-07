@@ -28,6 +28,7 @@ from hanapwedeApp.views import get_employer_details
 from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_preferences,get_all_jobs,get_all_users,delete_user,approve_application,decline_application,platform_statistics,admin_login
 from hanapwedeApp.views import get_user_details_redirect, delete_account, ocr_view,job_post_disability_tags, edit_job_post,job_post_tags,delete_job
 from hanapwedeApp.views import my_applications, all_reports,cancel_application,delete_application,JobFairJobListView,JobFairViewSet,JobFairRegistrationViewSet,EmployerJobListView,JobListDataView, EmployerJobFairJobListView
+from hanapwedeApp.views import JobFairApplicationsView
 router = DefaultRouter()
 router.register(r'posts', PostViewSet)
 router.register(r'comments', CommentViewSet)
@@ -88,5 +89,7 @@ urlpatterns = [
     path("api/cancel-application/<int:application_id>/", cancel_application, name="cancel-application"),
     path("api/delete-application/<int:application_id>/", delete_application, name="delete-application"),
     path('api/employer-jobs/', EmployerJobListView.as_view(), name='employer-job-list'),
+    path('api/jobfairs/<int:jobfair_id>/applications/', JobFairApplicationsView.as_view(), name='jobfair-applications'),
+
     path('api/jobfairs/<int:jobfair_id>/jobs/', JobListDataView.as_view(), name='jobfair-jobs-list')
 ]

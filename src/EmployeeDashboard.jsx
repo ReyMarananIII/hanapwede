@@ -48,7 +48,7 @@ export default function EmployeeDashboard() {
           Authorization: `Token ${authToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ employer_id: employerId }),
+        body: JSON.stringify({ other_user_id: employerId }),
       })
 
       if (!response.ok) {

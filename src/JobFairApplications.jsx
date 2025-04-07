@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import { useParams, useNavigate, data } from "react-router-dom"
 import LoggedInHeader from "./LoggedInHeader"
 import {
   Briefcase,
@@ -36,6 +36,7 @@ export default function JobFairApplications() {
   const [sortBy, setSortBy] = useState("newest")
   const [expandedApplication, setExpandedApplication] = useState(null)
   const [jobs, setJobs] = useState([])
+  const authToken = localStorage.getItem("authToken")
 
   // Modal states for applicant actions
   const [showModal, setShowModal] = useState(false)
@@ -47,9 +48,13 @@ export default function JobFairApplications() {
   useEffect(() => {
     fetchJobFair()
     fetchJobFairJobs()
-   {/* fetchApplications()*/}
+    fetchApplications()
   }, [jobFairId])
 
+  useEffect(()=>{
+    console.log(applications)
+
+  },[applications])
   const fetchJobFair = async () => {
     try {
       const token = localStorage.getItem("authToken")
@@ -65,6 +70,7 @@ export default function JobFairApplications() {
 
       const data = await response.json()
       setJobFair(data)
+      
     } catch (error) {
       console.error("Error fetching job fair:", error)
       setError("Failed to load job fair details. Please try again.")
@@ -91,7 +97,30 @@ export default function JobFairApplications() {
     }
   }
 
-  {/*const fetchApplications = async () => {
+
+  const handleChat = async (employeeId) => {
+    try {
+      const response = await fetch("http://localhost:8000/api/create_chat/", {
+        method: "POST",
+        headers: {
+          Authorization: `Token ${authToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ other_user_id: employeeId }),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to create chat")
+      }
+
+      const data = await response.json()
+      navigate(`/chat/${data.room_id}`)
+    } catch (error) {
+      console.error("Error starting chat:", error)
+    }
+  }
+
+  const fetchApplications = async () => {
     setIsLoading(true)
     setError(null)
 
@@ -116,7 +145,7 @@ export default function JobFairApplications() {
       setIsLoading(false)
     }
   }
-    */}
+    
 
   // Open modal with appropriate type for applicant actions
   const openModal = (type, applicant) => {
@@ -174,7 +203,7 @@ export default function JobFairApplications() {
       setTimeout(() => {
         closeModal()
         // Refresh data
-        {/*fetchApplications()*/}
+        fetchApplications()
       }, 2000)
     } catch (error) {
       console.error("Error approving application:", error)
@@ -226,7 +255,7 @@ export default function JobFairApplications() {
       setTimeout(() => {
         closeModal()
         // Refresh data
-        {/*fetchApplications()*/}
+        fetchApplications()
       }, 2000)
     } catch (error) {
       console.error("Error declining application:", error)
@@ -252,7 +281,7 @@ export default function JobFairApplications() {
         app.job_title?.toLowerCase().includes(searchTerm.toLowerCase())
 
       // Filter by status
-      const matchesStatus = filterStatus === "all" || app.status === filterStatus
+      const matchesStatus = filterStatus === "all" || app.application_status === filterStatus
 
       // Filter by job
       const matchesJob = filterJob === "all" || app.job_id.toString() === filterJob
@@ -310,10 +339,10 @@ export default function JobFairApplications() {
   // Calculate statistics
   const stats = {
     total: applications.length,
-    pending: applications.filter((app) => app.status === "Pending").length,
-    approved: applications.filter((app) => app.status === "Approved").length,
-    declined: applications.filter((app) => app.status === "Declined").length,
-    interviewed: applications.filter((app) => app.status === "Interviewed").length,
+    pending: applications.filter((app) => app.application_status === "Pending").length,
+    approved: applications.filter((app) => app.application_status === "Approved").length,
+    declined: applications.filter((app) => app.application_status === "Declined").length,
+    interviewed: applications.filter((app) => app.application_status === "Interviewed").length,
   }
 
   return (
@@ -426,7 +455,7 @@ export default function JobFairApplications() {
                 </select>
               </div>
 
-              <div className="flex items-center">
+              {/*<div className="flex items-center">
                 <Briefcase className="h-4 w-4 text-gray-400 mr-2" />
                 <select
                   value={filterJob}
@@ -440,7 +469,7 @@ export default function JobFairApplications() {
                     </option>
                   ))}
                 </select>
-              </div>
+              </div>*/}
 
               <div className="flex items-center">
                 <Clock className="h-4 w-4 text-gray-400 mr-2" />
@@ -518,11 +547,11 @@ export default function JobFairApplications() {
                               <h3 className="font-medium text-lg">{application.applicant_name}</h3>
                               <span
                                 className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(
-                                  application.status,
+                                  application.application_status,
                                 )} mt-1 sm:mt-0 sm:ml-2`}
                               >
-                                {getStatusIcon(application.status)}
-                                <span className="ml-1">{application.status}</span>
+                                {getStatusIcon(application.application_status)}
+                                <span className="ml-1">{application.application_status}</span>
                               </span>
                             </div>
                             <p className="text-gray-600">{application.job_title}</p>
@@ -549,7 +578,7 @@ export default function JobFairApplications() {
                           <Eye className="w-5 h-5" />
                         </button>
 
-                        {application.status === "Pending" && (
+                        {application.application_status === "Pending" && (
                           <>
                             <button
                               onClick={() => openModal("approve", application)}
@@ -591,7 +620,7 @@ export default function JobFairApplications() {
                     {expandedApplication === application.application_id && (
                       <div className="mt-4 pt-4 border-t border-gray-200">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div>
+                          {/*  <div>
                             <h4 className="font-medium text-gray-700 mb-2">Applicant Details</h4>
                             <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                               <div>
@@ -606,25 +635,23 @@ export default function JobFairApplications() {
                                 <p className="text-sm text-gray-500">Experience</p>
                                 <p className="font-medium">{application.applicant_experience || "Not specified"}</p>
                               </div>
-                              <div>
-                                <p className="text-sm text-gray-500">Education</p>
-                                <p className="font-medium">{application.applicant_education || "Not specified"}</p>
-                              </div>
+                     
                             </div>
-                          </div>
+                          </div>*/}
 
                           <div>
                             <h4 className="font-medium text-gray-700 mb-2">Application Details</h4>
                             <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                               <div>
                                 <p className="text-sm text-gray-500">Status</p>
-                                <p className="font-medium">{application.status}</p>
+                                <p className="font-medium">{application.application_status}</p>
                               </div>
                               <div>
-                                <p className="text-sm text-gray-500">Applied On</p>
-                                <p className="font-medium">{formatDate(application.applied_date)}</p>
+                                <p className="text-sm text-gray-500">Applied For</p>
+                                <p className="font-medium">{application.job_title}</p>
                               </div>
-                              <div>
+
+                              {/*<div>
                                 <p className="text-sm text-gray-500">Resume</p>
                                 <div className="flex items-center mt-1">
                                   <FileText className="h-4 w-4 text-gray-500 mr-2" />
@@ -638,28 +665,25 @@ export default function JobFairApplications() {
                                   </a>
                                 </div>
                               </div>
-                              {application.cover_letter && (
-                                <div>
-                                  <p className="text-sm text-gray-500">Cover Letter</p>
-                                  <p className="text-sm mt-1 line-clamp-3">{application.cover_letter}</p>
-                                </div>
-                              )}
+                      */}
                             </div>
                           </div>
                         </div>
 
                         <div className="mt-6 flex flex-wrap gap-3">
-                          <button
+                          {/*<button
                             onClick={() => window.open(`/job/${application.job_id}`, "_blank")}
                             className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
                           >
                             <Eye className="h-4 w-4 mr-2" />
                             View Job Details
-                          </button>
+                          </button>*/}
                           <button
                             onClick={() => {
                               // Logic to start a chat with the applicant
-                              navigate(`/chat/${application.applicant_id}`)
+                              console.log(application.applicant_id)
+
+                         handleChat(application.applicant_id)
                             }}
                             className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
                           >
@@ -738,11 +762,11 @@ export default function JobFairApplications() {
                       <p className="text-sm text-gray-500">Status</p>
                       <span
                         className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(
-                          selectedApplicant.status,
+                          selectedApplicant.application_status,
                         )}`}
                       >
-                        {getStatusIcon(selectedApplicant.status)}
-                        <span className="ml-1">{selectedApplicant.status}</span>
+                        {getStatusIcon(selectedApplicant.application_status)}
+                        <span className="ml-1">{selectedApplicant.application_status}</span>
                       </span>
                     </div>
                     <div>

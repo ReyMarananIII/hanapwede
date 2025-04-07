@@ -40,9 +40,14 @@ class DisabilityTagSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class JobApplicationSerializer(serializers.ModelSerializer):
+    applicant_id = serializers.PrimaryKeyRelatedField(source='applicant.id', read_only=True)
+    job_title = serializers.PrimaryKeyRelatedField(source='job_post.job_title', read_only=True)
     class Meta:
         model = Application
         fields = '__all__'
+
+
+
 
 
 #start of forums serializers
@@ -145,11 +150,21 @@ class ReportSerializerv2(serializers.ModelSerializer):
 
 class JobFairSerializer(serializers.ModelSerializer):
     jobs = serializers.PrimaryKeyRelatedField(queryset=JobPost.objects.all(), many=True)
+    registrations_count = serializers.SerializerMethodField()
+    jobs_count = serializers.SerializerMethodField()
 
     class Meta:
         model = JobFair
-        fields = ['id','title', 'description', 'date',  'contact_number', 'email', 'jobs']
+        fields = ['id', 'title', 'description', 'date', 'contact_number', 'email', 'jobs', 'registrations_count', 'jobs_count']
         read_only_fields = ['organizer']
+
+    def get_registrations_count(self, obj):
+        # Count the number of registrations for this job fair
+        return JobFairRegistration.objects.filter(job_fair=obj).count()
+
+    def get_jobs_count(self, obj):
+        # Count the number of jobs associated with this job fair
+        return obj.jobs.count()
 
 
 class JobFairRegistrationSerializer(serializers.ModelSerializer):

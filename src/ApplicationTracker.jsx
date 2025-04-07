@@ -108,7 +108,7 @@ export default function ApplicationTracker() {
           Authorization: `Token ${token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ employer_id: employerId }),
+        body: JSON.stringify({ other_user_id: employerId }),
       })
 
       if (!response.ok) {
@@ -378,7 +378,7 @@ export default function ApplicationTracker() {
           ) : (
             <div className="divide-y divide-gray-200">
               {filteredApplications.map((application) => (
-                <div key={application.id} className="hover:bg-gray-50 transition-colors">
+                <div key={application.application_id} className="hover:bg-gray-50 transition-colors">
                   <div className="p-4">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                       <div className="flex-1">
@@ -410,10 +410,10 @@ export default function ApplicationTracker() {
 
                       <div className="flex items-center mt-4 md:mt-0">
                         <button
-                          onClick={() => toggleExpandApplication(application.id)}
+                          onClick={() => toggleExpandApplication(application.application_id)}
                           className="flex items-center px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-md mr-2"
                         >
-                          {expandedApplication === application.id ? (
+                          {expandedApplication === application.application_id ? (
                             <>
                               <ChevronUp className="h-4 w-4 mr-1" />
                               Hide Details
@@ -429,7 +429,7 @@ export default function ApplicationTracker() {
                     </div>
 
                     {/* Expanded Details */}
-                    {expandedApplication === application.id && (
+                    {expandedApplication === application.application_id && (
                       <div className="mt-4 pt-4 border-t border-gray-200">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div>

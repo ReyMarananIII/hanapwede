@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import LoggedInHeader from "./LoggedInHeader"
 import Header from "./Header"
 import { useNavigate } from "react-router-dom"
+import {User } from "lucide-react"
 
 export default function EditProfile() {
   const [activeTab, setActiveTab] = useState("about")
@@ -189,9 +190,9 @@ const handleSubmit = async (e) => {
       <div className="container mx-auto px-4 -mt-20">
         <div className="flex justify-between items-start mb-8">
           <div className="flex items-end gap-4">
-            <div className="w-32 h-32 bg-white rounded-full border-4 border-white">
-              <img src="/placeholder.svg" alt="Profile" className="w-full h-full rounded-full" />
-            </div>
+            <div className="flex items-center justify-center text-gray-400 mb-4">
+                      <User className="w-12 h-12" />
+                    </div>
             <h1 className="text-2xl font-semibold text-white mb-4">Edit Profile</h1>
           </div>
         </div>

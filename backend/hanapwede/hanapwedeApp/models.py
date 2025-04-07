@@ -121,9 +121,15 @@ class Application(models.Model):
     JobPost, 
     on_delete=models.CASCADE, 
     related_name="applications",
-    null=True,  
+    null=True,)
+    job_fair = models.ForeignKey(
+        'JobFair',
+        on_delete=models.CASCADE,
+        related_name="applications",
+        null=True,
+        blank=True
+    )
     
-)
     
     
 

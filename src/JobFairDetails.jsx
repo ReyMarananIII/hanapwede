@@ -67,7 +67,7 @@ export default function JobFairDetails({ jobFair, onClose }) {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://localhost:8000/api/job-applications/", {
+      const response = await fetch(`http://localhost:8000/api/jobfairs/${jobFair.id}/applications/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -75,8 +75,7 @@ export default function JobFairDetails({ jobFair, onClose }) {
         },
         body: JSON.stringify({
           job: jobId,
-          job_fair: jobFair.id,
-          cover_letter: "Applied through Job Fair", // Optional cover letter
+         
         }),
       })
 

@@ -447,7 +447,7 @@ def employer_dashboard(request):
         "created_at"
     ))
 
-    applications = Application.objects.filter(job_post__in=jobs)
+    applications = Application.objects.filter(job_post__in=jobs, job_fair__isnull=True)
 
     applicants_data = list(applications.values(
         "applicant__employeeprofile__contact_no",
@@ -565,11 +565,27 @@ def mark_all_notifications_read(request):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_chat(request):
-    employer_id = request.data.get("employer_id")
-    employee = request.user
-    employer = User.objects.get(id=employer_id)
+   
+    other_user_id = request.data.get("other_user_id")
+    print("Other id", other_user_id)
+    user = request.user  
+    print("Current user:", user)
 
    
+    if user.user_type == 'Employer':
+        employer = user
+        employee = User.objects.get(id=other_user_id)
+        print("Employer:" ,employer)
+        print("Employee:", employee)
+    elif user.user_type == 'Employee':
+        employer = User.objects.get(id=other_user_id)
+        employee = user
+        print("Employer:" ,employer)
+        print("Employee:", employee)
+    else:
+        return Response({"detail": "Invalid user type."}, status=status.HTTP_400_BAD_REQUEST)
+
+    # Create or get the chat room between the employer and employee
     chat_room, created = ChatRooms.objects.get_or_create(employee=employee, employer=employer)
 
     return Response({"room_id": chat_room.id})
@@ -742,8 +758,9 @@ def delete_account(request):
 @permission_classes([IsAuthenticated])
 def approve_application(request, application_id):
     try:
-        application = Application.objects.get(applicaton_id=application_id)
+        application = Application.objects.get(application_id=application_id)
         application.application_status = "Approved"
+        application.application_action = "Approved"
         application.save()
 
        
@@ -941,28 +958,44 @@ class JobFairJobListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, job_fair_id):
-        job_fair = JobFair.objects.get(id=job_fair_id)
+        job_fair = JobFair.objects.filter(id=job_fair_id).annotate(
+            registrations_count=Count('jobfairregistration')
+        ).first()
 
-       
+        if not job_fair:
+            return Response({"detail": "Job fair not found."}, status=404)
+
+        # Check if the user has registered for the job fair
         if not JobFairRegistration.objects.filter(job_fair=job_fair, user=request.user).exists():
             return Response({"detail": "You must register for this job fair first."}, status=400)
 
-       
+        # Get the jobs for the job fair
         jobs = job_fair.jobs.all()
 
-   
-        job_data = [{"job_title": job.job_title, "job_desc": job.job_desc, "location":job.location,"company_name":job.get_company_name(),"post_id":job.post_id} for job in jobs]
+        # Prepare the job data
+        job_data = [
+            {
+                "job_title": job.job_title,
+                "job_desc": job.job_desc,
+                "location": job.location,
+                "company_name": job.get_company_name(),
+                "post_id": job.post_id
+            }
+            for job in jobs
+        ]
 
-        return Response({"job_fair": job_fair.title, "jobs": job_data})
+        # Include the registration count in the response
+        return Response({
+            "job_fair": job_fair.title,
+            "registrations_count": job_fair.registrations_count,  # Include the registration count
+            "jobs": job_data
+        })
     
 class EmployerJobFairJobListView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, job_fair_id):
         job_fair = JobFair.objects.get(id=job_fair_id)
-
-       
-        
        
         jobs = job_fair.jobs.all()
 
@@ -1007,19 +1040,71 @@ class JobListDataView(APIView):
 
 class JobFairApplicationsView(APIView):
     permission_classes = [IsAuthenticated]
-
+   
     def get(self, request, jobfair_id):
-        # Get job fair object
         job_fair = JobFair.objects.filter(id=jobfair_id).first()
-
         if not job_fair:
             return Response({"detail": "Job fair not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        # Get all job applications associated with this job fair
-        job_applications = JobApplication.objects.filter(job_fair=job_fair)
-
-        # Serialize the job applications
+        job_applications = Application.objects.filter(job_fair=job_fair)
         serializer = JobApplicationSerializer(job_applications, many=True)
-
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request, jobfair_id):
+        job_fair = JobFair.objects.filter(id=jobfair_id).first()
+        if not job_fair:
+            return Response({"detail": "Job fair not found."}, status=status.HTTP_404_NOT_FOUND)
+        job_id = request.data.get("job")  # Correct way to access job from request body
+        if not job_id:
+            return Response({"detail": "Job ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        job_post = JobPost.objects.filter(post_id=job_id).first()
+        if not job_post:
+            return Response({"detail": "Job not found."}, status=status.HTTP_404_NOT_FOUND)
+        id= request.user.id
+        print(id)
+        emp_profile = EmployeeProfile.objects.get(user_id=id)
+        print(emp_profile)
+        print(emp_profile.full_name)
+        data = request.data.copy()
+        data["job_fair"] = job_fair.id
+        data["applicant"] = request.user.id 
+        data["job_post"] = job_post.post_id
+        data["applicant_name"] = emp_profile.full_name
+        data["applicant_role"] = "N/A"
+        data["application_action"]="For Approval"
+
+        serializer = JobApplicationSerializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def put(self, request, jobfair_id):
+        application_id = request.data.get("application_id")
+        if not application_id:
+            return Response({"detail": "Application ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        application = Application.objects.filter(application_id=application_id, job_fair_id=jobfair_id).first()
+        if not application:
+            return Response({"detail": "Application not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        serializer = JobApplicationSerializer(application, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, jobfair_id):
+        application_id = request.data.get("application_id")
+        if not application_id:
+            return Response({"detail": "Application ID is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        application = Application.objects.filter(application_id=application_id, job_fair_id=jobfair_id).first()
+        if not application:
+            return Response({"detail": "Application not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        application.delete()
+        return Response({"detail": "Application deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+
     
