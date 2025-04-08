@@ -5,7 +5,7 @@ from django.urls import re_path
 from channels.auth import AuthMiddlewareStack
 
 import django
-from hanapwedeApp.routing import websocket_urlpatterns
+
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hanapwede.settings")
 django.setup()
 from hanapwedeApp.ChatConsumer import ChatConsumer

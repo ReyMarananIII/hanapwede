@@ -1,6 +1,10 @@
 import json
+import os
 from channels.generic.websocket import AsyncWebsocketConsumer
 from asgiref.sync import sync_to_async
+import django
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hanapwede.settings")
+django.setup()
 from hanapwedeApp.models import ChatRooms, Messages, User
 
 class ChatConsumer(AsyncWebsocketConsumer):
