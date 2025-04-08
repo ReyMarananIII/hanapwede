@@ -25,8 +25,11 @@ export default function AdminDashboard() {
   const [selectedUser, setSelectedUser] = useState(null)
   const [showUserDetails, setShowUserDetails] = useState(false)
   const [processingId, setProcessingId] = useState(null)
+  const [pwdCardImage, setPwdCardImage] = useState(null)
+  const [imageLoading, setImageLoading] = useState(false)
+  const [imageError, setImageError] = useState(null)
 
-
+  // Fetch pending users
   useEffect(() => {
     const fetchPendingUsers = async () => {
       setIsLoading(true)
@@ -34,7 +37,7 @@ export default function AdminDashboard() {
 
       try {
         const token = localStorage.getItem("authToken")
-        const response = await fetch("http://localhost:8000/api/admin/pending-users/", {
+        const response = await fetch("http://127.0.0.1:8000/api/admin/pending-users/", {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -66,12 +69,13 @@ export default function AdminDashboard() {
     return matchesSearch
   })
 
+  // Handle user approval
   const handleApproveUser = async (userId) => {
     setProcessingId(userId)
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://localhost:8000/api/admin/approve-user/${userId}/`, {
+      const response = await fetch(`http://127.0.0.1:8000/api/admin/approve-user/${userId}/`, {
         method: "POST",
         headers: {
           Authorization: `Token ${token}`,
@@ -104,7 +108,7 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://localhost:8000/api/admin/reject-user/${userId}/`, {
+      const response = await fetch(`http://127.0.0.1:8000/api/admin/reject-user/${userId}/`, {
         method: "POST",
         headers: {
           Authorization: `Token ${token}`,
@@ -131,10 +135,39 @@ export default function AdminDashboard() {
     }
   }
 
+  // Fetch PWD card image
+  const fetchPwdCardImage = async (userId) => {
+    setImageLoading(true)
+    setImageError(null)
+    setPwdCardImage(null)
+
+    try {
+      const token = localStorage.getItem("authToken")
+      const response = await fetch(`http://127.0.0.1:8000/api/retrieve-card/${userId}/`, {
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch PWD card image")
+      }
+
+      const data = await response.json()
+      setPwdCardImage(data.image)
+    } catch (error) {
+      console.error("Error fetching PWD card image:", error)
+      setImageError("Failed to load PWD card image. The user may not have uploaded one.")
+    } finally {
+      setImageLoading(false)
+    }
+  }
+
   // View user details
   const handleViewDetails = (user) => {
     setSelectedUser(user)
     setShowUserDetails(true)
+    fetchPwdCardImage(user.user)
   }
 
   // Format date
@@ -394,6 +427,44 @@ export default function AdminDashboard() {
                   </div>
                 </div>
               </div>
+
+              <div className="bg-gray-50 rounded-lg p-4 mt-4">
+                <h5 className="text-sm font-medium text-gray-700 mb-3">PWD Card Verification</h5>
+
+                {imageLoading ? (
+                  <div className="flex justify-center items-center h-48">
+                    <Loader className="h-8 w-8 text-indigo-500 animate-spin" />
+                    <span className="ml-2 text-gray-600">Loading PWD card image...</span>
+                  </div>
+                ) : imageError ? (
+                  <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-md">
+                    <div className="flex">
+                      <div className="flex-shrink-0">
+                        <AlertCircle className="h-5 w-5 text-yellow-400" />
+                      </div>
+                      <div className="ml-3">
+                        <p className="text-sm text-yellow-700">{imageError}</p>
+                      </div>
+                    </div>
+                  </div>
+                ) : pwdCardImage ? (
+                  <div className="flex flex-col items-center">
+                    <img
+                      src={`http://localhost:8000${pwdCardImage}` || "/placeholder.svg"}
+                      alt="PWD Card"
+                      className="max-w-full h-auto max-h-96 rounded-lg border border-gray-200 shadow-sm"
+                    />
+                    <p className="text-xs text-gray-500 mt-2">PWD Card Image</p>
+                  </div>
+                ) : (
+                  <div className="bg-gray-100 rounded-lg p-8 flex flex-col items-center justify-center">
+                    <div className="rounded-full bg-gray-200 p-3 mb-2">
+                      <AlertCircle className="h-6 w-6 text-gray-400" />
+                    </div>
+                    <p className="text-gray-500 text-center">No PWD card image available</p>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex justify-end space-x-3">
@@ -437,4 +508,3 @@ export default function AdminDashboard() {
     </div>
   )
 }
-

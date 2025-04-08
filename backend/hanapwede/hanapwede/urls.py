@@ -28,7 +28,7 @@ from hanapwedeApp.views import get_employer_details
 from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_preferences,get_all_jobs,get_all_users,delete_user,approve_application,decline_application,platform_statistics,admin_login
 from hanapwedeApp.views import get_user_details_redirect, delete_account, ocr_view,job_post_disability_tags, edit_job_post,job_post_tags,delete_job
 from hanapwedeApp.views import my_applications, all_reports,cancel_application,delete_application,JobFairJobListView,JobFairViewSet,JobFairRegistrationViewSet,EmployerJobListView,JobListDataView, EmployerJobFairJobListView
-from hanapwedeApp.views import JobFairApplicationsView,UploadPWDCardView
+from hanapwedeApp.views import JobFairApplicationsView,UploadPWDCardView,GetPWDCardImage
 
 from django.conf.urls.static import static
 from django.conf import settings
@@ -94,5 +94,6 @@ urlpatterns = [
     path('api/employer-jobs/', EmployerJobListView.as_view(), name='employer-job-list'),
     path('api/jobfairs/<int:jobfair_id>/applications/', JobFairApplicationsView.as_view(), name='jobfair-applications'),
     path('api/upload-pwd-card/', UploadPWDCardView.as_view(), name='upload-pwd-card'),
-    path('api/jobfairs/<int:jobfair_id>/jobs/', JobListDataView.as_view(), name='jobfair-jobs-list')
+    path('api/jobfairs/<int:jobfair_id>/jobs/', JobListDataView.as_view(), name='jobfair-jobs-list'),
+    path('api/retrieve-card/<int:user_id>/',GetPWDCardImage, name='get-pwd-card-image')
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

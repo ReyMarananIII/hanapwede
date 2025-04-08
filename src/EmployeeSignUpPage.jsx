@@ -27,12 +27,53 @@ export default function SignUpPage() {
     confirmPassword: "",
     user_disability: "",
     ID_number: "",
+    image: null,
   })
+
+  const handleFileChange = (file) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      image: file, 
+    }));
+
+    
+  };
+
+  useEffect(() => { 
+    console.log("Form Data:", formData)
+    console.log("File sa parent:", formData.image)
+  }, [formData.image])
+
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [agreeToPolicy, setAgreeToPolicy] = useState(false)
 
+
+
+  const uploadPWDCard = async (file, userId) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    formData.append("user", userId);
+  
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/upload-pwd-card/", {
+        method: "POST",
+        body: formData,
+      });
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error("Upload failed:", errorData);
+        return;
+      }
+  
+      const result = await response.json();
+      console.log(" PWD Card Uploaded:", result);
+    } catch (error) {
+      console.error(" Upload error:", error);
+    }
+  };
 
 
   const handleChange = (e) => {
@@ -64,7 +105,7 @@ export default function SignUpPage() {
     }
 
     try {
-     
+      
       const response = await fetch("http://127.0.0.1:8000/api/signup/", {
         method: "POST",
         headers: {
@@ -80,11 +121,25 @@ export default function SignUpPage() {
           ID_number: formData.ID_number,
         }),
       })
+ 
 
       const data = await response.json()
-
       if (response.ok) {
         setSuccess("Registration Successful. Account pending approval.")
+        const userId = data.id
+        const file =formData.image
+        console.log("User ID:", userId);
+
+        console.log("File to upload!!!!!!!!!:",formData.image)
+        
+        console.log(file)
+        if (file) {
+          await uploadPWDCard(file, userId)
+        }
+        else{
+          console.error("No file to upload")
+        }
+        
         setFormData({
           first_name: "",
           last_name: "",
@@ -286,7 +341,7 @@ export default function SignUpPage() {
                   <IdCard className="h-5 w-5 text-green-500 mr-2" />
                   <span className="text-sm font-medium text-gray-700">Upload your PWD ID Card</span>
                 </div>
-                <PwdCardOCR formData={formData} setFormData={setFormData} />
+                <PwdCardOCR formData={formData} setFormData={setFormData}  onFileChange={handleFileChange} />
 
                 <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
                   <div>
@@ -299,7 +354,7 @@ export default function SignUpPage() {
                       name="ID_number"
                       value={formData.ID_number}
                       onChange={handleChange}
-                      readOnly
+                     
                       className="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md shadow-sm py-1.5 px-3 text-sm text-gray-700"
                     />
                   </div>
@@ -313,7 +368,7 @@ export default function SignUpPage() {
                       name="user_disability"
                       value={formData.user_disability}
                       onChange={handleChange}
-                      readOnly
+             
                       className="mt-1 block w-full bg-gray-100 border border-gray-300 rounded-md shadow-sm py-1.5 px-3 text-sm text-gray-700"
                     />
                   </div>

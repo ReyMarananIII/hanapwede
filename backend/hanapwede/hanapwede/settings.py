@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-3tx(s48#1os6585e!=1c#x8^%vvt#x4@yt%n#u+f*nnng7+-w%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['194.163.40.84']
+ALLOWED_HOSTS = ['194.163.40.84', 'localhost','127.0.0.1']
 
 
 
@@ -62,12 +62,12 @@ MIDDLEWARE = [
 ]
  #papaltan pa  to ( FOR DEV LANG )
 
-CSRF_TRUSTED_ORIGINS = ['https://*.127.0.0.1',"https://161.248.25.136","http://194.163.40.84"]
+CSRF_TRUSTED_ORIGINS = ['https://*.localhost',"https://161.248.25.136","http://194.163.40.84"]
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:5173","http://161.248.25.136","http://194.163.40.84" 
 ]
 
-CORS_ALLOWED_ORIGINS= ['https://*.127.0.0.1',"https://161.248.25.136","http://194.163.40.84"]
+CORS_ALLOWED_ORIGINS= ['https://*.localhost',"https://161.248.25.136","http://194.163.40.84", "http://localhost:5173"]
 ROOT_URLCONF = 'hanapwede.urls'
 
 TEMPLATES = [
@@ -85,7 +85,8 @@ TEMPLATES = [
         },
     },
 ]
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 ASGI_APPLICATION = "hanapwede.asgi.application"
 
 CHANNEL_LAYERS = {

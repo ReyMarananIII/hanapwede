@@ -78,7 +78,7 @@ def signup(request):
                                                user_disability=user_disability,
                 ID_no=ID_number)
 
-            return JsonResponse({"message": "User created successfully."}, status=201)
+            return JsonResponse({"message": "User created successfully.", "id":user.id}, status=201)
 
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON data."}, status=400)
@@ -676,9 +676,10 @@ def approve_user(request, id):
 @permission_classes([IsAuthenticated])
 def reject_user(request, id):
     try:
-        user = EmployeeProfile.objects.get(user_id=id)
-        user.status = "False"  
-        user.save()
+        user_profile = EmployeeProfile.objects.get(user_id=id)
+        user = User.objects.get(id=id)
+        user_profile.delete()
+        user.delete()
         return Response({"message": "User rejected successfully"}, status=status.HTTP_200_OK)
     except User.DoesNotExist:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
@@ -1118,3 +1119,12 @@ class UploadPWDCardView(APIView):
             return Response({"message": "PWD Card uploaded successfully", "data": serializer.data})
         return Response(serializer.errors, status=400)
 
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def GetPWDCardImage(request,user_id):
+    try:
+        pwd_card = PWDCard.objects.get(user=user_id)
+        serializer = PWDCardSerializer(pwd_card)
+        return Response(serializer.data, status=200)
+    except PWDCard.DoesNotExist:
+        return Response({"error": "PWD Card not found"}, status=404)

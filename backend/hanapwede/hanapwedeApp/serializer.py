@@ -177,3 +177,4 @@ class PWDCardSerializer(serializers.ModelSerializer):
     class Meta:
         model = PWDCard
         fields = ['id', 'user', 'image', 'uploaded_at']
+    

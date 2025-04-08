@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 
 
-export default function PwdCardOCR({ formData, setFormData }) {
+export default function PwdCardOCR({ formData, setFormData, onFileChange }) {
   const [image, setImage] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -23,6 +23,7 @@ export default function PwdCardOCR({ formData, setFormData }) {
     if (file) {
       const imgURL = URL.createObjectURL(file);
       checkImageBlur(imgURL, file);
+      onFileChange(file);
     }
   };
 
@@ -60,8 +61,11 @@ export default function PwdCardOCR({ formData, setFormData }) {
       canvas.toBlob((blob) => {
         if (blob) {
           setError("");
-          setImage(canvas.toDataURL()); // Display processed image
-          processOCR(blob); // Use the enhanced image for OCR
+          setImage(canvas.toDataURL()); 
+          processOCR(blob); 
+      
+
+        
         }
       }, "image/png");
     };
@@ -93,53 +97,33 @@ export default function PwdCardOCR({ formData, setFormData }) {
     return sumSq / grayData.length - mean * mean;
   };
 
-  const uploadToServer = async (file) => {
-    const formData = new FormData();
-    formData.append("image", file);
-  
-    // If you track user ID, you can pass it like this:
-    // formData.append("user", userId);
-  
-    try {
-      const response = await fetch("http://127.0.0.1:8000/api/upload-pwd-card/", {
-        method: "POST",
-        body: formData,
-      });
-  
-      const result = await response.json();
-      console.log("✅ Uploaded to server:", result);
-    } catch (error) {
-      console.error("Upload error:", error);
-    }
-  };
+ 
   
   const processOCR = async (file) => {
-  setLoading(true);
-
-  const formData = new FormData();
-  formData.append("image", file);
-
-  try {
-    const response = await fetch("http://127.0.0.1:8000/api/ocr/", {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = await response.json();
-    console.log("🔍 Extracted Text:", data.text);
-
-    extractFields(data.text);
-
-
-    uploadToServer(file);
-
-  } catch (error) {
-    console.error("OCR Error:", error);
-    setError("Failed to process image.");
-  } finally {
-    setLoading(false);
-  }
-};
+    setLoading(true);
+  
+    const ocrFormData = new FormData(); // Temporary FormData for OCR
+    ocrFormData.append("image", file);
+    console.log("Image File in OCR:", file);
+    console.log("Form Data:", ocrFormData.get("image"));
+  
+    try {
+      const response = await fetch("http://127.0.0.1:8000/api/ocr/", {
+        method: "POST",
+        body: ocrFormData,
+      });
+  
+      const data = await response.json();
+      console.log("🔍 Extracted Text:", data.text);
+  
+      extractFields(data.text);
+    } catch (error) {
+      console.error("OCR Error:", error);
+      setError("Failed to process image.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // kunin mga details
   const extractFields = (text) => {
@@ -209,19 +193,14 @@ if (idMatch) {
 
     
   
-    setFormData({
-      ...formData,
-      user_disability: extractedData.disability,
-      ID_number: extractedData.idNumber,
-    });
+setFormData(prevFormData => ({
+  ...prevFormData,
+  user_disability: extractedData.disability,
+  ID_number: extractedData.idNumber,
+}));
   
     console.log("Extracted Data:", extractedData);
   };
-  
-  
-  
-  
-  
   
   
   
@@ -245,19 +224,7 @@ if (idMatch) {
       {image && <img src={image} alt="Uploaded PWD Card" className="mt-4 max-w-xs" />}
       {loading && <p className="mt-4 text-blue-500">Processing image, please wait...</p>}
 
-      <div className="mt-4 w-full max-w-md p-4 border rounded bg-gray-100">
-        <h3 className="text-lg font-semibold">Extracted Details</h3>
-        <form className="mt-2 flex flex-col gap-2">
-          <label className="text-sm">Name</label>
-          <input type="text" className="border p-2 rounded" value={formData.name} readOnly />
-
-          <label className="text-sm">Type of Disability</label>
-          <input type="text" className="border p-2 rounded" value={formData.user_disability} readOnly />
-
-          <label className="text-sm">ID Number</label>
-          <input type="text" className="border p-2 rounded" value={formData.ID_number} readOnly />
-        </form>
-      </div>
+   
     </div>
   );
 }
