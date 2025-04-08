@@ -3,11 +3,12 @@ from django.core.asgi import get_asgi_application
 from channels.routing import ProtocolTypeRouter, URLRouter
 from django.urls import re_path
 from channels.auth import AuthMiddlewareStack
-from hanapwedeApp.ChatConsumer import ChatConsumer
+
 import django
 from hanapwedeApp.routing import websocket_urlpatterns
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "hanapwede.settings")
 django.setup()
+from hanapwedeApp.ChatConsumer import ChatConsumer
 application = ProtocolTypeRouter(
     {
         "http": get_asgi_application(),
