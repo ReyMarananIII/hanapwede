@@ -286,3 +286,13 @@ class JobFairJobPost(models.Model):
 
     def __str__(self):
         return f"{self.jobfair.title} - {self.jobpost.job_title}"
+
+
+#START NG PWD CARD MODELS
+
+User = get_user_model()
+
+class PWDCard(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='pwd_cards/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)

@@ -93,30 +93,53 @@ export default function PwdCardOCR({ formData, setFormData }) {
     return sumSq / grayData.length - mean * mean;
   };
 
-  
-  const processOCR = async (file) => {
-    setLoading(true);
-  
+  const uploadToServer = async (file) => {
     const formData = new FormData();
     formData.append("image", file);
   
+    // If you track user ID, you can pass it like this:
+    // formData.append("user", userId);
+  
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/ocr/", {
+      const response = await fetch("http://127.0.0.1:8000/api/upload-pwd-card/", {
         method: "POST",
         body: formData,
       });
   
-      const data = await response.json();
-      console.log("🔍 Extracted Text:", data.text);
-  
-      extractFields(data.text);
+      const result = await response.json();
+      console.log("✅ Uploaded to server:", result);
     } catch (error) {
-      console.error("OCR Error:", error);
-      setError("Failed to process image.");
-    } finally {
-      setLoading(false);
+      console.error("Upload error:", error);
     }
   };
+  
+  const processOCR = async (file) => {
+  setLoading(true);
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  try {
+    const response = await fetch("http://127.0.0.1:8000/api/ocr/", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = await response.json();
+    console.log("🔍 Extracted Text:", data.text);
+
+    extractFields(data.text);
+
+
+    uploadToServer(file);
+
+  } catch (error) {
+    console.error("OCR Error:", error);
+    setError("Failed to process image.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   // kunin mga details
   const extractFields = (text) => {

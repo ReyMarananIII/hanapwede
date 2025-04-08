@@ -16,7 +16,7 @@ from rest_framework.decorators import api_view, permission_classes,parser_classe
 from rest_framework.permissions import IsAuthenticated
 from .models import EmployerProfile, Post, Comment, Report, BannedWord
 from .serializer import EmployerProfileSerializer
-from .serializer import JobPostSerializer, ReportSerializerv2
+from .serializer import JobPostSerializer, ReportSerializerv2,PWDCardSerializer
 from .models import Tag, User, JobPost, DisabilityTag,Application
 from .serializer import TagSerializer, DisabilityTagSerializer,JobApplicationSerializer
 import pandas as pd
@@ -28,7 +28,7 @@ from rest_framework import viewsets
 from hanapwedeApp.models import ChatRooms , Messages, Application, JobFairRegistration
 from rest_framework import viewsets
 from rest_framework.permissions import IsAuthenticated
-from .models import JobFair
+from .models import JobFair,PWDCard
 from .serializer import JobFairSerializer
 
 from .serializer import PostSerializer, CommentSerializer, ReportSerializer, BannedWordSerializer
@@ -1108,3 +1108,13 @@ class JobFairApplicationsView(APIView):
         return Response({"detail": "Application deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
 
     
+class UploadPWDCardView(APIView):
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        serializer = PWDCardSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "PWD Card uploaded successfully", "data": serializer.data})
+        return Response(serializer.errors, status=400)
+

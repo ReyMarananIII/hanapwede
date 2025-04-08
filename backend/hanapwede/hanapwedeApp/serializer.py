@@ -2,7 +2,7 @@ from rest_framework import serializers
 from .models import EmployerProfile, JobPost,Tag ,User as CustomUser, DisabilityTag,Application
 from .models import Post,Comment, Report,BannedWord, EmployeeProfile,Notification
 from rest_framework import serializers
-from .models import JobFair, JobPost, JobFairRegistration
+from .models import JobFair, JobPost, JobFairRegistration,PWDCard
 
 class EmployerProfileSerializer(serializers.ModelSerializer):
     class Meta:
@@ -171,3 +171,9 @@ class JobFairRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = JobFairRegistration
         fields = ['job_fair']
+
+
+class PWDCardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PWDCard
+        fields = ['id', 'user', 'image', 'uploaded_at']
