@@ -25,7 +25,7 @@ export default function JobSeekerJobFairs() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://194.163.40.84/api/jobfairs/", {
+      const response = await fetch("http://localhost:8000/api/jobfairs/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -48,7 +48,7 @@ export default function JobSeekerJobFairs() {
   const fetchRegistrations = async () => {
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://194.163.40.84/api/jobfair-registrations/", {
+      const response = await fetch("http://localhost:8000/api/jobfair-registrations/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -71,7 +71,7 @@ export default function JobSeekerJobFairs() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://194.163.40.84/api/jobfair-registrations/", {
+      const response = await fetch("http://localhost:8000/api/jobfair-registrations/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

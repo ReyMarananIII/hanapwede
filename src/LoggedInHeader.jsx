@@ -13,7 +13,7 @@ export default function LoggedInHeader() {
     const fetchNotifications = async () => {
       try {
         const token = localStorage.getItem("authToken");
-        const response = await fetch("http://194.163.40.84/api/get-notifications/", {
+        const response = await fetch("http://localhost:8000/api/get-notifications/", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -39,7 +39,7 @@ export default function LoggedInHeader() {
   const markAsRead = async (id) => {
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch(`http://194.163.40.84/api/mark-notification-read/${id}/`, {
+      const response = await fetch(`http://localhost:8000/api/mark-notification-read/${id}/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -65,7 +65,7 @@ export default function LoggedInHeader() {
   const markAllAsRead = async () => {
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch("http://194.163.40.84/api/mark-all-notifications-read/", {
+      const response = await fetch("http://localhost:8000/api/mark-all-notifications-read/", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -93,7 +93,7 @@ export default function LoggedInHeader() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("http://194.163.40.84/api/logout/", {
+      const response = await fetch("http://localhost:8000/api/logout/", {
         method: "POST",
        
         headers: {
@@ -118,7 +118,7 @@ export default function LoggedInHeader() {
   return (
     <header className="flex h-16 items-center justify-between px-4 lg:px-16 bg-white relative">
       <Link to="/" className="flex items-center">
-        <img src="/hanapwedelogo.png" alt="Logo" className="h-8 w-auto" />
+        <img src="/hanapwedelogo.png" alt="Logo" className="h-6 w-auto" />
       </Link>
       <div className="flex items-center gap-4">
       <div className="relative">
@@ -219,7 +219,7 @@ export default function LoggedInHeader() {
     <img 
       src="/favicon1.png" 
       alt="Profile" 
-      className="w-10 h-10 rounded-full object-cover"
+      className="w-10 h-8 rounded-full object-contain"
     />
   </button>
 

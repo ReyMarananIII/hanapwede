@@ -41,7 +41,7 @@ export default function EmployeeProfile() {
     setIsLoading(true)
     setError(null)
 
-    fetch(`http://194.163.40.84/api/get-user-details/${userId}/`, {
+    fetch(`http://localhost:8000/api/get-user-details/${userId}/`, {
       headers: token ? { Authorization: `Token ${token}` } : {},
     })
       .then((res) => {
@@ -73,7 +73,7 @@ export default function EmployeeProfile() {
     setIsDeleting(true)
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://194.163.40.84/api/delete-account/", {
+      const response = await fetch("http://localhost:8000/api/delete-account/", {
         method: "DELETE",
         headers: {
           Authorization: `Token ${token}`,

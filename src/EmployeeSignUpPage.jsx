@@ -39,10 +39,7 @@ export default function SignUpPage() {
     
   };
 
-  useEffect(() => { 
-    console.log("Form Data:", formData)
-    console.log("File sa parent:", formData.image)
-  }, [formData.image])
+
 
   const [error, setError] = useState(null)
   const [success, setSuccess] = useState(null)
@@ -57,7 +54,7 @@ export default function SignUpPage() {
     formData.append("user", userId);
   
     try {
-      const response = await fetch("http://194.163.40.84/api/upload-pwd-card/", {
+      const response = await fetch("http://localhost:8000/api/upload-pwd-card/", {
         method: "POST",
         body: formData,
       });
@@ -69,7 +66,7 @@ export default function SignUpPage() {
       }
   
       const result = await response.json();
-      console.log(" PWD Card Uploaded:", result);
+ 
     } catch (error) {
       console.error(" Upload error:", error);
     }
@@ -106,7 +103,7 @@ export default function SignUpPage() {
 
     try {
       
-      const response = await fetch("http://194.163.40.84/api/signup/", {
+      const response = await fetch("http://localhost:8000/api/signup/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -128,11 +125,9 @@ export default function SignUpPage() {
         setSuccess("Registration Successful. Account pending approval.")
         const userId = data.id
         const file =formData.image
-        console.log("User ID:", userId);
 
-        console.log("File to upload!!!!!!!!!:",formData.image)
         
-        console.log(file)
+
         if (file) {
           await uploadPWDCard(file, userId)
         }

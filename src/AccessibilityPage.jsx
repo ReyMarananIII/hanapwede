@@ -32,7 +32,7 @@ export default function AccessibilityPage() {
       <div className="bg-gradient-to-r from-[#4CAF50] to-[#00BCD4] py-16 px-4">
         <div className="max-w-4xl mx-auto text-center">
           <div className="inline-flex items-center justify-center p-3 bg-white bg-opacity-20 rounded-full mb-6">
-            <Accessibility className="h-8 w-8 text-white" />
+          <Accessibility className="h-8 w-8 text-[#7cd1ed]" />
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">Accessibility at hanaPWeDe</h1>
           <p className="text-xl text-white text-opacity-90 max-w-3xl mx-auto">

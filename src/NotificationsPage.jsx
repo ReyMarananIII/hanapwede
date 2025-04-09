@@ -38,7 +38,7 @@ export default function NotificationsPage() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://194.163.40.84/api/get-notifications/", {
+      const response = await fetch("http://localhost:8000/api/get-notifications/", {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -64,7 +64,7 @@ export default function NotificationsPage() {
   const markAsRead = async (id) => {
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://194.163.40.84/api/mark-notification-read/${id}/`, {
+      const response = await fetch(`http://localhost:8000/api/mark-notification-read/${id}/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +92,7 @@ export default function NotificationsPage() {
     setIsMarkingAll(true)
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://194.163.40.84/api/mark-all-notifications-read/", {
+      const response = await fetch("http://localhost:8000/api/mark-all-notifications-read/", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -121,7 +121,7 @@ export default function NotificationsPage() {
   const deleteNotification = async (id) => {
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://194.163.40.84/api/delete-notification/${id}/`, {
+      const response = await fetch(`http://localhost:8000/api/delete-notification/${id}/`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -144,7 +144,7 @@ export default function NotificationsPage() {
     setIsDeleting(true)
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://194.163.40.84/api/delete-all-notifications/", {
+      const response = await fetch("http://localhost:8000/api/delete-all-notifications/", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

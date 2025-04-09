@@ -37,11 +37,11 @@ export default function PostJobForm() {
       try {
         const headers = token ? { Authorization: `Token ${token}` } : {}
 
-        const disabilityRes = await fetch("http://194.163.40.84/api/disability-tags/", { headers })
+        const disabilityRes = await fetch("http://localhost:8000/api/disability-tags/", { headers })
         const disabilityData = await disabilityRes.json()
         setDisabilityTags(disabilityData)
 
-        const jobTagsRes = await fetch("http://194.163.40.84/api/tags", { headers })
+        const jobTagsRes = await fetch("http://localhost:8000/api/tags", { headers })
         const jobTagsData = await jobTagsRes.json()
         setJobTags(jobTagsData)
       } catch (error) {
@@ -98,7 +98,7 @@ export default function PostJobForm() {
     }
 
     try {
-      const response = await fetch("http://194.163.40.84/api/post-job/", {
+      const response = await fetch("http://localhost:8000/api/post-job/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -175,7 +175,7 @@ export default function PostJobForm() {
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-8 mb-8">
-          <button onClick={() => navigate(-1)} className="flex items-center text-blue-600 hover:text-blue-800 mb-6">
+          <button onClick={() => navigate("/employer/dashboard")} className="flex items-center text-blue-600 hover:text-blue-800 mb-6">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </button>

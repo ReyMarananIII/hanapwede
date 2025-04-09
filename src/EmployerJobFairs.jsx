@@ -27,7 +27,7 @@ export default function EmployerJobFairs() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://194.163.40.84/api/jobfairs/", {
+      const response = await fetch("http://localhost:8000/api/jobfairs/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -38,10 +38,10 @@ export default function EmployerJobFairs() {
       }
 
       const data = await response.json()
-      console.log(data)
+  
   
       const employerJobFairs = data
-      console.log(employerJobFairs)
+    
       setJobFairs(employerJobFairs)
     } catch (error) {
       console.error("Error fetching job fairs:", error)
@@ -54,8 +54,8 @@ export default function EmployerJobFairs() {
   const handleCreateJobFair = async (jobFairData) => {
     try {
       const token = localStorage.getItem("authToken")
-      console.log(token)
-      const response = await fetch("http://194.163.40.84/api/jobfairs/", {
+   
+      const response = await fetch("http://localhost:8000/api/jobfairs/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -81,7 +81,7 @@ export default function EmployerJobFairs() {
   const handleUpdateJobFair = async (jobFairId, updatedData) => {
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://194.163.40.84/api/jobfairs/${jobFairId}/`, {
+      const response = await fetch(`http://localhost:8000/api/jobfairs/${jobFairId}/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -111,7 +111,7 @@ export default function EmployerJobFairs() {
     setIsDeleting(true)
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://194.163.40.84/api/jobfairs/${selectedJobFair.id}/`, {
+      const response = await fetch(`http://localhost:8000/api/jobfairs/${selectedJobFair.id}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Token ${token}`,
