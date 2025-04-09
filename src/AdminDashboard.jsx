@@ -37,7 +37,7 @@ export default function AdminDashboard() {
 
       try {
         const token = localStorage.getItem("authToken")
-        const response = await fetch("http://127.0.0.1:8000/api/admin/pending-users/", {
+        const response = await fetch("http://194.163.40.84/api/admin/pending-users/", {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -75,7 +75,7 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://127.0.0.1:8000/api/admin/approve-user/${userId}/`, {
+      const response = await fetch(`http://194.163.40.84/api/admin/approve-user/${userId}/`, {
         method: "POST",
         headers: {
           Authorization: `Token ${token}`,
@@ -108,7 +108,7 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://127.0.0.1:8000/api/admin/reject-user/${userId}/`, {
+      const response = await fetch(`http://194.163.40.84/api/admin/reject-user/${userId}/`, {
         method: "POST",
         headers: {
           Authorization: `Token ${token}`,
@@ -143,7 +143,7 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://127.0.0.1:8000/api/retrieve-card/${userId}/`, {
+      const response = await fetch(`http://194.163.40.84/api/retrieve-card/${userId}/`, {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -450,7 +450,7 @@ export default function AdminDashboard() {
                 ) : pwdCardImage ? (
                   <div className="flex flex-col items-center">
                     <img
-                      src={`http://localhost:8000${pwdCardImage}` || "/placeholder.svg"}
+                      src={`http://194.163.40.84${pwdCardImage}` || "/placeholder.svg"}
                       alt="PWD Card"
                       className="max-w-full h-auto max-h-96 rounded-lg border border-gray-200 shadow-sm"
                     />

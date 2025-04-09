@@ -19,7 +19,7 @@ export default function EditProfile() {
     // Fetch user profile data if available
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(`http://localhost:8000/api/get-user-details`, {
+        const response = await fetch(`http://194.163.40.84/api/get-user-details`, {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -158,7 +158,7 @@ const handleSubmit = async (e) => {
       formDataToSend.append("employee_resume", resume);  // ✅ Change the key here
     }
 
-    const response = await fetch("http://localhost:8000/api/edit-profile/", {
+    const response = await fetch("http://194.163.40.84/api/edit-profile/", {
       method: "PUT",
       headers: {
         Authorization: `Token ${localStorage.getItem("authToken")}`,

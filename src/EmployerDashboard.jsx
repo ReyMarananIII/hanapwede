@@ -48,7 +48,7 @@ export default function EmployerDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/employer-dashboard", {
+      const response = await fetch("http://194.163.40.84/api/employer-dashboard", {
         method: "GET",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -93,7 +93,7 @@ export default function EmployerDashboard() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/applications/${selectedApplicant.application_id}/approve/`,
+        `http://194.163.40.84/api/applications/${selectedApplicant.application_id}/approve/`,
         {
           method: "POST",
           headers: {
@@ -146,7 +146,7 @@ export default function EmployerDashboard() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/applications/${selectedApplicant.application_id}/decline/`,
+        `http://194.163.40.84/api/applications/${selectedApplicant.application_id}/decline/`,
         {
           method: "POST",
           headers: {
@@ -214,7 +214,7 @@ export default function EmployerDashboard() {
 
     try {
 
-      const response = await fetch(`http://localhost:8000/api/delete-job/${selectedJob.post_id}/`, {
+      const response = await fetch(`http://194.163.40.84/api/delete-job/${selectedJob.post_id}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -268,7 +268,7 @@ const handleDeleteApplication = async () => {
 
   try {
     const response = await fetch(
-      `http://localhost:8000/api/delete-application/${selectedApplicant.application_id}/`,
+      `http://194.163.40.84/api/delete-application/${selectedApplicant.application_id}/`,
       {
         method: "DELETE",
         headers: {

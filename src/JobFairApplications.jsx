@@ -58,7 +58,7 @@ export default function JobFairApplications() {
   const fetchJobFair = async () => {
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://localhost:8000/api/jobfairs/${jobFairId}/`, {
+      const response = await fetch(`http://194.163.40.84/api/jobfairs/${jobFairId}/`, {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -80,7 +80,7 @@ export default function JobFairApplications() {
   const fetchJobFairJobs = async () => {
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://localhost:8000/api/jobfairs/${jobFairId}/employer/jobs/`, {
+      const response = await fetch(`http://194.163.40.84/api/jobfairs/${jobFairId}/employer/jobs/`, {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -100,7 +100,7 @@ export default function JobFairApplications() {
 
   const handleChat = async (employeeId) => {
     try {
-      const response = await fetch("http://localhost:8000/api/create_chat/", {
+      const response = await fetch("http://194.163.40.84/api/create_chat/", {
         method: "POST",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -126,7 +126,7 @@ export default function JobFairApplications() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://localhost:8000/api/jobfairs/${jobFairId}/applications/`, {
+      const response = await fetch(`http://194.163.40.84/api/jobfairs/${jobFairId}/applications/`, {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -173,7 +173,7 @@ export default function JobFairApplications() {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/applications/${selectedApplicant.application_id}/approve/`,
+        `http://194.163.40.84/api/applications/${selectedApplicant.application_id}/approve/`,
         {
           method: "POST",
           headers: {
@@ -225,7 +225,7 @@ export default function JobFairApplications() {
 
     try {
       const response = await fetch(
-        `http://localhost:8000/api/applications/${selectedApplicant.application_id}/decline/`,
+        `http://194.163.40.84/api/applications/${selectedApplicant.application_id}/decline/`,
         {
           method: "POST",
           headers: {

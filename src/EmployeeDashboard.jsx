@@ -42,7 +42,7 @@ export default function EmployeeDashboard() {
 
   const handleChat = async (employerId) => {
     try {
-      const response = await fetch("http://localhost:8000/api/create_chat/", {
+      const response = await fetch("http://194.163.40.84/api/create_chat/", {
         method: "POST",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -70,7 +70,7 @@ export default function EmployeeDashboard() {
       return
     }
 
-    fetch(`http://localhost:8000/api/recommend_jobs/?user_id=${userId}`, {
+    fetch(`http://194.163.40.84/api/recommend_jobs/?user_id=${userId}`, {
       method: "GET",
       headers: {
         Authorization: `Token ${authToken}`,
@@ -97,7 +97,7 @@ export default function EmployeeDashboard() {
   // Fetch all jobs when tab changes
   useEffect(() => {
     if (activeTab === "all") {
-      fetch("http://localhost:8000/api/all-jobs/", {
+      fetch("http://194.163.40.84/api/all-jobs/", {
         method: "GET",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -114,7 +114,7 @@ export default function EmployeeDashboard() {
   useEffect(() => {
     setStatsLoading(true)
 
-    fetch("http://localhost:8000/api/platform-statistics/", {
+    fetch("http://194.163.40.84/api/platform-statistics/", {
       method: "GET",
       headers: {
         Authorization: `Token ${authToken}`,

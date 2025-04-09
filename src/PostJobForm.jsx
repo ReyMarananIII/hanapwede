@@ -37,11 +37,11 @@ export default function PostJobForm() {
       try {
         const headers = token ? { Authorization: `Token ${token}` } : {}
 
-        const disabilityRes = await fetch("http://localhost:8000/api/disability-tags/", { headers })
+        const disabilityRes = await fetch("http://194.163.40.84/api/disability-tags/", { headers })
         const disabilityData = await disabilityRes.json()
         setDisabilityTags(disabilityData)
 
-        const jobTagsRes = await fetch("http://localhost:8000/api/tags", { headers })
+        const jobTagsRes = await fetch("http://194.163.40.84/api/tags", { headers })
         const jobTagsData = await jobTagsRes.json()
         setJobTags(jobTagsData)
       } catch (error) {
@@ -98,7 +98,7 @@ export default function PostJobForm() {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/post-job/", {
+      const response = await fetch("http://194.163.40.84/api/post-job/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

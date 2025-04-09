@@ -49,7 +49,7 @@ export default function JobApplication() {
   useEffect(() => {
     const token = localStorage.getItem("authToken")
 
-    fetch(`http://localhost:8000/api/get-user-details/${userId}/`, {
+    fetch(`http://194.163.40.84/api/get-user-details/${userId}/`, {
       headers: token ? { Authorization: `Token ${token}` } : {},
     })
       .then((res) => {
@@ -103,7 +103,7 @@ export default function JobApplication() {
       return
     }
 
-    fetch(`http://localhost:8000/api/job/${jobId}`)
+    fetch(`http://194.163.40.84/api/job/${jobId}`)
       .then((res) => {
         if (!res.ok) throw new Error("Failed to fetch job details")
         return res.json()
@@ -146,7 +146,7 @@ export default function JobApplication() {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/submit-application/", {
+      const response = await fetch("http://194.163.40.84/api/submit-application/", {
         headers: {
           Authorization: `Token ${localStorage.getItem("authToken")}`,
         },
@@ -424,7 +424,7 @@ export default function JobApplication() {
                         <FileText className="w-12 h-12 text-green-600 mx-auto mb-2" />
                         <p className="text-sm text-gray-700 mb-2">Resume uploaded</p>
                         <a
-                          href={`http://localhost:8000${resume}`}
+                          href={`http://194.163.40.84${resume}`}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-sm text-blue-600 hover:text-blue-800 underline flex items-center justify-center"

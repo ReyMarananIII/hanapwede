@@ -20,7 +20,7 @@ export default function ForumPage() {
 const [activeCommentId, setActiveCommentId] = useState(null);
 
   const [loading, setLoading] = useState(true);
-  const API_BASE_URL = "http://localhost:8000/api"; //papaltan pa to lahat para mas readable
+  const API_BASE_URL = "http://194.163.40.84/api"; //papaltan pa to lahat para mas readable
 
 
   useEffect(() => {

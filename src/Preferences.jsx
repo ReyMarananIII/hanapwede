@@ -15,7 +15,7 @@ const Preferences = ({ onPreferencesSaved }) => {
 
     const fetchTags = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/tags/");
+        const response = await fetch("http://194.163.40.84/api/tags/");
         if (!response.ok) throw new Error("Failed to fetch tags");
         const data = await response.json();
         setTags(data);
@@ -26,7 +26,7 @@ const Preferences = ({ onPreferencesSaved }) => {
 
     const fetchUserPreferences = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/preferences/", {
+        const response = await fetch("http://194.163.40.84/api/preferences/", {
           headers: {
             Authorization: `Token ${authToken}`,
             "Content-Type": "application/json",
@@ -66,7 +66,7 @@ const Preferences = ({ onPreferencesSaved }) => {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/save-preferences/", {
+      const response = await fetch("http://194.163.40.84/api/save-preferences/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

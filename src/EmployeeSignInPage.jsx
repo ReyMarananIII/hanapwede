@@ -22,7 +22,7 @@ export default function EmployeeSignIn() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("http://localhost:8000/api/login/", {
+      const response = await fetch("http://194.163.40.84/api/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -42,7 +42,7 @@ export default function EmployeeSignIn() {
         localStorage.setItem("userType", data.user_type)
         localStorage.setItem("username", data.username)
 
-        const preferencesResponse = await fetch(`http://localhost:8000/api/user-preferences/${data.userId}/`, {
+        const preferencesResponse = await fetch(`http://194.163.40.84/api/user-preferences/${data.userId}/`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

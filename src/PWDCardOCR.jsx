@@ -108,7 +108,7 @@ export default function PwdCardOCR({ formData, setFormData, onFileChange }) {
     console.log("Form Data:", ocrFormData.get("image"));
   
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/ocr/", {
+      const response = await fetch("http://194.163.40.84/api/ocr/", {
         method: "POST",
         body: ocrFormData,
       });
