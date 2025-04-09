@@ -49,7 +49,7 @@ export default function AdminReportsPage() {
         throw new Error("Authentication token not found")
       }
 
-      const response = await fetch("http://localhost:8000/api/admin/reports/", {
+      const response = await fetch("https://hanapwede.com/api/admin/reports/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -83,7 +83,7 @@ export default function AdminReportsPage() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://localhost:8000/api/admin/reports/${reportId}/resolve/`, {
+      const response = await fetch(`https://hanapwede.com/api/admin/reports/${reportId}/resolve/`, {
         method: "PATCH",
         headers: {
           Authorization: `Token ${token}`,
@@ -116,7 +116,7 @@ export default function AdminReportsPage() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://localhost:8000/api/admin/reports/${reportId}/dismiss/`, {
+      const response = await fetch(`https://hanapwede.com/api/admin/reports/${reportId}/dismiss/`, {
         method: "PATCH",
         headers: {
           Authorization: `Token ${token}`,
@@ -151,8 +151,8 @@ export default function AdminReportsPage() {
       const token = localStorage.getItem("authToken")
       const endpoint =
         contentType === "post"
-          ? `http://localhost:8000/api/admin/posts/${contentId}/`
-          : `http://localhost:8000/api/admin/comments/${contentId}/`
+          ? `https://hanapwede.com/api/admin/posts/${contentId}/`
+          : `https://hanapwede.com/api/admin/comments/${contentId}/`
 
       const response = await fetch(endpoint, {
         method: "DELETE",

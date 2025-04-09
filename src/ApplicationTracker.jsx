@@ -57,7 +57,7 @@ export default function ApplicationTracker() {
         throw new Error("Authentication token not found")
       }
 
-      const response = await fetch("http://localhost:8000/api/my-applications/", {
+      const response = await fetch("https://hanapwede.com/api/my-applications/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -99,7 +99,7 @@ export default function ApplicationTracker() {
   const handleContactEmployer = async (employerId) => {
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://localhost:8000/api/create_chat/", {
+      const response = await fetch("https://hanapwede.com/api/create_chat/", {
         method: "POST",
         headers: {
           Authorization: `Token ${token}`,
@@ -124,7 +124,7 @@ export default function ApplicationTracker() {
     if (window.confirm("Are you sure you want to cancel this application?")) {
       try {
         const token = localStorage.getItem("authToken");
-        const response = await fetch(`http://localhost:8000/api/cancel-application/${applicationId}/`, {
+        const response = await fetch(`https://hanapwede.com/api/cancel-application/${applicationId}/`, {
           method: "DELETE",
           headers: {
             Authorization: `Token ${token}`,

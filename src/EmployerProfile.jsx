@@ -29,7 +29,7 @@ export default function EmployerProfile() {
       setError(null)
 
       try {
-        const response = await fetch(`http://localhost:8000/api/get-employer-details/${userId}/`, {
+        const response = await fetch(`https://hanapwede.com/api/get-employer-details/${userId}/`, {
           method: "GET",
           headers: {
             Authorization: `Token ${localStorage.getItem("authToken")}`,

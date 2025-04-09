@@ -13,7 +13,7 @@ const PreferencesPage = () => {
 
     const fetchPreferences = async () => {
       try {
-        const response = await fetch("http://localhost:8000/api/preferences/", {
+        const response = await fetch("https://hanapwede.com/api/preferences/", {
           method: "GET",
           headers: {
             Authorization: `Token ${localStorage.getItem("authToken")}`,

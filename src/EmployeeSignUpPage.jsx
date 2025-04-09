@@ -54,7 +54,7 @@ export default function SignUpPage() {
     formData.append("user", userId);
   
     try {
-      const response = await fetch("http://localhost:8000/api/upload-pwd-card/", {
+      const response = await fetch("https://hanapwede.com/api/upload-pwd-card/", {
         method: "POST",
         body: formData,
       });
@@ -103,7 +103,7 @@ export default function SignUpPage() {
 
     try {
       
-      const response = await fetch("http://localhost:8000/api/signup/", {
+      const response = await fetch("https://hanapwede.com/api/signup/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

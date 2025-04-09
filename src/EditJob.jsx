@@ -39,7 +39,7 @@ export default function EditJob() {
 
       try {
         // Fetch job details
-        const jobResponse = await fetch(`http://localhost:8000/api/job/${jobId}/`, {
+        const jobResponse = await fetch(`https://hanapwede.com/api/job/${jobId}/`, {
           headers: {
             Authorization: `Token ${authToken}`,
             "Content-Type": "application/json",
@@ -79,7 +79,7 @@ export default function EditJob() {
   // Function to fetch disability tags
   const fetchDisabilityTags = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/disability-tags/", {
+      const response = await fetch("https://hanapwede.com/api/disability-tags/", {
         headers: {
           Authorization: `Token ${authToken}`,
           "Content-Type": "application/json",
@@ -100,7 +100,7 @@ export default function EditJob() {
   // Function to fetch job-specific disability tags
   const fetchJobDisabilityTags = async (jobId) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/job-post-disability-tags/${jobId}/`, {
+      const response = await fetch(`https://hanapwede.com/api/job-post-disability-tags/${jobId}/`, {
         headers: {
           Authorization: `Token ${authToken}`,
           "Content-Type": "application/json",
@@ -121,7 +121,7 @@ export default function EditJob() {
   // Function to fetch general tags
   const fetchTags = async () => {
     try {
-      const response = await fetch("http://localhost:8000/api/tags/", {
+      const response = await fetch("https://hanapwede.com/api/tags/", {
         headers: {
           Authorization: `Token ${authToken}`,
           "Content-Type": "application/json",
@@ -142,7 +142,7 @@ export default function EditJob() {
   // Function to fetch job-specific tags
   const fetchJobTags = async (jobId) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/job-post-tags/${jobId}/`, {
+      const response = await fetch(`https://hanapwede.com/api/job-post-tags/${jobId}/`, {
         headers: {
           Authorization: `Token ${authToken}`,
           "Content-Type": "application/json",
@@ -206,7 +206,7 @@ export default function EditJob() {
         tags: selectedTags,
       }
 
-      const response = await fetch(`http://localhost:8000/api/edit-job-post/${jobId}/`, {
+      const response = await fetch(`https://hanapwede.com/api/edit-job-post/${jobId}/`, {
         method: "PUT",
         headers: {
           Authorization: `Token ${authToken}`,

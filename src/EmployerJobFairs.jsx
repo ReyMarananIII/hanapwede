@@ -27,7 +27,7 @@ export default function EmployerJobFairs() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://localhost:8000/api/jobfairs/", {
+      const response = await fetch("https://hanapwede.com/api/jobfairs/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -55,7 +55,7 @@ export default function EmployerJobFairs() {
     try {
       const token = localStorage.getItem("authToken")
    
-      const response = await fetch("http://localhost:8000/api/jobfairs/", {
+      const response = await fetch("https://hanapwede.com/api/jobfairs/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -81,7 +81,7 @@ export default function EmployerJobFairs() {
   const handleUpdateJobFair = async (jobFairId, updatedData) => {
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://localhost:8000/api/jobfairs/${jobFairId}/`, {
+      const response = await fetch(`https://hanapwede.com/api/jobfairs/${jobFairId}/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -111,7 +111,7 @@ export default function EmployerJobFairs() {
     setIsDeleting(true)
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://localhost:8000/api/jobfairs/${selectedJobFair.id}/`, {
+      const response = await fetch(`https://hanapwede.com/api/jobfairs/${selectedJobFair.id}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Token ${token}`,

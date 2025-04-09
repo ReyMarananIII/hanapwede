@@ -26,7 +26,7 @@ export default function JobFairCreationForm({ onClose, onSubmit }) {
       setIsLoading(true)
       try {
         const token = localStorage.getItem("authToken")
-        const response = await fetch("http://localhost:8000/api/employer-jobs/", {
+        const response = await fetch("https://hanapwede.com/api/employer-jobs/", {
           headers: {
             Authorization: `Token ${token}`,
           },

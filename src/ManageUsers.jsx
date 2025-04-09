@@ -22,7 +22,7 @@ export default function ManageUsers() {
 
       try {
         const token = localStorage.getItem("authToken")
-        const response = await fetch("http://localhost:8000/api/admin/users/", {
+        const response = await fetch("https://hanapwede.com/api/admin/users/", {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -63,7 +63,7 @@ export default function ManageUsers() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`http://localhost:8000/api/admin/delete-user/${userId}/`, {
+      const response = await fetch(`https://hanapwede.com/api/admin/delete-user/${userId}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Token ${token}`,

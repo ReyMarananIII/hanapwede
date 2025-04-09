@@ -24,7 +24,7 @@ export default function ChatRoom() {
     setIsLoading(true)
     setError(null)
 
-    fetch(`http://localhost:8000/api/chat/messages/${roomId}/`, {
+    fetch(`https://hanapwede.com/api/chat/messages/${roomId}/`, {
       method: "GET",
       headers: {
         Authorization: `Token ${authToken}`,
@@ -50,7 +50,7 @@ export default function ChatRoom() {
 
 
   useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:8000/ws/chat/${roomId}/`)
+    const ws = new WebSocket(`wss://${window.location.host}/ws/chat/${roomId}/`);
     setSocket(ws)
 
     ws.onmessage = (event) => {

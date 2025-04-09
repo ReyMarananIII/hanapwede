@@ -25,7 +25,7 @@ export default function JobSeekerJobFairs() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://localhost:8000/api/jobfairs/", {
+      const response = await fetch("https://hanapwede.com/api/jobfairs/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -48,7 +48,7 @@ export default function JobSeekerJobFairs() {
   const fetchRegistrations = async () => {
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://localhost:8000/api/jobfair-registrations/", {
+      const response = await fetch("https://hanapwede.com/api/jobfair-registrations/", {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -71,7 +71,7 @@ export default function JobSeekerJobFairs() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://localhost:8000/api/jobfair-registrations/", {
+      const response = await fetch("https://hanapwede.com/api/jobfair-registrations/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

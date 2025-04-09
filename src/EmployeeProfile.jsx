@@ -41,7 +41,7 @@ export default function EmployeeProfile() {
     setIsLoading(true)
     setError(null)
 
-    fetch(`http://localhost:8000/api/get-user-details/${userId}/`, {
+    fetch(`https://hanapwede.com/api/get-user-details/${userId}/`, {
       headers: token ? { Authorization: `Token ${token}` } : {},
     })
       .then((res) => {
@@ -73,7 +73,7 @@ export default function EmployeeProfile() {
     setIsDeleting(true)
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("http://localhost:8000/api/delete-account/", {
+      const response = await fetch("https://hanapwede.com/api/delete-account/", {
         method: "DELETE",
         headers: {
           Authorization: `Token ${token}`,

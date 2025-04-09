@@ -34,7 +34,7 @@ export default function EmployerSignUpPage() {
     }
 
     try {
-      const response = await fetch("http://localhost:8000/api/signup/", {
+      const response = await fetch("https://hanapwede.com/api/signup/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
