@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import LoggedInHeader from "./LoggedInHeader"
 import { baseURL } from './constants';
+import Swal from "sweetalert2";
 import {
   Briefcase,
   Search,
@@ -26,6 +27,21 @@ import {
 } from "lucide-react"
 
 export default function ApplicationTracker() {
+    const handleError = (message) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message
+      });
+    };
+  
+    const handleSuccess = (message) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: message
+      });
+    }
   const navigate = useNavigate()
   const [applications, setApplications] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -117,7 +133,7 @@ export default function ApplicationTracker() {
       navigate(`/chat/${data.room_id}`)
     } catch (error) {
       console.error("Error starting chat:", error)
-      alert("Failed to start chat with employer. Please try again.")
+      handleError("Failed to start chat with employer. Please try again.")
     }
   }
 
@@ -136,10 +152,10 @@ export default function ApplicationTracker() {
         if (!response.ok) {
           throw new Error("Failed to delete application");
         }
-        alert("Application cancelled successfully.");
+        handleSuccess("Application cancelled successfully.");
       } catch (error) {
         console.error("Error deleting application:", error);
-        alert("Failed to delete application. Please try again.");
+        handleError("Failed to delete application. Please try again.");
       }
     }
   };

@@ -15,6 +15,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
+from django.contrib.auth import views as auth_views
 from django.urls import path
 from hanapwedeApp.views import signup, login_view,logout_view,employer_profile,post_job, get_tags,save_preferences,recommend_jobs, get_user_preferences
 from hanapwedeApp.views import get_disability_tags,get_job,apply_job,employer_dashboard
@@ -28,7 +29,8 @@ from hanapwedeApp.views import get_employer_details
 from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_preferences,get_all_jobs,get_all_users,delete_user,approve_application,decline_application,platform_statistics,admin_login
 from hanapwedeApp.views import get_user_details_redirect, delete_account, ocr_view,job_post_disability_tags, edit_job_post,job_post_tags,delete_job
 from hanapwedeApp.views import my_applications, all_reports,cancel_application,delete_application,JobFairJobListView,JobFairViewSet,JobFairRegistrationViewSet,EmployerJobListView,JobListDataView, EmployerJobFairJobListView
-from hanapwedeApp.views import JobFairApplicationsView,UploadPWDCardView,GetPWDCardImage
+from hanapwedeApp.views import JobFairApplicationsView,UploadPWDCardView,GetPWDCardImage, verify_email
+from hanapwedeApp.views import forgot_password, reset_password,get_all_employers,delete_employer,user_has_profile
 
 from django.conf.urls.static import static
 from django.conf import settings
@@ -95,5 +97,13 @@ urlpatterns = [
     path('api/jobfairs/<int:jobfair_id>/applications/', JobFairApplicationsView.as_view(), name='jobfair-applications'),
     path('api/upload-pwd-card/', UploadPWDCardView.as_view(), name='upload-pwd-card'),
     path('api/jobfairs/<int:jobfair_id>/jobs/', JobListDataView.as_view(), name='jobfair-jobs-list'),
-    path('api/retrieve-card/<int:user_id>/',GetPWDCardImage, name='get-pwd-card-image')
+    path('api/retrieve-card/<int:user_id>/',GetPWDCardImage, name='get-pwd-card-image'),
+     path('api/verify-email/<uidb64>/<token>/', verify_email, name='verify_email'),
+    path('api/admin/get-all-employers/', get_all_employers, name='get_all_employers'),
+    path('api/admin/delete-employer/<int:id>/', delete_employer, name='delete_employer'),
+    path('api/user-has-profile/<int:user_id>/', user_has_profile, name='user_has_profile'),
+
+     # URL for requesting password reset
+     path('api/forgot-password/', forgot_password, name='forgot_password'),
+    path('api/reset-password/<uidb64>/<token>/',reset_password, name='reset_password'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

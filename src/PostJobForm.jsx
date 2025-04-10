@@ -317,7 +317,7 @@ export default function PostJobForm() {
                       name="salary_range"
                       value={formData.salary_range}
                       onChange={handleChange}
-                      placeholder="e.g. ₱30,000 - ₱50,000"
+                      placeholder="e.g. ₱30,000"
                       className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                       required
                     />

@@ -214,6 +214,9 @@ setFormData(prevFormData => ({
     <div className="p-4 flex flex-col items-center">
       <h2 className="text-xl font-bold">Upload or Capture PWD Card</h2>
       <p className="text-sm text-muted-foreground"> Please ensure your details are correct before submitting. </p>  
+      <p className="text-sm text-muted-foreground mt-2 italic">
+  Note: Manual input is allowed if the extracted output is incorrect.
+</p>
       <input type="file" accept="image/*" capture="environment" onChange={handleImageUpload} ref={fileInputRef} className="hidden" />
 
       <button type="button" onClick={handleCapture} className="mt-4 bg-[#4CAF50] text-white px-4 py-2 rounded">

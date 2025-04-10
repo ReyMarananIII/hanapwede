@@ -35,14 +35,63 @@ from .serializer import PostSerializer, CommentSerializer, ReportSerializer, Ban
 from .serializer import EmployeeProfileSerializer,NotificationSerializer, JobApplicationSerializerv2, JobFairRegistrationSerializer
 from rest_framework.views import APIView
 
+#forgot password imports 
+from django.core.mail import send_mail
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.auth import get_user_model
+from django.template.loader import render_to_string
+from django.contrib.sites.shortcuts import get_current_site
+from django.conf import settings
+import json
+from django.utils.translation import gettext_lazy as _
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
+
+#end
+
+
+
 #OCR imports
 
 import easyocr
 from PIL import Image
 import numpy as np
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
+
+from .tokens import email_verification_token
+
+
+
+
+from django.core.mail import send_mail
+from django.urls import reverse
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth import get_user_model
+from django.utils.http import urlsafe_base64_decode
+from django.shortcuts import redirect
+from django.contrib import messages
+from .tokens import email_verification_token
 User = get_user_model()
+
+
+def verify_email(request, uidb64, token):
+    try:
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+
+    if user and email_verification_token.check_token(user, token):
+        user.is_email_verified = True
+        user.save()
+        messages.success(request, "Email verified successfully.")
+    else:
+        messages.error(request, "Invalid or expired verification link.")
+    frontend_url = "http://localhost:5173" #papaltan to
+    return redirect(f"{frontend_url}/")
 @csrf_exempt
 def signup(request):
     if request.method == "POST":
@@ -56,7 +105,7 @@ def signup(request):
             
             user_disability = data.get("user_disability")
             ID_number = data.get("ID_number")   
-           
+
             if not all([first_name, last_name, email, password]):
                 return JsonResponse({"error": "All fields are required."}, status=400)
 
@@ -70,21 +119,38 @@ def signup(request):
                 last_name=last_name,
                 password=make_password(password),
                 user_type=user_type,
-                
             )
 
             if user_type == "Employee":
-                EmployeeProfile.objects.create(user_id = user.id,
-                                               user_disability=user_disability,
-                ID_no=ID_number)
+                EmployeeProfile.objects.create(
+                    user_id=user.id,
+                    user_disability=user_disability,
+                    ID_no=ID_number
+                )
 
-            return JsonResponse({"message": "User created successfully.", "id":user.id}, status=201)
+
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = email_verification_token.make_token(user)
+            verification_link = request.build_absolute_uri(
+                reverse('verify_email', kwargs={'uidb64': uid, 'token': token})
+            )
+
+            send_mail(
+                subject='Verify your Hanapwede email',
+                message=f'Click the link to verify your email: {verification_link}',
+                from_email='noreply@hanapwede.com',
+                recipient_list=[user.email],
+                fail_silently=False,
+            )
+
+            return JsonResponse({
+                "message": "User created successfully. Please check your email to verify your account.",
+                "id": user.id
+            }, status=201)
 
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON data."}, status=400)
-
-    return JsonResponse({"error": "Invalid request method."}, status=405)
-
+        
 @api_view(["POST"])
 def admin_login(request):
     email = request.data.get("email")
@@ -125,6 +191,9 @@ def login_view(request):
         return JsonResponse({"error": "Invalid credentials."}, status=400)
 
     user = authenticate(username=user.username, password=password)
+
+    if not user.is_email_verified:
+        return JsonResponse({"error": "Verify your email first."}, status=400)
    
     has_profile=False
     if user.user_type == "Employer":
@@ -218,7 +287,13 @@ def save_preferences(request):
     user = request.user
     tag_ids = request.data.get('tags', []) 
     user.preferences.set(Tag.objects.filter(id__in=tag_ids))
-    return Response({"message": "Preferences saved successfully"})
+    if user.user_type == "Employer":
+        profile = EmployerProfile.objects.filter(user_id=user.id).first()
+        has_profile = profile is not None
+
+    else:
+        has_profile = False
+    return Response({"message": "Preferences saved successfully","has_profile":has_profile}, status=200)
 
 
 
@@ -307,6 +382,23 @@ def get_user_preferences(request, user_id):
         return Response({"has_preferences": True})
     else:
         return Response({"has_preferences": False})
+    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_has_profile(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+
+    # Check if the user has a profile
+    if user.user_type == "Employer":
+        profile = EmployerProfile.objects.filter(user_id=user.id).first()
+        has_profile = profile is not None
+    elif user.user_type == "Employee":
+        profile = EmployeeProfile.objects.filter(user_id=user.id).first()
+        has_profile = profile is not None
+    else:
+        has_profile = False
+
+    return Response({"has_profile": has_profile})
 
 
 
@@ -593,8 +685,29 @@ def create_chat(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_chat_messages(request, room_id):
+    # Fetch the chat room
+    room = ChatRooms.objects.get(id=room_id)
+    
+    # Determine the other user in the chat room
+    if room.employee == request.user:
+        other_user = room.employer
+    else:
+        other_user = room.employee
+    
+    # Fetch the messages in the chat room
     messages = Messages.objects.filter(room_id=room_id).order_by("timestamp")
-    return Response([{"sender": msg.sender.username, "content": msg.content, "timestamp": msg.timestamp} for msg in messages])
+    
+    # Prepare the response with the other user's information
+    response_data = {
+        "other_user": {"username": other_user.username, "id": other_user.id},
+        "messages": [
+            {"sender": msg.sender.username, "content": msg.content, "timestamp": msg.timestamp} 
+            for msg in messages
+        ]
+    }
+    
+    return Response(response_data)
+
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -730,6 +843,25 @@ def get_all_users (request):
     users =  EmployeeProfile.objects.all()
     serializer = EmployeeProfileSerializer(users, many=True)
     return Response(serializer.data)
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def get_all_employers (request):
+    users =  EmployerProfile.objects.all()
+    serializer = EmployerProfileSerializer(users, many=True)
+    return Response(serializer.data)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_employer(request, id):
+    user = User.objects.get(id=id)
+    emp_profile = EmployerProfile.objects.get(user_id=id)
+    emp_profile.delete()
+    user.delete()
+    return Response({"message": "User deleted successfully"}, status=status.HTTP_200_OK)
+
 
 @api_view(["DELETE"])
 @permission_classes([IsAuthenticated])
@@ -1055,30 +1187,41 @@ class JobFairApplicationsView(APIView):
         job_fair = JobFair.objects.filter(id=jobfair_id).first()
         if not job_fair:
             return Response({"detail": "Job fair not found."}, status=status.HTTP_404_NOT_FOUND)
-        job_id = request.data.get("job")  # Correct way to access job from request body
+
+        job_id = request.data.get("job")  
         if not job_id:
             return Response({"detail": "Job ID is required."}, status=status.HTTP_400_BAD_REQUEST)
 
         job_post = JobPost.objects.filter(post_id=job_id).first()
         if not job_post:
             return Response({"detail": "Job not found."}, status=status.HTTP_404_NOT_FOUND)
-        id= request.user.id
-        print(id)
-        emp_profile = EmployeeProfile.objects.get(user_id=id)
-        print(emp_profile)
-        print(emp_profile.full_name)
+
+        emp_profile = EmployeeProfile.objects.get(user_id=request.user.id)
+
+       
+        existing_application = Application.objects.filter(
+            job_post=job_post,
+            applicant=request.user,
+            job_fair=job_fair
+        ).first()
+
+        if existing_application:
+            return Response({"detail": "You have already applied for this job during this job fair."},
+                            status=status.HTTP_400_BAD_REQUEST)
+
         data = request.data.copy()
         data["job_fair"] = job_fair.id
         data["applicant"] = request.user.id 
         data["job_post"] = job_post.post_id
         data["applicant_name"] = emp_profile.full_name
         data["applicant_role"] = "N/A"
-        data["application_action"]="For Approval"
+        data["application_action"] = "For Approval"
 
         serializer = JobApplicationSerializer(data=data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, jobfair_id):
@@ -1128,3 +1271,87 @@ def GetPWDCardImage(request,user_id):
         return Response(serializer.data, status=200)
     except PWDCard.DoesNotExist:
         return Response({"error": "PWD Card not found"}, status=404)
+    
+
+
+#forgot password
+
+
+
+User = get_user_model()
+@csrf_exempt
+def forgot_password(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            email = data.get("email")
+
+            if not email:
+                return JsonResponse({"error": "Email is required."}, status=400)
+
+            user = User.objects.filter(email=email).first()
+
+            if user:
+                # Create token for password reset
+                token_generator = PasswordResetTokenGenerator()
+                token = token_generator.make_token(user)
+                uid = urlsafe_base64_encode(force_bytes(user.pk))
+                
+                # Construct the reset URL
+                
+             
+            
+ 
+    # Create the email content using the reset_url
+                subject = 'Password Reset Request'
+                message = f"Hi {user.first_name},\n\n" \
+                f"You requested a password reset. Click the link below to reset your password:\n" \
+                f"http://localhost:5173/reset-password/{uid}/{token}/\n\n" \
+                f"If you didn't request this, please ignore this email."
+
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
+
+                return JsonResponse({"message": "Password reset email sent."}, status=200)
+
+            else:
+                return JsonResponse({"error": "No account found with that email."}, status=404)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data."}, status=400)
+
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+    else:
+        return JsonResponse({"error": "Invalid request method."}, status=405)
+@csrf_exempt
+def reset_password(request, uidb64, token):
+    try:
+        # Decode the UID from the base64 encoded string
+        uid = urlsafe_base64_decode(uidb64).decode()
+        user = User.objects.get(pk=uid)
+    except (TypeError, ValueError, OverflowError, User.DoesNotExist):
+        return JsonResponse({"error": "Invalid link or expired."}, status=400)
+
+    # Check if the token is valid
+    if not default_token_generator.check_token(user, token):
+        return JsonResponse({"error": "Invalid or expired token."}, status=400)
+
+    if request.method == 'POST':
+        # Parse the incoming JSON request body
+        try:
+            data = json.loads(request.body)
+            new_password = data.get("new_password")
+            
+            if not new_password:
+                return JsonResponse({"error": "New password is required."}, status=400)
+
+            # Set and save the new password
+            user.set_password(new_password)
+            user.save()
+
+            return JsonResponse({"message": "Your password has been successfully updated."}, status=200)
+        
+        except json.JSONDecodeError:
+            return JsonResponse({"error": "Invalid JSON data."}, status=400)
+
+    return JsonResponse({"error": "Invalid request method."}, status=405)

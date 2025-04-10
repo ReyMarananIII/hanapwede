@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { baseURL } from './constants';
 import AdminLayout from "./AdminLayout"
+import Swal from "sweetalert2";
 import {
   AlertTriangle,
   Search,
@@ -21,6 +22,21 @@ import {
 } from "lucide-react"
 
 export default function AdminReportsPage() {
+    const handleError = (message) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message
+      });
+    };
+  
+    const handleSuccess = (message) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: message
+      });
+    }
   const [reports, setReports] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -104,7 +120,7 @@ export default function AdminReportsPage() {
       )
     } catch (error) {
       console.error("Error resolving report:", error)
-      alert("Failed to resolve report. Please try again.")
+      handleError("Failed to resolve report. Please try again.")
     } finally {
       setIsProcessing(false)
       setProcessingId(null)
@@ -137,7 +153,7 @@ export default function AdminReportsPage() {
       )
     } catch (error) {
       console.error("Error dismissing report:", error)
-      alert("Failed to dismiss report. Please try again.")
+      handleError("Failed to dismiss report. Please try again.")
     } finally {
       setIsProcessing(false)
       setProcessingId(null)
@@ -180,10 +196,10 @@ export default function AdminReportsPage() {
         ),
       )
 
-      alert(`${contentType.charAt(0).toUpperCase() + contentType.slice(1)} has been deleted successfully.`)
+      handleSuccess(`${contentType.charAt(0).toUpperCase() + contentType.slice(1)} has been deleted successfully.`)
     } catch (error) {
       console.error(`Error deleting ${contentType}:`, error)
-      alert(`Failed to delete ${contentType}. Please try again.`)
+      handleError(`Failed to delete ${contentType}. Please try again.`)
     } finally {
       setIsProcessing(false)
       setProcessingId(null)

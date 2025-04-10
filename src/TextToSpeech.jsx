@@ -1,6 +1,22 @@
 import { useState, useEffect } from "react";
+import Swal from "sweetalert2";
 
 const TextToSpeech = () => {
+    const handleError = (message) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message
+      });
+    };
+  
+    const handleSuccess = (message) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: message
+      });
+    }
   const [text, setText] = useState(""); 
   const [isSpeaking, setIsSpeaking] = useState(false);
   const synth = window.speechSynthesis;
@@ -16,7 +32,7 @@ const TextToSpeech = () => {
   const speakText = (textToSpeak) => {
     if (!textToSpeak) return;
     if (!("speechSynthesis" in window)) {
-      alert("Sorry, your browser does not support Text-to-Speech.");
+      handleError("Sorry, your browser does not support Text-to-Speech.");
       return;
     }
 
@@ -44,7 +60,7 @@ const TextToSpeech = () => {
     if (selectedText) {
       speakText(selectedText);
     } else {
-      alert("Please select some text to read.");
+      handleError("Please select some text to read.");
     }
   };
 

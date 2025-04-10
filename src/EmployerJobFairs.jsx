@@ -6,8 +6,24 @@ import JobFairCreationForm from "./JobFairCreationForm"
 import EditJobFairForm from "./EditJobFairForm"
 import { useNavigate } from "react-router-dom"
 import { baseURL } from './constants';
+import Swal from "sweetalert2"
 
 export default function EmployerJobFairs() {
+    const handleError = (message) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message
+      });
+    };
+  
+    const handleSuccess = (message) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: message
+      });
+    }
   const [jobFairs, setJobFairs] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -128,7 +144,7 @@ export default function EmployerJobFairs() {
       setSelectedJobFair(null)
     } catch (error) {
       console.error("Error deleting job fair:", error)
-      alert("Failed to delete job fair. Please try again.")
+      handleError("Failed to delete job fair. Please try again.")
     } finally {
       setIsDeleting(false)
     }

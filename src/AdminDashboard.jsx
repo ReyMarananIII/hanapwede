@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { baseURL } from './constants';
+import Swal from 'sweetalert2'
 import {
   Users,
   CheckCircle,
@@ -18,6 +19,21 @@ import {
 } from "lucide-react"
 
 export default function AdminDashboard() {
+    const handleError = (message) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message
+      });
+    };
+  
+    const handleSuccess = (message) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: message
+      });
+    }
   const [pendingUsers, setPendingUsers] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -97,7 +113,7 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error("Error approving user:", error)
-      alert("Failed to approve user. Please try again.")
+      handleError("Failed to approve user. Please try again.")
     } finally {
       setProcessingId(null)
     }
@@ -130,7 +146,7 @@ export default function AdminDashboard() {
       }
     } catch (error) {
       console.error("Error rejecting user:", error)
-      alert("Failed to reject user. Please try again.")
+      handleError("Failed to reject user. Please try again.")
     } finally {
       setProcessingId(null)
     }

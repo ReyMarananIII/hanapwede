@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Loader,
   CheckCircle,
+  XCircle
 } from "lucide-react"
 
 export default function JobFairDetails({ jobFair, onClose }) {
@@ -23,6 +24,7 @@ export default function JobFairDetails({ jobFair, onClose }) {
   const [isApplying, setIsApplying] = useState(false)
   const [applicationSuccess, setApplicationSuccess] = useState(null)
   const [applicationJobId, setApplicationJobId] = useState(null)
+  const [applicationFail,setApplicationFail] =useState(null)
 
   useEffect(() => {
     fetchJobFairJobs()
@@ -62,6 +64,7 @@ export default function JobFairDetails({ jobFair, onClose }) {
     setIsApplying(true)
     setApplicationJobId(jobId)
     setApplicationSuccess(null)
+    setApplicationFail(null)
 
     try {
       const token = localStorage.getItem("authToken")
@@ -87,7 +90,8 @@ export default function JobFairDetails({ jobFair, onClose }) {
       setJobs(jobs.map((job) => (job.post_id === jobId ? { ...job, has_applied: true } : job)))
     } catch (error) {
       console.error("Error applying for job:", error)
-      setApplicationSuccess(`Failed to apply: ${error.message}`)
+      setApplicationFail(`${error.message}, You may have already applied for this job`)
+      setApplicationSuccess(null)
     } finally {
       setIsApplying(false)
       setApplicationJobId(null)
@@ -119,6 +123,14 @@ export default function JobFairDetails({ jobFair, onClose }) {
               </div>
             </div>
           )}
+            {applicationFail && (
+    <div className="bg-red-50 border-l-4 border-red-500 p-4 mb-6">
+      <div className="flex">
+        <XCircle className="h-6 w-6 text-red-500 mr-3" />
+        <p className="text-red-700">{applicationFail}</p>
+      </div>
+    </div>
+  )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div>

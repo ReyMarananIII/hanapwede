@@ -1,8 +1,24 @@
 import { useState, useEffect } from "react";
 import LoggedInHeader from "./LoggedInHeader";
 import { baseURL } from './constants';
+import Swal from 'sweetalert2';
 
 export default function ForumPage() {
+  const handleError = (message) => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: message
+    });
+  };
+
+  const handleSuccess = (message) => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Success!',
+      text: message
+    });
+  }
   const [posts, setPosts] = useState([]);
   const [showNewPostModal, setShowNewPostModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
@@ -72,12 +88,12 @@ const [activeCommentId, setActiveCommentId] = useState(null);
 
   const handleReport = () => {
     if (!reportReason) {
-      alert("Please select a reason for reporting.");
+      handleError("Select a reason for reporting.");
       return;
     }
 
     if (!reportDetails) {
-        alert("Please put details for reporting.");
+        handleError("Please put details for reporting.");
         return;
       }
   
@@ -100,7 +116,7 @@ const [activeCommentId, setActiveCommentId] = useState(null);
       
       } 
       else {
-        alert("Error: No post or comment selected.");
+        handleError("Error: No post or comment selected.");
         return;
       }
   
@@ -114,14 +130,14 @@ const [activeCommentId, setActiveCommentId] = useState(null);
     })
       .then((res) => res.json())
       .then(() => {
-        alert("Report submitted successfully.");
+        handleSuccess("Report submitted successfully.");
         setShowReportModal(false);
         setReportReason("");
         setReportDetails("");
       })
       .catch((error) => {
         console.error("Error submitting report:", error);
-        alert("Failed to submit report. Please try again.");
+        handleError("Failed to submit report. Please try again.");
       });
   };
   
@@ -176,7 +192,7 @@ const handleCreatePost = (e) => {
         .then(async (res) => {
             if (!res.ok) {
                 const errorData = await res.json();
-                alert(errorData.error);
+                handleError(errorData.error);
                 throw new Error(errorData.error||"Failed to add comment");
             }
             return res.json();
@@ -216,10 +232,10 @@ const handleCreatePost = (e) => {
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
-      <LoggedInHeader />
+     {/* <LoggedInHeader />*/}
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">Hanapwede Forum</h1>
+          <h1 className="text-2xl font-bold">Forum</h1>
           <button
             onClick={() => setShowNewPostModal(true)}
             className="bg-[#4CAF50] text-white px-4 py-2 rounded-lg hover:bg-[#45a049] transition-colors"

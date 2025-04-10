@@ -1,6 +1,6 @@
 import { useState,useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Bell,Mail } from "lucide-react"
+import { Bell,Mail,Briefcase } from "lucide-react"
 import { baseURL } from './constants';
 export default function LoggedInHeader() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -120,31 +120,42 @@ export default function LoggedInHeader() {
       <Link to="/" className="flex items-center">
         <img src="/hanapwedelogo.png" alt="Logo" className="h-6 w-auto" />
       </Link>
-      <div className="flex items-center gap-4">
-      <div className="relative">
-          <button
-            onClick={()=>navigate("/user-chats")}
-            className="relative p-2 text-gray-600 hover:text-gray-800 rounded-full hover:bg-gray-100"
-          >
-            <Mail className="h-5 w-5" />
-           
-            
-          </button>
-          </div>
+      <div className="flex items-center gap-6">
+      <div className="relative flex flex-col items-center">
+              <button
+                onClick={() => navigate("/user-chats")}
+                className="relative p-2 text-gray-600 hover:text-gray-800 rounded-full hover:bg-gray-100"
+              >
+                <Mail className="h-5 w-5" />
+              </button>
+              <span className="text-xs text-gray-600 mt-1">Messages</span>
+            </div>
+
+
+            <div className="relative flex flex-col items-center">
+              <button
+                onClick={() => navigate("/job-fairs")}
+                className="relative p-2 text-gray-600 hover:text-gray-800 rounded-full hover:bg-gray-100"
+              >
+                <Briefcase className="h-5 w-5" />
+              </button>
+              <span className="text-xs text-gray-600 mt-1">Job Fair</span>
+            </div>
 
      {/* Notifications */}
-     <div className="relative">
+     <div className="relative flex flex-col items-center">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
             className="relative p-2 text-gray-600 hover:text-gray-800 rounded-full hover:bg-gray-100"
           >
             <Bell className="h-5 w-5" />
-            {unreadCount > 0 && (
-              <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
-                {unreadCount}
-              </span>
-            )}
-          </button>
+                {unreadCount > 0 && (
+                  <span className="absolute top-0 right-0 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 rounded-full">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+              <span className="text-xs text-gray-600 mt-1">Notifications</span>
 
           {showNotifications && (
             <>
@@ -275,18 +286,10 @@ export default function LoggedInHeader() {
 )}
 
 
-<li>
-    <Link
-      to={"/job-fairs"}
-      className="block px-4 py-2 hover:bg-gray-100"
-      onClick={() => setIsDropdownOpen(false)}
-    >
-      Job Fairs
-    </Link>
-  </li>
+
 
                 
-                {userRole !== "Employee!" && (
+                {userRole !== "Employee" && (
   <li>
     <Link
       to={"/hanapwede/forum"}

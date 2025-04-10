@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import LoggedInHeader from "./LoggedInHeader"
 import { useNavigate } from "react-router-dom"
 import { baseURL } from './constants';
+import ForumPage from "./ForumPage"
 import {
   Users,
   Briefcase,
@@ -355,6 +356,7 @@ export default function EmployeeDashboard() {
           </div>
         </div>
       </div>
+      <ForumPage />
     </div>
   )
 }

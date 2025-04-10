@@ -7,7 +7,7 @@ from .models import JobFair, JobPost, JobFairRegistration,PWDCard
 class EmployerProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = EmployerProfile
-        fields = ["comp_name", "comp_desc", "comp_site", "industry", "contact_no", "location"]
+        fields = ["comp_name", "comp_desc", "comp_site", "industry", "contact_no", "location","user_id"]
 
 
 

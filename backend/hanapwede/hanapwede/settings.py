@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 from pathlib import Path
 
+
+FRONTEND_URL = 'http://localhost:5173'    #https://hanapwede.com prod
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -23,11 +26,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-3tx(s48#1os6585e!=1c#x8^%vvt#x4@yt%n#u+f*nnng7+-w%'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['194.163.40.84', 'localhost','127.0.0.1']
+ALLOWED_HOSTS = ['hanapwede.com', 'www.hanapwede.com', '194.163.40.84', 'localhost', '127.0.0.1']
 
 
+
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'pwedehana@gmail.com'
+EMAIL_HOST_PASSWORD = 'tasg pnbi ymfa gemc' 
 
 # Application definition
 
@@ -62,7 +74,7 @@ MIDDLEWARE = [
 ]
  #papaltan pa  to ( FOR DEV LANG )
 
-CSRF_TRUSTED_ORIGINS = ['https://*.localhost',"https://161.248.25.136","http://194.163.40.84"]
+CSRF_TRUSTED_ORIGINS = ['https://*.localhost',"https://161.248.25.136","http://194.163.40.84","http://localhost:5173"]
 CORS_ORIGIN_WHITELIST = [
     "http://localhost:5173","http://161.248.25.136","http://194.163.40.84" 
 ]

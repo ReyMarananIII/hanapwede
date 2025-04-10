@@ -46,18 +46,14 @@ export default function EmployerSignIn() {
         localStorage.setItem("authToken", data.token)
         localStorage.setItem("userId", data.userId)
         localStorage.setItem("username", data.username)
-        if (data.user_type === "Admin") {
-          navigate("/admin/user-approval");
-      } else {
-          let finalRedirect = data.has_profile ? "/employer/dashboard" : "/employer/edit-profile";
+        
+        console.log(data.has_profile)
+        data.has_profile ? navigate("/employer/dashboard") : navigate("/employer/edit-profile");
       
         
-          if (redirectPath && redirectPath !== "/employer/signin") {
-              finalRedirect = redirectPath;
-          }
+         
+          
       
-          navigate(finalRedirect);
-      }
     }
     } catch (error) {
       console.error("Error:", error)

@@ -12,6 +12,7 @@ export default function ChatRoom() {
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
   const messagesEndRef = useRef(null)
+  const [otherUser,setOtherUser] = useState(null)
   const authToken = localStorage.getItem("authToken")
   const username = localStorage.getItem("username")
 
@@ -21,6 +22,9 @@ export default function ChatRoom() {
   }, [messages]) 
 
 
+  useEffect(() => {
+    console.log(messages)
+  }, [messages])
   useEffect(() => {
     setIsLoading(true)
     setError(null)
@@ -39,7 +43,8 @@ export default function ChatRoom() {
         return response.json()
       })
       .then((data) => {
-        setMessages(data) 
+        setMessages(data.messages)
+        setOtherUser(data.other_user.username) 
         setIsLoading(false)
       })
       .catch((error) => {
@@ -96,7 +101,7 @@ export default function ChatRoom() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div>
-            <h2 className="text-lg font-bold">Chat</h2>
+            <h2 className="text-lg font-bold">Chat with  {otherUser}</h2>
           </div>
         </div>
       </div>

@@ -6,8 +6,24 @@ import Header from "./Header"
 import { useNavigate } from "react-router-dom"
 import {User } from "lucide-react"
 import { baseURL } from './constants';
+import Swal from 'sweetalert2'
 
 export default function EditProfile() {
+    const handleError = (message) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message
+      });
+    };
+  
+    const handleSuccess = (message) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: message
+      });
+    }
   const [activeTab, setActiveTab] = useState("about")
   const navigate = useNavigate()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -17,7 +33,7 @@ export default function EditProfile() {
     const token = localStorage.getItem("authToken")
     setIsLoggedIn(!!token)
 
-    // Fetch user profile data if available
+ 
     const fetchUserProfile = async () => {
       try {
         const response = await fetch(`${baseURL}/api/get-user-details`, {
@@ -134,7 +150,7 @@ const handleFileChange = (e) => {
       resume: file, // Store the file reference
     }));
   } else {
-    alert("Please upload a PDF or Word document");
+    handleError("Please upload a PDF or Word document");
   }
 };
 
@@ -168,15 +184,15 @@ const handleSubmit = async (e) => {
     });
 
     if (response.ok) {
-      alert("Profile updated successfully!");
+      handleSuccess("Profile updated successfully!");
       navigate("/job-seeker/profile");
     } else {
       console.error("Error submitting profile:", response.statusText);
-      alert("Failed to submit profile");
+      handleError("Failed to submit profile");
     }
   } catch (error) {
     console.error("Error:", error);
-    alert("An error occurred. Please try again.");
+    handleError("An error occurred. Please try again.");
   }
 };
 

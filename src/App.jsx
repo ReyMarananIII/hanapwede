@@ -35,6 +35,9 @@ import AccessibilityPage from "./AccessibilityPage";
 import ApplicationTracker from "./ApplicationTracker";
 import JobFairApplications from "./JobFairApplications";
 import JobFairMain from "./JobFairMain";
+import ForgotPassword from "./ForgotPassword";
+import ResetPassword from "./ResetPassword";
+import ManageEmployers from "./ManageEmployers";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -55,7 +58,8 @@ function App() {
         <Route path="/notifications" element={<NotificationsPage />} />
         <Route path="/accessibility" element={<AccessibilityPage />} />
         <Route path="/job-fairs" element={<JobFairMain />} />
-
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:uid/:token" element={<ResetPassword/>} />
         <Route 
         path="admin/user-approval"
           element={
@@ -70,6 +74,16 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Admin"]}>
               <AdminManageUsersPage />
+              
+            </ProtectedRoute>
+          } 
+        />
+
+<Route 
+        path="admin/manage-employers"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <ManageEmployers />
               
             </ProtectedRoute>
           } 

@@ -2,7 +2,23 @@
 import { useState, useEffect } from "react"
 import { Users, Search, Filter, Eye, AlertCircle, Loader, Trash2, UserX, Clock, BadgeCheck } from "lucide-react"
 import { baseURL } from './constants';
+import Swal from 'sweetalert2'
 export default function ManageUsers() {
+    const handleError = (message) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message
+      });
+    };
+  
+    const handleSuccess = (message) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: message
+      });
+    }
   const [users, setUsers] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -86,7 +102,7 @@ export default function ManageUsers() {
       }
     } catch (error) {
       console.error("Error deleting user:", error)
-      alert("Failed to delete user. Please try again.")
+      handleError("Failed to delete user. Please try again.")
     } finally {
       setProcessingId(null)
     }

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useSearchParams, useNavigate } from "react-router-dom"
 import LoggedInHeader from "./LoggedInHeader"
+import Swal from "sweetalert2"
 import { baseURL } from './constants';
 import {
   Briefcase,
@@ -21,6 +22,21 @@ import {
 } from "lucide-react"
 
 export default function JobApplication() {
+    const handleError = (message) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message
+      });
+    };
+  
+    const handleSuccess = (message) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: message
+      });
+    }
   const [searchParams] = useSearchParams()
   const jobId = searchParams.get("post_id")
   const userId = localStorage.getItem("userId")
@@ -124,7 +140,7 @@ export default function JobApplication() {
 
     // Check if all required fields are filled
     if (isIncomplete) {
-      alert("Please complete your profile before submitting an application.")
+      handleError("Please complete your profile before submitting an application.")
       return
     }
 
@@ -164,7 +180,7 @@ export default function JobApplication() {
         navigate("/job-seeker/dashboard")
       }, 3000)
     } catch (error) {
-      alert("Error submitting application: " + error.message)
+      handleError("Error submitting application: " + error.message)
     } finally {
       setIsSubmitting(false)
     }

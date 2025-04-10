@@ -31,7 +31,7 @@ export default function EmployeeSignIn() {
 
       const data = await response.json()
 
-      if (response.ok) {n
+      if (response.ok) {
         if (data.user_type !== "Employee" && data.user_type !== "Admin") {
           setError("Invalid role. Please sign in using a Job Seeker Account.")
           setIsLoading(false)
@@ -54,7 +54,7 @@ export default function EmployeeSignIn() {
         const preferencesData = await preferencesResponse.json()
         
         if (preferencesData.has_preferences) {
-          navigate("/job-seeker/profile")
+          navigate("/job-seeker/dashboard")
         } else {
           navigate("/job-seeker/preferences")
         }
@@ -154,7 +154,13 @@ export default function EmployeeSignIn() {
               </div>
             </div>
 
- 
+            <div className="text-sm">
+            <span className="text-gray-600">Forgot Password?</span>{" "}
+            <Link to="/forgot-password" className="font-medium text-green-600 hover:text-green-500">
+             Reset now
+            </Link>
+          </div>
+           
 
             <div>
               <button

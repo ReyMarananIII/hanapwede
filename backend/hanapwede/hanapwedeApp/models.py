@@ -31,6 +31,7 @@ class User(AbstractUser):
         ('employer', 'Employer'),
     )
     user_type = models.CharField(max_length=10, choices=USER_TYPES)
+    is_email_verified = models.BooleanField(default=False)
 
     def __str__(self):
         return self.username

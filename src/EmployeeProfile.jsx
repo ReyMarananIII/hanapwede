@@ -5,6 +5,7 @@ import LoggedInHeader from "./LoggedInHeader"
 import PreferencesPage from "./PreferencesPage"
 import Header from "./Header"
 import { baseURL } from './constants';
+import Swal from "sweetalert2"
 import {
   User,
   Eye,
@@ -23,6 +24,21 @@ import {
 import { Link } from "react-router-dom"
 
 export default function EmployeeProfile() {
+    const handleError = (message) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message
+      });
+    };
+  
+    const handleSuccess = (message) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: message
+      });
+    }
   const [userDetails, setUserDetails] = useState(null)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -93,7 +109,7 @@ export default function EmployeeProfile() {
       }
     } catch (error) {
       console.error("Error deleting profile:", error)
-      alert("Failed to delete profile. Please try again.")
+      handleError("Failed to delete profile. Please try again.")
     } finally {
       setIsDeleting(false)
       setShowDeleteModal(false)

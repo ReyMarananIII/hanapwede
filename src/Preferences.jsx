@@ -2,14 +2,30 @@ import { useState, useEffect } from "react";
 import LoggedInHeader from "./LoggedInHeader";
 import { useNavigate } from "react-router-dom";
 import { baseURL } from './constants';
+import Swal from "sweetalert2";
 const Preferences = ({ onPreferencesSaved }) => {
+    const handleError = (message) => {
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message
+      });
+    };
+  
+    const handleSuccess = (message) => {
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: message
+      });
+    }
   const [tags, setTags] = useState([]); 
   const [selectedTags, setSelectedTags] = useState([]); 
   const authToken = localStorage.getItem("authToken");
   const navigate = useNavigate();
   useEffect(() => {
     if (!authToken) {
-      alert("User not logged in");
+      handleError("User not logged in");
       return;
     }
 
@@ -53,7 +69,7 @@ const Preferences = ({ onPreferencesSaved }) => {
       } else if (prev.length < 5) {
         return [...prev, tagId]; 
       } else {
-        alert("You can select up to 5 preferences only.");
+        handleError("You can select up to 5 preferences only.");
         return prev; 
       }
     });
@@ -61,7 +77,7 @@ const Preferences = ({ onPreferencesSaved }) => {
 
   const handleSubmit = async () => {
     if (!authToken) {
-      alert("User not logged in");
+      handleError("User not logged in");
       return;
     }
 
@@ -74,10 +90,11 @@ const Preferences = ({ onPreferencesSaved }) => {
         },
         body: JSON.stringify({ tags: selectedTags }),
       });
-
+      const data = await response.json();
+      console.log(data.has_profile)
       if (response.ok) {
-        alert("Preferences saved successfully!");
-        navigate("/job-seeker/dashboard")
+        handleSuccess("Preferences saved successfully!");
+        data.has_profile ? navigate("/job-seeker/dashboard") : navigate("/job-seeker/edit-profile");
         onPreferencesSaved();
       
       } else {
