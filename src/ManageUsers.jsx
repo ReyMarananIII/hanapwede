@@ -1,7 +1,7 @@
 
 import { useState, useEffect } from "react"
 import { Users, Search, Filter, Eye, AlertCircle, Loader, Trash2, UserX, Clock, BadgeCheck } from "lucide-react"
-
+import { baseURL } from './constants';
 export default function ManageUsers() {
   const [users, setUsers] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -22,7 +22,7 @@ export default function ManageUsers() {
 
       try {
         const token = localStorage.getItem("authToken")
-        const response = await fetch("https://hanapwede.com/api/admin/users/", {
+        const response = await fetch(`${baseURL}/api/admin/users/`, {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -63,7 +63,7 @@ export default function ManageUsers() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`https://hanapwede.com/api/admin/delete-user/${userId}/`, {
+      const response = await fetch(`${baseURL}/api/admin/delete-user/${userId}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Token ${token}`,

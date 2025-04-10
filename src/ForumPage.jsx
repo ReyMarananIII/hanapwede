@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import LoggedInHeader from "./LoggedInHeader";
+import { baseURL } from './constants';
 
 export default function ForumPage() {
   const [posts, setPosts] = useState([]);
@@ -8,6 +9,7 @@ export default function ForumPage() {
   const [reportedPostId, setReportedPostId] = useState(null);
   const[reportedCommentId, setReportedCommentId]=useState(null);
   const [reportReason, setReportReason] = useState("");
+  
 
 
   const [reportDetails, setReportDetails] = useState("");
@@ -20,7 +22,7 @@ export default function ForumPage() {
 const [activeCommentId, setActiveCommentId] = useState(null);
 
   const [loading, setLoading] = useState(true);
-  const API_BASE_URL = "https://hanapwede.com/api"; //papaltan pa to lahat para mas readable
+  const API_BASE_URL = `${baseURL}/api`; //papaltan pa to lahat para mas readable
 
 
   useEffect(() => {

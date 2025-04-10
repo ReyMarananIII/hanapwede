@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import Header from "./Header"
 import { Mail, Lock, Eye, EyeOff, LogIn, AlertCircle, Loader } from "lucide-react"
+import { baseURL } from './constants';
 
 export default function EmployeeSignIn() {
   const [showPassword, setShowPassword] = useState(false)
@@ -22,7 +23,7 @@ export default function EmployeeSignIn() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("https://hanapwede.com/api/login/", {
+      const response = await fetch(`${baseURL}/api/login/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -30,7 +31,7 @@ export default function EmployeeSignIn() {
 
       const data = await response.json()
 
-      if (response.ok) {
+      if (response.ok) {n
         if (data.user_type !== "Employee" && data.user_type !== "Admin") {
           setError("Invalid role. Please sign in using a Job Seeker Account.")
           setIsLoading(false)
@@ -42,7 +43,7 @@ export default function EmployeeSignIn() {
         localStorage.setItem("userType", data.user_type)
         localStorage.setItem("username", data.username)
 
-        const preferencesResponse = await fetch(`https://hanapwede.com/api/user-preferences/${data.userId}/`, {
+        const preferencesResponse = await fetch(`${baseURL}/api/user-preferences/${data.userId}/`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

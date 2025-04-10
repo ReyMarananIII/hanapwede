@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { X, Loader, Calendar, Clock, MapPin, Phone, Mail, Save } from "lucide-react"
+import { baseURL } from './constants';
 
 export default function EditJobFairForm({ jobFair, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
@@ -25,7 +26,7 @@ export default function EditJobFairForm({ jobFair, onClose, onSubmit }) {
       setIsLoading(true)
       try {
         const token = localStorage.getItem("authToken")
-        const response = await fetch("https://hanapwede.com/api/employer-jobs/", {
+        const response = await fetch(`${baseURL}/api/employer-jobs/`, {
           headers: {
             Authorization: `Token ${token}`,
           },

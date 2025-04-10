@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
+import { baseURL } from './constants';
 import LoggedInHeader from "./LoggedInHeader"
 import {
   Bell,
@@ -38,7 +39,7 @@ export default function NotificationsPage() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("https://hanapwede.com/api/get-notifications/", {
+      const response = await fetch(`${baseURL}/api/get-notifications/`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -64,7 +65,7 @@ export default function NotificationsPage() {
   const markAsRead = async (id) => {
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`https://hanapwede.com/api/mark-notification-read/${id}/`, {
+      const response = await fetch(`${baseURL}/api/mark-notification-read/${id}/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +93,7 @@ export default function NotificationsPage() {
     setIsMarkingAll(true)
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("https://hanapwede.com/api/mark-all-notifications-read/", {
+      const response = await fetch(`${baseURL}/api/mark-all-notifications-read/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -121,7 +122,7 @@ export default function NotificationsPage() {
   const deleteNotification = async (id) => {
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`https://hanapwede.com/api/delete-notification/${id}/`, {
+      const response = await fetch(`${baseURL}/api/delete-notification/${id}/`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -144,7 +145,7 @@ export default function NotificationsPage() {
     setIsDeleting(true)
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("https://hanapwede.com/api/delete-all-notifications/", {
+      const response = await fetch(`${baseURL}/api/delete-all-notifications/`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

@@ -1,7 +1,7 @@
 import { useState,useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Bell,Mail } from "lucide-react"
-
+import { baseURL } from './constants';
 export default function LoggedInHeader() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const navigate = useNavigate();
@@ -13,7 +13,7 @@ export default function LoggedInHeader() {
     const fetchNotifications = async () => {
       try {
         const token = localStorage.getItem("authToken");
-        const response = await fetch("https://hanapwede.com/api/get-notifications/", {
+        const response = await fetch(`${baseURL}/api/get-notifications/`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -39,7 +39,7 @@ export default function LoggedInHeader() {
   const markAsRead = async (id) => {
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch(`https://hanapwede.com/api/mark-notification-read/${id}/`, {
+      const response = await fetch(`${baseURL}/api/mark-notification-read/${id}/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -65,7 +65,7 @@ export default function LoggedInHeader() {
   const markAllAsRead = async () => {
     try {
       const token = localStorage.getItem("authToken");
-      const response = await fetch("https://hanapwede.com/api/mark-all-notifications-read/", {
+      const response = await fetch(`${baseURL}/api/mark-all-notifications-read/`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -93,7 +93,7 @@ export default function LoggedInHeader() {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch("https://hanapwede.com/api/logout/", {
+      const response = await fetch(`${baseURL}/api/logout/`, {
         method: "POST",
        
         headers: {

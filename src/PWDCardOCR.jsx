@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-
+import { baseURL } from './constants';
 
 export default function PwdCardOCR({ formData, setFormData, onFileChange }) {
   const [image, setImage] = useState(null);
@@ -108,7 +108,7 @@ export default function PwdCardOCR({ formData, setFormData, onFileChange }) {
     console.log("Form Data:", ocrFormData.get("image"));
   
     try {
-      const response = await fetch("https://hanapwede.com/api/ocr/", {
+      const response = await fetch(`${baseURL}/api/ocr/`, {
         method: "POST",
         body: ocrFormData,
       });

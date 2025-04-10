@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import LoggedInHeader from "./LoggedInHeader"
+import { baseURL } from './constants';
 import {
   Building,
   FileText,
@@ -39,7 +40,7 @@ export default function EditEmployerProfile() {
     const fetchProfileData = async () => {
       setIsLoading(true)
       try {
-        const response = await fetch(`https://hanapwede.com/api/get-employer-details/${userId}/`, {
+        const response = await fetch(`${baseURL}/api/get-employer-details/${userId}/`, {
           method: "GET",
           headers: {
             Authorization: `Token ${localStorage.getItem("authToken")}`,
@@ -58,7 +59,8 @@ export default function EditEmployerProfile() {
           })
 
           if (data.comp_logo) {
-            setLogoPreview(`https://hanapwede.com${data.comp_logo}`)
+            setLogoPreview(`${baseURL}${data.comp_logo}`);
+
           }
         }
       } catch (error) {
@@ -109,7 +111,7 @@ export default function EditEmployerProfile() {
     }
 
     try {
-      const response = await fetch("https://hanapwede.com/api/employer-profile/", {
+      const response = await fetch(`${baseURL}/api/employer-profile/`, {
         method: "POST",
         headers: {
           Authorization: `Token ${localStorage.getItem("authToken")}`,

@@ -5,6 +5,7 @@ import LoggedInHeader from "./LoggedInHeader"
 import Header from "./Header"
 import { useNavigate } from "react-router-dom"
 import {User } from "lucide-react"
+import { baseURL } from './constants';
 
 export default function EditProfile() {
   const [activeTab, setActiveTab] = useState("about")
@@ -19,7 +20,7 @@ export default function EditProfile() {
     // Fetch user profile data if available
     const fetchUserProfile = async () => {
       try {
-        const response = await fetch(`https://hanapwede.com/api/get-user-details`, {
+        const response = await fetch(`${baseURL}/api/get-user-details`, {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -158,7 +159,7 @@ const handleSubmit = async (e) => {
       formDataToSend.append("employee_resume", resume);  // ✅ Change the key here
     }
 
-    const response = await fetch("https://hanapwede.com/api/edit-profile/", {
+    const response = await fetch(`${baseURL}/api/edit-profile/`, {
       method: "PUT",
       headers: {
         Authorization: `Token ${localStorage.getItem("authToken")}`,

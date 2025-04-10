@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { baseURL } from './constants';
 import {
   X,
   Calendar,
@@ -36,7 +37,7 @@ export default function JobFairDetails({ jobFair, onClose }) {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`https://hanapwede.com/api/jobfairs/${jobFair.id}/jobs/`, {
+      const response = await fetch(`${baseURL}/api/jobfairs/${jobFair.id}/jobs/`, {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -64,7 +65,7 @@ export default function JobFairDetails({ jobFair, onClose }) {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`https://hanapwede.com/api/jobfairs/${jobFair.id}/applications/`, {
+      const response = await fetch(`${baseURL}/api/jobfairs/${jobFair.id}/applications/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

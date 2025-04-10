@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { Link } from "react-router-dom"
 import LoggedInHeader from "./LoggedInHeader"
 import { useNavigate } from "react-router-dom"
+import { baseURL } from './constants';
 import {
   Building,
   FileText,
@@ -29,7 +30,7 @@ export default function EmployerProfile() {
       setError(null)
 
       try {
-        const response = await fetch(`https://hanapwede.com/api/get-employer-details/${userId}/`, {
+        const response = await fetch(`${baseURL}/api/get-employer-details/${userId}/`, {
           method: "GET",
           headers: {
             Authorization: `Token ${localStorage.getItem("authToken")}`,

@@ -2,6 +2,7 @@
 import { useEffect, useState, useRef } from "react"
 import { useParams } from "react-router-dom"
 import { Send, ArrowLeft } from "lucide-react"
+import { baseURL } from './constants';
 
 export default function ChatRoom() {
   const { roomId } = useParams()
@@ -24,7 +25,7 @@ export default function ChatRoom() {
     setIsLoading(true)
     setError(null)
 
-    fetch(`https://hanapwede.com/api/chat/messages/${roomId}/`, {
+    fetch(`${baseURL}/api/chat/messages/${roomId}/`, {
       method: "GET",
       headers: {
         Authorization: `Token ${authToken}`,
@@ -50,7 +51,8 @@ export default function ChatRoom() {
 
 
   useEffect(() => {
-    const ws = new WebSocket(`wss://${window.location.host}/ws/chat/${roomId}/`);
+    const ws = new WebSocket(`ws://localhost:8000/ws/chat/${roomId}/`);     //LOCAL
+    //const ws = new WebSocket(`wss://${window.location.host}/ws/chat/${roomId}/`); //PRODUCTION
     setSocket(ws)
 
     ws.onmessage = (event) => {

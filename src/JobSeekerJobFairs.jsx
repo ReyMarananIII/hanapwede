@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { Calendar, MapPin, Users, Briefcase, Clock, AlertCircle, Loader, CheckCircle, ExternalLink } from "lucide-react"
 import JobFairDetails from "./JobFairDetails"
+import { baseURL } from './constants';
 
 export default function JobSeekerJobFairs() {
   const [jobFairs, setJobFairs] = useState([])
@@ -25,7 +26,7 @@ export default function JobSeekerJobFairs() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("https://hanapwede.com/api/jobfairs/", {
+      const response = await fetch(`${baseURL}/api/jobfairs/`, {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -48,7 +49,7 @@ export default function JobSeekerJobFairs() {
   const fetchRegistrations = async () => {
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("https://hanapwede.com/api/jobfair-registrations/", {
+      const response = await fetch(`${baseURL}/api/jobfair-registrations/`, {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -71,7 +72,7 @@ export default function JobSeekerJobFairs() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("https://hanapwede.com/api/jobfair-registrations/", {
+      const response = await fetch(`${baseURL}/api/jobfair-registrations/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

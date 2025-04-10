@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import LoggedInHeader from "./LoggedInHeader"
 import PreferencesPage from "./PreferencesPage"
 import Header from "./Header"
+import { baseURL } from './constants';
 import {
   User,
   Eye,
@@ -41,7 +42,7 @@ export default function EmployeeProfile() {
     setIsLoading(true)
     setError(null)
 
-    fetch(`https://hanapwede.com/api/get-user-details/${userId}/`, {
+    fetch(`${baseURL}/api/get-user-details/${userId}/`, {
       headers: token ? { Authorization: `Token ${token}` } : {},
     })
       .then((res) => {
@@ -73,7 +74,7 @@ export default function EmployeeProfile() {
     setIsDeleting(true)
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("https://hanapwede.com/api/delete-account/", {
+      const response = await fetch(`${baseURL}/api/delete-account/`, {
         method: "DELETE",
         headers: {
           Authorization: `Token ${token}`,

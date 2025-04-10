@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";  // Import useNavigate
 import { User, UserCog } from "lucide-react";
-
+import { baseURL } from './constants';
 const PreferencesPage = () => {
   const [preferences, setPreferences] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -13,7 +13,7 @@ const PreferencesPage = () => {
 
     const fetchPreferences = async () => {
       try {
-        const response = await fetch("https://hanapwede.com/api/preferences/", {
+        const response = await fetch(`${baseURL}/api/preferences/`, {
           method: "GET",
           headers: {
             Authorization: `Token ${localStorage.getItem("authToken")}`,

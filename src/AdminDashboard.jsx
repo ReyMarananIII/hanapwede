@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { baseURL } from './constants';
 import {
   Users,
   CheckCircle,
@@ -37,7 +38,7 @@ export default function AdminDashboard() {
 
       try {
         const token = localStorage.getItem("authToken")
-        const response = await fetch("https://hanapwede.com/api/admin/pending-users/", {
+        const response = await fetch(`${baseURL}/api/admin/pending-users/`, {
           headers: {
             Authorization: `Token ${token}`,
           },
@@ -75,7 +76,7 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`https://hanapwede.com/api/admin/approve-user/${userId}/`, {
+      const response = await fetch(`${baseURL}/api/admin/approve-user/${userId}/`, {
         method: "POST",
         headers: {
           Authorization: `Token ${token}`,
@@ -108,7 +109,7 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`https://hanapwede.com/api/admin/reject-user/${userId}/`, {
+      const response = await fetch(`${baseURL}/api/admin/reject-user/${userId}/`, {
         method: "POST",
         headers: {
           Authorization: `Token ${token}`,
@@ -143,7 +144,7 @@ export default function AdminDashboard() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`https://hanapwede.com/api/retrieve-card/${userId}/`, {
+      const response = await fetch(`${baseURL}/api/retrieve-card/${userId}/`, {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -450,7 +451,7 @@ export default function AdminDashboard() {
                 ) : pwdCardImage ? (
                   <div className="flex flex-col items-center">
                     <img
-                      src={`https://hanapwede.com${pwdCardImage}` || "/placeholder.svg"}
+                     src={`${baseURL}${pwdCardImage}` || "/placeholder.svg"}
                       alt="PWD Card"
                       className="max-w-full h-auto max-h-96 rounded-lg border border-gray-200 shadow-sm"
                     />

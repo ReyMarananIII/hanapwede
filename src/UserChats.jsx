@@ -2,6 +2,7 @@
 import LoggedInHeader from "./LoggedInHeader"
 import Header from "./Header"
 import { useEffect, useState } from "react"
+import { baseURL } from './constants';
 import { useNavigate } from "react-router-dom"
 import {
   MessageSquare,
@@ -29,7 +30,7 @@ export default function UserChats() {
     setIsLoading(true)
     setError(null)
 
-    fetch("https://hanapwede.com/api/user-chats/", {
+    fetch(`${baseURL}/api/user-chats/`, {
       method: "GET",
       headers: {
         Authorization: `Token ${authToken}`,

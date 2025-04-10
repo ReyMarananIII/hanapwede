@@ -1,6 +1,8 @@
 "use client"
 
+
 import { useState } from "react"
+import { baseURL } from './constants';
 import { Link, useNavigate } from "react-router-dom"
 import Header from "./Header"
 import { Mail, Lock, Eye, EyeOff, ShieldCheck, AlertCircle, Loader } from "lucide-react"
@@ -22,7 +24,7 @@ export default function AdminSignIn() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("https://hanapwede.com/api/admin-login/", {
+      const response = await fetch(`${baseURL}/api/admin-login/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

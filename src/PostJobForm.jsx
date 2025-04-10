@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import Header from "./Header"
 import LoggedInHeader from "./LoggedInHeader"
+import { baseURL } from './constants';
 import {
   Briefcase,
   MapPin,
@@ -37,11 +38,11 @@ export default function PostJobForm() {
       try {
         const headers = token ? { Authorization: `Token ${token}` } : {}
 
-        const disabilityRes = await fetch("https://hanapwede.com/api/disability-tags/", { headers })
+        const disabilityRes = await fetch(`${baseURL}/api/disability-tags/`, { headers })
         const disabilityData = await disabilityRes.json()
         setDisabilityTags(disabilityData)
 
-        const jobTagsRes = await fetch("https://hanapwede.com/api/tags", { headers })
+        const jobTagsRes = await fetch(`${baseURL}/api/tags`, { headers })
         const jobTagsData = await jobTagsRes.json()
         setJobTags(jobTagsData)
       } catch (error) {
@@ -98,7 +99,7 @@ export default function PostJobForm() {
     }
 
     try {
-      const response = await fetch("https://hanapwede.com/api/post-job/", {
+      const response = await fetch(`${baseURL}/api/post-job/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

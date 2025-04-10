@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Link, useNavigate,useLocation } from "react-router-dom"
 import Header from "./Header"
 import { Mail, Lock, Eye, EyeOff, Briefcase, AlertCircle, Loader } from "lucide-react"
+import { baseURL } from './constants';
 
 export default function EmployerSignIn() {
   const [showPassword, setShowPassword] = useState(false)
@@ -25,7 +26,7 @@ export default function EmployerSignIn() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("https://hanapwede.com/api/login/", {
+      const response = await fetch(`${baseURL}/api/login/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),

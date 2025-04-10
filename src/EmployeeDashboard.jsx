@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import LoggedInHeader from "./LoggedInHeader"
 import { useNavigate } from "react-router-dom"
+import { baseURL } from './constants';
 import {
   Users,
   Briefcase,
@@ -42,7 +43,7 @@ export default function EmployeeDashboard() {
 
   const handleChat = async (employerId) => {
     try {
-      const response = await fetch("https://hanapwede.com/api/create_chat/", {
+      const response = await fetch(`${baseURL}/api/create_chat/`, {
         method: "POST",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -70,7 +71,7 @@ export default function EmployeeDashboard() {
       return
     }
 
-    fetch(`https://hanapwede.com/api/recommend_jobs/?user_id=${userId}`, {
+    fetch(`${baseURL}/api/recommend_jobs/?user_id=${userId}`, {
       method: "GET",
       headers: {
         Authorization: `Token ${authToken}`,
@@ -97,7 +98,7 @@ export default function EmployeeDashboard() {
   // Fetch all jobs when tab changes
   useEffect(() => {
     if (activeTab === "all") {
-      fetch("https://hanapwede.com/api/all-jobs/", {
+      fetch(`${baseURL}/api/all-jobs/`, {
         method: "GET",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -114,7 +115,7 @@ export default function EmployeeDashboard() {
   useEffect(() => {
     setStatsLoading(true)
 
-    fetch("https://hanapwede.com/api/platform-statistics/", {
+    fetch(`${baseURL}/api/platform-statistics/`, {
       method: "GET",
       headers: {
         Authorization: `Token ${authToken}`,

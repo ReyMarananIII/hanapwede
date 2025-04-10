@@ -5,6 +5,7 @@ import { Calendar, MapPin, Users, Edit, Trash2, Plus, AlertCircle, Loader, Eye, 
 import JobFairCreationForm from "./JobFairCreationForm"
 import EditJobFairForm from "./EditJobFairForm"
 import { useNavigate } from "react-router-dom"
+import { baseURL } from './constants';
 
 export default function EmployerJobFairs() {
   const [jobFairs, setJobFairs] = useState([])
@@ -27,7 +28,7 @@ export default function EmployerJobFairs() {
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch("https://hanapwede.com/api/jobfairs/", {
+      const response = await fetch(`${baseURL}/api/jobfairs/`, {
         headers: {
           Authorization: `Token ${token}`,
         },
@@ -55,7 +56,7 @@ export default function EmployerJobFairs() {
     try {
       const token = localStorage.getItem("authToken")
    
-      const response = await fetch("https://hanapwede.com/api/jobfairs/", {
+      const response = await fetch(`${baseURL}/api/jobfairs/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -81,7 +82,7 @@ export default function EmployerJobFairs() {
   const handleUpdateJobFair = async (jobFairId, updatedData) => {
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`https://hanapwede.com/api/jobfairs/${jobFairId}/`, {
+      const response = await fetch(`${baseURL}/api/jobfairs/${jobFairId}/`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -111,7 +112,7 @@ export default function EmployerJobFairs() {
     setIsDeleting(true)
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`https://hanapwede.com/api/jobfairs/${selectedJobFair.id}/`, {
+      const response = await fetch(`${baseURL}/api/jobfairs/${selectedJobFair.id}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Token ${token}`,

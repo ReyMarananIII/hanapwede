@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import LoggedInHeader from "./LoggedInHeader"
 import { useNavigate } from "react-router-dom"
+import { baseURL } from './constants';
 import {
   CheckCircle,
   XCircle,
@@ -48,7 +49,7 @@ export default function EmployerDashboard() {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch("https://hanapwede.com/api/employer-dashboard", {
+      const response = await fetch(`${baseURL}/api/employer-dashboard`, {
         method: "GET",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -93,7 +94,7 @@ export default function EmployerDashboard() {
 
     try {
       const response = await fetch(
-        `https://hanapwede.com/api/applications/${selectedApplicant.application_id}/approve/`,
+        `${baseURL}/api/applications/${selectedApplicant.application_id}/approve/`,
         {
           method: "POST",
           headers: {
@@ -146,7 +147,7 @@ export default function EmployerDashboard() {
 
     try {
       const response = await fetch(
-        `https://hanapwede.com/api/applications/${selectedApplicant.application_id}/decline/`,
+        `${baseURL}/api/applications/${selectedApplicant.application_id}/decline/`,
         {
           method: "POST",
           headers: {
@@ -214,7 +215,7 @@ export default function EmployerDashboard() {
 
     try {
 
-      const response = await fetch(`https://hanapwede.com/api/delete-job/${selectedJob.post_id}/`, {
+      const response = await fetch(`${baseURL}/api/delete-job/${selectedJob.post_id}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -268,7 +269,7 @@ const handleDeleteApplication = async () => {
 
   try {
     const response = await fetch(
-      `https://hanapwede.com/api/delete-application/${selectedApplicant.application_id}/`,
+      `${baseURL}/api/delete-application/${selectedApplicant.application_id}/`,
       {
         method: "DELETE",
         headers: {

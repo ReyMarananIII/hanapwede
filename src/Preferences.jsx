@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import LoggedInHeader from "./LoggedInHeader";
 import { useNavigate } from "react-router-dom";
-
+import { baseURL } from './constants';
 const Preferences = ({ onPreferencesSaved }) => {
   const [tags, setTags] = useState([]); 
   const [selectedTags, setSelectedTags] = useState([]); 
@@ -15,7 +15,7 @@ const Preferences = ({ onPreferencesSaved }) => {
 
     const fetchTags = async () => {
       try {
-        const response = await fetch("https://hanapwede.com/api/tags/");
+        const response = await fetch(`${baseURL}/api/tags/`);
         if (!response.ok) throw new Error("Failed to fetch tags");
         const data = await response.json();
         setTags(data);
@@ -26,7 +26,7 @@ const Preferences = ({ onPreferencesSaved }) => {
 
     const fetchUserPreferences = async () => {
       try {
-        const response = await fetch("https://hanapwede.com/api/preferences/", {
+        const response = await fetch(`${baseURL}/api/preferences/`, {
           headers: {
             Authorization: `Token ${authToken}`,
             "Content-Type": "application/json",
@@ -66,7 +66,7 @@ const Preferences = ({ onPreferencesSaved }) => {
     }
 
     try {
-      const response = await fetch("https://hanapwede.com/api/save-preferences/", {
+      const response = await fetch(`${baseURL}/api/save-preferences/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
