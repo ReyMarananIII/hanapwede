@@ -166,7 +166,7 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
-      <LoggedInHeader />
+      {/*<LoggedInHeader />*/}
 
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-6">Job Feed</h1>
@@ -356,7 +356,7 @@ export default function EmployeeDashboard() {
           </div>
         </div>
       </div>
-      <ForumPage />
+      {/*<ForumPage />*/}
     </div>
   )
 }

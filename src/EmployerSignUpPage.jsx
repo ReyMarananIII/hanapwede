@@ -52,7 +52,7 @@ export default function EmployerSignUpPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess("Account created successfully! You can now log in.");
+        setSuccess("Account created successfully! Please check your email to verify your account.");
         setFormData({ first_name: "", last_name: "", email: "", password: "", confirmPassword: "" });
       } else {
         setError(data.error || "Signup failed.");

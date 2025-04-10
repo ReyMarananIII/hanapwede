@@ -56,8 +56,8 @@ export default function ChatRoom() {
 
 
   useEffect(() => {
-    const ws = new WebSocket(`ws://localhost:8000/ws/chat/${roomId}/`);     //LOCAL
-    //const ws = new WebSocket(`wss://${window.location.host}/ws/chat/${roomId}/`); //PRODUCTION
+    //const ws = new WebSocket(`ws://localhost:8000/ws/chat/${roomId}/`);     //LOCAL
+    const ws = new WebSocket(`wss://${window.location.host}/ws/chat/${roomId}/`); //PRODUCTION
     setSocket(ws)
 
     ws.onmessage = (event) => {

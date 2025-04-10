@@ -59,7 +59,7 @@ export default function EmployerProfile() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#F8FBFF]">
-        <LoggedInHeader />
+        {/*<LoggedInHeader />*/}
         <div className="flex items-center justify-center h-[calc(100vh-64px)]">
           <div className="text-center">
             <Loader className="w-12 h-12 text-blue-600 animate-spin mx-auto mb-4" />
@@ -73,7 +73,7 @@ export default function EmployerProfile() {
   if (error) {
     return (
       <div className="min-h-screen bg-[#F8FBFF]">
-        <LoggedInHeader />
+       {/* <LoggedInHeader />*/}
         <div className="flex items-center justify-center h-[calc(100vh-64px)]">
           <div className="bg-white rounded-lg shadow-md p-8 max-w-md w-full">
             <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
@@ -97,7 +97,7 @@ export default function EmployerProfile() {
   if (!profileData) {
     return (
       <div className="min-h-screen bg-[#F8FBFF]">
-        <LoggedInHeader />
+        {/*<LoggedInHeader />*/}
         <div className="flex items-center justify-center h-[calc(100vh-64px)]">
           <div className="bg-white rounded-lg shadow-md p-8 max-w-md w-full text-center">
             <Building className="w-16 h-16 text-gray-400 mx-auto mb-4" />
@@ -120,7 +120,7 @@ export default function EmployerProfile() {
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
-      <LoggedInHeader />
+     {/* <LoggedInHeader />*/}
 
       {/* Banner */}
       <div className="h-40 bg-gradient-to-r from-[#2563EB] to-[#3B82F6]" />

@@ -9,7 +9,10 @@ class EmployerProfileSerializer(serializers.ModelSerializer):
         model = EmployerProfile
         fields = ["comp_name", "comp_desc", "comp_site", "industry", "contact_no", "location","user_id"]
 
-
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'email', 'user_type', 'profile_picture']
 
 class JobPostSerializer(serializers.ModelSerializer):
     disabilitytag = serializers.PrimaryKeyRelatedField(

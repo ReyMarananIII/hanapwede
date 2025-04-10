@@ -8,6 +8,7 @@ export default function LoggedInHeader() {
   const userRole = localStorage.getItem("userType");
   const [showNotifications, setShowNotifications] = useState(false)
   const [notifications, setNotifications] = useState([])
+  const [isLoggedIn] = useState(!!localStorage.getItem("authToken"))
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -117,7 +118,16 @@ export default function LoggedInHeader() {
 
   return (
     <header className="flex h-16 items-center justify-between px-4 lg:px-16 bg-white relative">
-      <Link to="/" className="flex items-center">
+      <Link 
+      
+      to={
+        !isLoggedIn
+          ? "/" 
+          : userRole === "Employee"
+          ? "/employee-components" 
+          : "/employer-components" 
+      }
+       className="flex items-center">
         <img src="/hanapwedelogo.png" alt="Logo" className="h-6 w-auto" />
       </Link>
       <div className="flex items-center gap-6">
@@ -132,16 +142,7 @@ export default function LoggedInHeader() {
             </div>
 
 
-            <div className="relative flex flex-col items-center">
-              <button
-                onClick={() => navigate("/job-fairs")}
-                className="relative p-2 text-gray-600 hover:text-gray-800 rounded-full hover:bg-gray-100"
-              >
-                <Briefcase className="h-5 w-5" />
-              </button>
-              <span className="text-xs text-gray-600 mt-1">Job Fair</span>
-            </div>
-
+          
      {/* Notifications */}
      <div className="relative flex flex-col items-center">
           <button
@@ -221,7 +222,11 @@ export default function LoggedInHeader() {
         </div>
 
         {/* Profile Dropdown */}
+
+     
         <div className="relative">
+
+          
         <button
     onClick={toggleDropdown}
     className="w-10 h-10 rounded-full flex items-center justify-center focus:outline-none"
@@ -234,11 +239,13 @@ export default function LoggedInHeader() {
     />
   </button>
 
-          {/* Dropdown Menu */}
+        
           {isDropdownOpen && (
             <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-md shadow-lg z-100">
               <ul className="py-2 text-sm text-gray-700">
-                <li>
+                  
+                  {/*
+                   <li>
                   <Link
                     to={userRole === "Employee" ? "/job-seeker/profile" : "/employer/profile"}
                     className="block px-4 py-2 hover:bg-gray-100"
@@ -246,11 +253,12 @@ export default function LoggedInHeader() {
                   >
                     Profile
                   </Link>
-                </li>
+                </li> 
+                */}
 
   
                 
-
+    {/*  
                 <li>
                   <Link
                     to={userRole === "Employee" ? "/job-seeker/dashboard" : "/employer/dashboard"}
@@ -260,6 +268,7 @@ export default function LoggedInHeader() {
                     Dashboard
                   </Link>
                 </li>
+    }*/}
 
                 {userRole === 'Employee' && (
   <li>
@@ -288,7 +297,7 @@ export default function LoggedInHeader() {
 
 
 
-                
+                {/* 
                 {userRole !== "Employee" && (
   <li>
     <Link
@@ -300,7 +309,7 @@ export default function LoggedInHeader() {
     </Link>
   </li>
 )}
-
+*/}
 
 
 

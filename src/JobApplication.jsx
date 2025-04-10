@@ -177,7 +177,7 @@ export default function JobApplication() {
 
       setSubmitSuccess(true)
       setTimeout(() => {
-        navigate("/job-seeker/dashboard")
+        navigate("/employee-components")
       }, 3000)
     } catch (error) {
       handleError("Error submitting application: " + error.message)
@@ -211,7 +211,7 @@ export default function JobApplication() {
             <p className="text-red-500 text-center">{error}</p>
             <div className="mt-6 text-center">
               <button
-                onClick={() => navigate("/job-seeker/dashboard")}
+                onClick={() => navigate("/employee-components")}
                 className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
               >
                 Return to Dashboard

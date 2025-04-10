@@ -15,7 +15,7 @@ export default function LandingPage() {
   const handleJoinAsCandidate = () => {
     const authToken = localStorage.getItem("authToken"); 
     if (authToken) {
-      navigate("/job-seeker/dashboard");
+      navigate("/employee-components");
     } else {
       navigate("/job-seeker/signup");
     }

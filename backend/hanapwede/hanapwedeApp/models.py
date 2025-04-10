@@ -24,14 +24,19 @@ class DisabilityTag(models.Model):
     def __str__(self):
         return self.name
     
+def user_directory_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/profile_pics/user_<id>/<filename>
+    return f'profile_pics/user_{instance.id}/{filename}'
+
 class User(AbstractUser):
-    preferences = models.ManyToManyField(Tag, blank=True)
+    preferences = models.ManyToManyField('Tag', blank=True)
     USER_TYPES = (
         ('employee', 'Employee'),
         ('employer', 'Employer'),
     )
     user_type = models.CharField(max_length=10, choices=USER_TYPES)
     is_email_verified = models.BooleanField(default=False)
+    profile_picture = models.ImageField(upload_to=user_directory_path, blank=True, null=True)
 
     def __str__(self):
         return self.username

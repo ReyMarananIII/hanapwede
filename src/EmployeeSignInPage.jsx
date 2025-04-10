@@ -54,7 +54,7 @@ export default function EmployeeSignIn() {
         const preferencesData = await preferencesResponse.json()
         
         if (preferencesData.has_preferences) {
-          navigate("/job-seeker/dashboard")
+          navigate("/employee-components")
         } else {
           navigate("/job-seeker/preferences")
         }

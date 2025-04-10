@@ -382,7 +382,7 @@ export default function ApplicationTracker() {
                 </button>
               ) : (
                 <button
-                  onClick={() => navigate("/job-seeker/dashboard")}
+                  onClick={() => navigate("/employee-components")}
                   className="mt-4 px-4 py-2 bg-[#4CAF50] text-white rounded-md hover:bg-[#45a049]"
                 >
                   Browse Jobs

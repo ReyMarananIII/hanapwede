@@ -90,7 +90,7 @@ def verify_email(request, uidb64, token):
         messages.success(request, "Email verified successfully.")
     else:
         messages.error(request, "Invalid or expired verification link.")
-    frontend_url = "http://localhost:5173" #papaltan to
+    frontend_url = "https://hanapwede.com" #papaltan to
     return redirect(f"{frontend_url}/")
 @csrf_exempt
 def signup(request):
@@ -303,6 +303,13 @@ def save_preferences(request):
 @permission_classes([IsAuthenticated])
 def edit_profile(request):
     id = request.user.id
+    user = User.objects.filter(id=id).first()
+    profile_picture = request.FILES.get('profile_picture')
+    print(user)
+    print("profile",profile_picture)
+    if profile_picture:
+        user.profile_picture = profile_picture
+        user.save()
 
     try:
         user_profile = EmployeeProfile.objects.get(user_id=id)
@@ -1306,7 +1313,7 @@ def forgot_password(request):
                 subject = 'Password Reset Request'
                 message = f"Hi {user.first_name},\n\n" \
                 f"You requested a password reset. Click the link below to reset your password:\n" \
-                f"http://localhost:5173/reset-password/{uid}/{token}/\n\n" \
+                f"https://hanapwede.com/reset-password/{uid}/{token}/\n\n" \
                 f"If you didn't request this, please ignore this email."
 
                 send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [email])
@@ -1355,3 +1362,18 @@ def reset_password(request, uidb64, token):
             return JsonResponse({"error": "Invalid JSON data."}, status=400)
 
     return JsonResponse({"error": "Invalid request method."}, status=405)
+
+
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_profile_picture(request):
+    user = request.user
+    profile_picture_url = user.profile_picture.url if user.profile_picture else None
+
+    return Response({
+        "profile_picture": request.build_absolute_uri(profile_picture_url) if profile_picture_url else None
+    })

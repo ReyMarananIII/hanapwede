@@ -94,7 +94,7 @@ const Preferences = ({ onPreferencesSaved }) => {
       console.log(data.has_profile)
       if (response.ok) {
         handleSuccess("Preferences saved successfully!");
-        data.has_profile ? navigate("/job-seeker/dashboard") : navigate("/job-seeker/edit-profile");
+        data.has_profile ? navigate("/employee-components") : navigate("/job-seeker/edit-profile");
         onPreferencesSaved();
       
       } else {

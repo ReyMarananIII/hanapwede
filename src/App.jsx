@@ -38,6 +38,8 @@ import JobFairMain from "./JobFairMain";
 import ForgotPassword from "./ForgotPassword";
 import ResetPassword from "./ResetPassword";
 import ManageEmployers from "./ManageEmployers";
+import ComponentWrapper from "./ComponentWrapper";
+import EmployerComponentWrapper from "./EmployerComponentWrapper";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -60,6 +62,11 @@ function App() {
         <Route path="/job-fairs" element={<JobFairMain />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:uid/:token" element={<ResetPassword/>} />
+
+
+     
+
+
         <Route 
         path="admin/user-approval"
           element={
@@ -111,6 +118,20 @@ function App() {
             </ProtectedRoute>
           } 
         />
+
+<Route 
+  path="/employee-components"
+  element={
+    <ProtectedRoute allowedRoles={["Employee"]}>
+      <ComponentWrapper
+        top1={<EmployeeProfile />}
+        top2={<EmployeeDashboard />}
+        top3={<JobFairMain />}
+        bottom={<ForumPage />}
+      />
+    </ProtectedRoute>
+  }
+/>
 
 
 <Route 
@@ -201,7 +222,19 @@ function App() {
           } 
         />
 
-
+<Route 
+  path="/employer-components"
+  element={
+    <ProtectedRoute allowedRoles={["Employer"]}>
+      <EmployerComponentWrapper
+        top1={<EmployerProfile />}
+        top2={<EmployerDashboard />}
+        top3={<JobFairMain />}
+        bottom={<ForumPage />}
+      />
+    </ProtectedRoute>
+  }
+/>
 
 
 <Route 

@@ -30,7 +30,7 @@ from hanapwedeApp.views import get_pending_users,approve_user,reject_user,get_pr
 from hanapwedeApp.views import get_user_details_redirect, delete_account, ocr_view,job_post_disability_tags, edit_job_post,job_post_tags,delete_job
 from hanapwedeApp.views import my_applications, all_reports,cancel_application,delete_application,JobFairJobListView,JobFairViewSet,JobFairRegistrationViewSet,EmployerJobListView,JobListDataView, EmployerJobFairJobListView
 from hanapwedeApp.views import JobFairApplicationsView,UploadPWDCardView,GetPWDCardImage, verify_email
-from hanapwedeApp.views import forgot_password, reset_password,get_all_employers,delete_employer,user_has_profile
+from hanapwedeApp.views import forgot_password, reset_password,get_all_employers,delete_employer,user_has_profile,get_profile_picture
 
 from django.conf.urls.static import static
 from django.conf import settings
@@ -106,4 +106,7 @@ urlpatterns = [
      # URL for requesting password reset
      path('api/forgot-password/', forgot_password, name='forgot_password'),
     path('api/reset-password/<uidb64>/<token>/',reset_password, name='reset_password'),
+
+
+    path('api/get-profile-picture/', get_profile_picture, name='get-profile-picture'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

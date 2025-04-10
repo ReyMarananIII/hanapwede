@@ -48,7 +48,7 @@ export default function EmployerSignIn() {
         localStorage.setItem("username", data.username)
         
         console.log(data.has_profile)
-        data.has_profile ? navigate("/employer/dashboard") : navigate("/employer/edit-profile");
+        data.has_profile ? navigate("/employer-components") : navigate("/employer/edit-profile");
       
         
          
@@ -148,7 +148,13 @@ export default function EmployerSignIn() {
               </div>
             </div>
 
-       
+            <div className="text-sm">
+            <span className="text-gray-600">Forgot Password?</span>{" "}
+            <Link to="/forgot-password" className="font-medium text-green-600 hover:text-green-500">
+             Reset now
+            </Link>
+          </div>
+           
 
             <div>
               <button

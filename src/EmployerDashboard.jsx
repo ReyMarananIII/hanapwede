@@ -343,7 +343,7 @@ const handleDeleteApplication = async () => {
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
-      <LoggedInHeader />
+      {/*<LoggedInHeader />*/}
 
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">

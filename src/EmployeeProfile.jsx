@@ -47,6 +47,7 @@ export default function EmployeeProfile() {
   const userId = localStorage.getItem("userId")
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [profilePicture,setProfilePicture] = useState(null)
 
   useEffect(() => {
     const token = localStorage.getItem("authToken")
@@ -78,6 +79,34 @@ export default function EmployeeProfile() {
         setIsLoading(false)
       })
   }, [userId])
+
+
+  useEffect(() => {
+    const getProfilePicture = async () => {
+      try {
+        const response = await fetch(`${baseURL}/api/get-profile-picture/`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Token ${localStorage.getItem('authToken')}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch profile picture');
+        }
+
+        const data = await response.json();
+        setProfilePicture(data.profile_picture);
+      } catch (error) {
+        setError(error.message); 
+        console.error(error);
+      }
+    };
+
+    getProfilePicture(); 
+
+  }, [userDetails]);
+  
 
   const tabs = [
     { id: "about", label: "About" },
@@ -119,7 +148,7 @@ export default function EmployeeProfile() {
   if (isLoading) {
     return (
       <div>
-        {isLoggedIn ? <LoggedInHeader /> : <Header />}
+       {/*{isLoggedIn ? <LoggedInHeader /> : <Header />}*/}
         <div className="flex items-center justify-center min-h-screen bg-[#F8FBFF]">
           <div className="flex flex-col items-center">
             <Loader className="w-10 h-10 text-[#4CAF50] animate-spin mb-4" />
@@ -133,7 +162,7 @@ export default function EmployeeProfile() {
   if (error) {
     return (
       <div>
-        {isLoggedIn ? <LoggedInHeader /> : <Header />}
+        {/*{isLoggedIn ? <LoggedInHeader /> : <Header />}*/}
         <div className="flex items-center justify-center min-h-screen bg-[#F8FBFF]">
           <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
             <div className="flex items-center justify-center text-red-500 mb-4">
@@ -150,7 +179,7 @@ export default function EmployeeProfile() {
   if (!userDetails) {
     return (
       <div>
-        {isLoggedIn ? <LoggedInHeader /> : <Header />}
+       {/* {isLoggedIn ? <LoggedInHeader /> : <Header />}*/}
         <div className="flex items-center justify-center min-h-screen bg-[#F8FBFF]">
           <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
             <div className="flex items-center justify-center text-gray-400 mb-4">
@@ -166,7 +195,7 @@ export default function EmployeeProfile() {
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
-      {isLoggedIn ? <LoggedInHeader /> : <Header />}
+      {/*{isLoggedIn ? <LoggedInHeader /> : <Header />}*/}
 
       {/* Profile Header with gradient banner */}
       <div className="h-40 bg-gradient-to-r from-[#4CAF50] to-[#00BCD4]" />
@@ -182,9 +211,16 @@ export default function EmployeeProfile() {
                   className="w-full h-full rounded-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full rounded-full bg-gray-100 flex items-center justify-center">
-                  <User className="w-16 h-16 text-gray-400" />
-                </div>
+                <div
+  className="w-full h-full rounded-full bg-gray-500 flex items-center justify-center"
+  style={{
+    backgroundImage: `url(${profilePicture})`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+  }}
+>
+  {!profilePicture && <User className="w-16 h-16 text-gray-400" />}
+</div>
               )}
             </div>
             <div>

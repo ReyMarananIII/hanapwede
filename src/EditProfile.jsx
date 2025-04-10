@@ -27,6 +27,8 @@ export default function EditProfile() {
   const [activeTab, setActiveTab] = useState("about")
   const navigate = useNavigate()
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [profilePicture, setProfilePicture] = useState(null);
+const [profilePicturePreview, setProfilePicturePreview] = useState(null);
   const userId = localStorage.getItem("userId")
   const [skills, setSkills] = useState([])
   useEffect(() => {
@@ -169,6 +171,12 @@ const handleSubmit = async (e) => {
     if (skills.length > 0) {
       formDataToSend.append("skills", skills.join(","));
     }
+    console.log(profilePicture)
+    
+    if (profilePicture) {
+      formDataToSend.append("profile_picture", profilePicture);
+    }
+    console.log(formDataToSend)
 
     // Append resume with correct field name
     if (resume) {
@@ -214,6 +222,9 @@ const handleSubmit = async (e) => {
           </div>
         </div>
 
+    
+
+
         <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-8">
           <div className="bg-white rounded-lg shadow-sm p-6">
             {/* Tabs */}
@@ -241,6 +252,35 @@ const handleSubmit = async (e) => {
             <form onSubmit={handleSubmit} className="space-y-6">
               {activeTab === "about" && (
                 <>
+
+<div>
+  <label className="block text-sm mb-2">Profile Picture</label>
+  <input
+    type="file"
+    accept="image/*"
+  onChange={(e) => {
+  const file = e.target.files[0];
+  if (file && file.type.startsWith("image/")) {
+    setProfilePicture(file);
+    setProfilePicturePreview(URL.createObjectURL(file)); 
+    setChangedFields((prev) => ({
+      ...prev,
+      profile_picture: file,
+    }));
+  } else {
+    handleError("Please select a valid image file (JPEG, PNG, etc.)");
+  }
+}}
+    className="w-full p-2 border rounded-md"
+  />
+  {profilePicturePreview && (
+    <img
+      src={profilePicturePreview}
+      alt="Preview"
+      className="mt-2 w-24 h-24 rounded-full object-cover border"
+    />
+  )}
+</div>
                   <div>
                     <label className="block text-sm mb-2">Full Name</label>
                     <input
