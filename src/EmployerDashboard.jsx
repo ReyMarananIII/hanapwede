@@ -462,6 +462,7 @@ const handleDeleteApplication = async () => {
               Current Job Postings
             </h2>
             <div className="bg-white rounded-lg shadow overflow-x-auto">
+            <div className="max-h-[500px] overflow-y-auto"> {/* This adds the scroll */}
               <table className="w-full">
                 <thead>
                   <tr className="border-b bg-gray-50">
@@ -521,6 +522,7 @@ const handleDeleteApplication = async () => {
                   )}
                 </tbody>
               </table>
+            </div>
             </div>
           </div>
 

@@ -29,7 +29,7 @@ export default function JobFairMain() {
   if (isLoading) {
     return (
       <div className="min-h-screen bg-[#F8FBFF]">
-        {/*<LoggedInHeader />*/}
+        <LoggedInHeader />
         <div className="flex items-center justify-center h-[calc(100vh-64px)]">
           <Loader className="h-8 w-8 text-blue-600 animate-spin" />
         </div>
@@ -39,7 +39,7 @@ export default function JobFairMain() {
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
-        {/*<LoggedInHeader />*/}
+        <LoggedInHeader />
       <div className="container mx-auto px-4 py-8">
         {userType === "Employer" ? <EmployerJobFairs /> : <JobSeekerJobFairs />}
       </div>

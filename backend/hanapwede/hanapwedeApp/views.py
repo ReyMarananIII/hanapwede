@@ -32,7 +32,7 @@ from .models import JobFair,PWDCard
 from .serializer import JobFairSerializer
 
 from .serializer import PostSerializer, CommentSerializer, ReportSerializer, BannedWordSerializer
-from .serializer import EmployeeProfileSerializer,NotificationSerializer, JobApplicationSerializerv2, JobFairRegistrationSerializer
+from .serializer import EmployeeProfileSerializer,NotificationSerializer,UserSerializer, JobApplicationSerializerv2, JobFairRegistrationSerializer
 from rest_framework.views import APIView
 
 #forgot password imports 
@@ -303,13 +303,15 @@ def save_preferences(request):
 @permission_classes([IsAuthenticated])
 def edit_profile(request):
     id = request.user.id
-    user = User.objects.filter(id=id).first()
+    user = User.objects.get(id=id)
     profile_picture = request.FILES.get('profile_picture')
     print(user)
     print("profile",profile_picture)
+    user_serializer = UserSerializer(user,data=request.data,partial=True)
     if profile_picture:
         user.profile_picture = profile_picture
-        user.save()
+    if user_serializer.is_valid():
+        user_serializer.save()
 
     try:
         user_profile = EmployeeProfile.objects.get(user_id=id)
@@ -445,7 +447,7 @@ def recommend_jobs(request):
     df = pd.DataFrame(job_data)
     df["combined_text"] = df["job_description"] + " " + df["skills_required"] + " " + df["tags"] +" " + df["category"] + ", " +  (df["disabilitytag"] + " ") * 2
 
-    user_profile = " ".join(preferred_tag_names) + ", " + (user_disability + " ") * 2
+    user_profile = " ".join(preferred_tag_names)*2 + ", " + (user_disability + " ") 
   
 
     tfidf_vectorizer = TfidfVectorizer(stop_words="english")
@@ -770,7 +772,9 @@ def get_user_chats(request):
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_pending_users (request):
-    users =  EmployeeProfile.objects.filter(activated=False)
+
+    users = EmployeeProfile.objects.filter(activated=False).select_related('user')
+
     serializer = EmployeeProfileSerializer(users, many=True)
     return Response(serializer.data)
 

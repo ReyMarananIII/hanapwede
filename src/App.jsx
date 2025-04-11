@@ -40,6 +40,8 @@ import ResetPassword from "./ResetPassword";
 import ManageEmployers from "./ManageEmployers";
 import ComponentWrapper from "./ComponentWrapper";
 import EmployerComponentWrapper from "./EmployerComponentWrapper";
+
+import PlatformStatistics from "./PlatformStatistics";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
   return (
@@ -72,6 +74,17 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Admin"]}>
               <AdminUserApprovalPage />
+              
+            </ProtectedRoute>
+          } 
+        />
+
+
+<Route 
+        path="admin/platform-statistics"
+          element={
+            <ProtectedRoute allowedRoles={["Admin"]}>
+              <PlatformStatistics />
               
             </ProtectedRoute>
           } 
@@ -123,13 +136,13 @@ function App() {
   path="/employee-components"
   element={
     <ProtectedRoute allowedRoles={["Employee"]}>
-      <ComponentWrapper
-        top1={<EmployeeProfile />}
-        top2={<EmployeeDashboard />}
-        top3={<JobFairMain />}
-        bottom={<ForumPage />}
-      />
-    </ProtectedRoute>
+    <ComponentWrapper
+      top1={<EmployeeProfile />}
+      top2={<EmployeeDashboard />}
+      top3={<JobFairMain />}
+      bottom={<ForumPage />}
+    />
+  </ProtectedRoute>
   }
 />
 

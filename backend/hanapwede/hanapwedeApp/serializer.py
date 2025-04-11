@@ -30,6 +30,11 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = '__all__'
 
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model= CustomUser
+        fields = ['id', 'username', 'first_name', 'last_name', 'email','profile_picture']
+
 class UserPreferenceSerializer(serializers.ModelSerializer):
     preferences = TagSerializer(many=True)
 
@@ -94,9 +99,27 @@ class BannedWordSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class EmployeeProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source="user.username", read_only=True)
+  
     class Meta:
         model= EmployeeProfile
-        fields ='__all__'
+        fields = [ 
+            'username',
+            'user',
+            'pro_headline',
+            'full_name',
+            'role',
+            'experience',
+            'bio',
+            'ID_no',
+            'skills',
+            'user_disability',
+            'employee_resume',
+            'user_disablitytag',
+            'contact_no',
+            'location',
+            'activated',
+        ]
 
 
 class NotificationSerializer(serializers.ModelSerializer):

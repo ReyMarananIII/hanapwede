@@ -14,6 +14,7 @@ export default function AdminLayout({ children }) {
     { name: "Manage Users", href: "/admin/manage-users", icon: Users },
     { name: "Manage Reports", href: "/admin/manage-reports", icon: Users },
     { name: "Manage Employers", href: "/admin/manage-employers", icon: LayoutDashboard },
+    { name: "Platform Statistics", href: "/admin/platform-statistics", icon: LayoutDashboard },
   ]
 
   const handleLogout = () => {

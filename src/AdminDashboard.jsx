@@ -65,6 +65,8 @@ export default function AdminDashboard() {
         }
 
         const data = await response.json()
+        console.log(data)
+        console.log(data.username)
         setPendingUsers(data)
       } catch (error) {
         console.error("Error fetching pending users:", error)
@@ -299,6 +301,13 @@ export default function AdminDashboard() {
                     >
                       User ID
                     </th>
+
+                    <th
+                      scope="col"
+                      className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    >
+                      Email
+                    </th>
                     <th
                       scope="col"
                       className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
@@ -338,6 +347,11 @@ export default function AdminDashboard() {
                             <div className="text-sm text-gray-500">User #{user.user}</div>
                           </div>
                         </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                          {user.username}
+                        </span>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">

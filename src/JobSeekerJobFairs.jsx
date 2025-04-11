@@ -145,7 +145,7 @@ export default function JobSeekerJobFairs() {
           <p className="text-gray-600 mb-6">There are no job fairs available at the moment. Please check back later.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {jobFairs.map((jobFair) => (
             <div key={jobFair.id} className="bg-white rounded-lg shadow-md overflow-hidden">
               <div className="p-6">

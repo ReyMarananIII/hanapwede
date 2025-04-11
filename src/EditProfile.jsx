@@ -193,7 +193,7 @@ const handleSubmit = async (e) => {
 
     if (response.ok) {
       handleSuccess("Profile updated successfully!");
-      navigate("/job-seeker/profile");
+      navigate("/employee-components");
     } else {
       console.error("Error submitting profile:", response.statusText);
       handleError("Failed to submit profile");
