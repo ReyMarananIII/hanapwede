@@ -105,7 +105,8 @@ export default function JobFairDetails({ jobFair, onClose }) {
 
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto">
+    <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
+
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center p-6 border-b">
           <h2 className="text-xl font-bold">{jobFair.title}</h2>
@@ -208,7 +209,7 @@ export default function JobFairDetails({ jobFair, onClose }) {
                           <span>{job.location}</span>
                         </div>
                       </div>
-                      <div className="mt-4 md:mt-0">
+                    {/*  <div className="mt-4 md:mt-0">
                         {job.has_applied ? (
                           <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
                             <CheckCircle className="h-4 w-4 mr-1" />
@@ -228,7 +229,7 @@ export default function JobFairDetails({ jobFair, onClose }) {
                             Apply Now
                           </button>
                         )}
-                      </div>
+                      </div> */}
                     </div>
                
                   </div>

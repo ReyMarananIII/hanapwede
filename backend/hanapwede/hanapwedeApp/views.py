@@ -193,7 +193,7 @@ def login_view(request):
     user = authenticate(username=user.username, password=password)
 
     if not user.is_email_verified:
-        return JsonResponse({"error": "Verify your email first."}, status=400)
+        return JsonResponse({"error": "Please check your inbox and verify your email to continue."}, status=400)
    
     has_profile=False
     if user.user_type == "Employer":
@@ -205,7 +205,7 @@ def login_view(request):
         profile = EmployeeProfile.objects.filter(user_id=user.id).first()
     
         if not profile.activated:
-            return JsonResponse({"error": "Registration Pending Approval"}, status=400)
+            return JsonResponse({"error": "Registration Pending Admin Approval"}, status=400)
         
     if user is not None:
         token, _ = Token.objects.get_or_create(user=user)
@@ -890,6 +890,18 @@ def delete_account(request):
     user = request.user
     user_obj = User.objects.get(id=user.id)
     emp_profile = EmployeeProfile.objects.get(user_id=user.id)
+
+    user_obj.delete()
+    emp_profile.delete()
+    return Response({"message": "Account deleted successfully"}, status=status.HTTP_200_OK)
+
+
+@api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
+def delete_emp_account(request):
+    user = request.user
+    user_obj = User.objects.get(id=user.id)
+    emp_profile = EmployerProfile.objects.get(user_id=user.id)
 
     user_obj.delete()
     emp_profile.delete()

@@ -233,7 +233,7 @@ const handleCreatePost = (e) => {
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
      {/* <LoggedInHeader />*/}
-      <div className="container mx-auto px-4 py-8">
+ <div className="container mx-auto px-4 py-8 h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-2xl font-bold">Forum</h1>
           <button
@@ -387,7 +387,8 @@ const handleCreatePost = (e) => {
         )}
       </div>
       {showNewPostModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+     <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
+
           <div className="bg-white rounded-lg max-w-2xl w-full p-6">
             <h2 className="text-xl font-bold mb-4">Create New Post</h2>
             {error && <p style={{ color: "red" }}>Unable to create post ({error})</p>} {/* Show error */}
@@ -429,9 +430,10 @@ const handleCreatePost = (e) => {
         </div>
       )}
       {showReportModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+   <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
+
           <div className="bg-white rounded-lg max-w-md w-full p-6">
-            <h2 className="text-xl font-bold mb-4">Report Post</h2>
+            <h2 className="text-xl font-bold mb-4">Report</h2>
             <p className="text-gray-600 mb-4">Please select the reason for reporting this post:</p>
             <select 
             className="w-full px-3 py-2 border rounded-lg mb-4 focus:ring-2 focus:ring-[#4CAF50] focus:border-transparent"

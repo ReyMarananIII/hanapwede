@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import LoggedInHeader from "./LoggedInHeader"
 import PreferencesPage from "./PreferencesPage"
+import { useNavigate } from "react-router-dom"
 import Header from "./Header"
 import { baseURL } from './constants';
 import Swal from "sweetalert2"
@@ -48,6 +49,7 @@ export default function EmployeeProfile() {
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [profilePicture,setProfilePicture] = useState(null)
+  const navigate= useNavigate()
 
   useEffect(() => {
     const token = localStorage.getItem("authToken")
@@ -132,7 +134,7 @@ export default function EmployeeProfile() {
         localStorage.removeItem("userId")
         localStorage.removeItem("userType")
         localStorage.removeItem("username")
-        window.location.href = "/"
+        navigate("/")
       } else {
         throw new Error("Failed to delete profile")
       }
@@ -227,26 +229,27 @@ export default function EmployeeProfile() {
               <h1 className="text-2xl font-semibold text-white mb-1">
                 {userDetails.full_name || userDetails.username}
               </h1>
-              <p className="text-white opacity-90">{userDetails.profile?.pro_headline || "Job Seeker"}</p>
+              <p className="text-black-500 font-bold opacity-90">{userDetails.profile?.pro_headline || "Job Seeker"}</p>
             </div>
           </div>
 
           {isLoggedIn && (
             <div className="flex gap-3 mt-4">
-              <Link
-                to="/job-seeker/edit-profile"
-                className="px-4 py-2 bg-white text-[#4CAF50] border border-[#4CAF50] rounded-md shadow-sm hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
-              >
-                <Edit className="w-4 h-4 inline mr-2" />
-                Edit Profile
-              </Link>
-              <button
-                onClick={() => setShowDeleteModal(true)}
-                className="px-4 py-2 bg-white text-red-600 border border-red-600 rounded-md shadow-sm hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
-              >
-                <Trash2 className="w-4 h-4 inline mr-2" />
-                Delete Profile
-              </button>
+        <Link
+    to="/employer/edit-profile"
+    className="px-3 py-1.5 text-sm bg-white text-blue-600 border border-blue-600 rounded-md shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center"
+  >
+    <Edit className="w-4 h-4 mr-2" />
+    Edit Profile
+  </Link>
+
+  <button
+    onClick={() => setShowDeleteModal(true)}
+    className="px-3 py-1.5 text-sm bg-white text-red-600 border border-red-600 rounded-md shadow-sm hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors flex items-center"
+  >
+    <Trash2 className="w-4 h-4 mr-2" />
+    Delete Profile
+  </button>
             </div>
           )}
         </div>
@@ -393,7 +396,8 @@ export default function EmployeeProfile() {
       </div>
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
+
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <div className="text-center mb-6">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">

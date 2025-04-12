@@ -31,7 +31,7 @@ from hanapwedeApp.views import get_user_details_redirect, delete_account, ocr_vi
 from hanapwedeApp.views import my_applications, all_reports,cancel_application,delete_application,JobFairJobListView,JobFairViewSet,JobFairRegistrationViewSet,EmployerJobListView,JobListDataView, EmployerJobFairJobListView
 from hanapwedeApp.views import JobFairApplicationsView,UploadPWDCardView,GetPWDCardImage, verify_email
 from hanapwedeApp.views import forgot_password, reset_password,get_all_employers,delete_employer,user_has_profile,get_profile_picture
-
+from hanapwedeApp.views import delete_emp_account
 from django.conf.urls.static import static
 from django.conf import settings
 router = DefaultRouter()
@@ -78,6 +78,7 @@ urlpatterns = [
     path("api/admin/users/", get_all_users, name="get_all_users"),
     path("api/admin/delete-user/<int:id>/", delete_user, name="delete_user"),
     path("api/delete-account/", delete_account, name="delete_account"),
+    path("api/delete-emp-account/", delete_emp_account, name="delete_emp_account"),
     path("api/applications/<int:application_id>/approve/", approve_application, name="approve_application"),
     path("api/applications/<int:application_id>/decline/", decline_application, name="decline_application"),
     path("api/platform-statistics/", platform_statistics, name="platform-statistics"),

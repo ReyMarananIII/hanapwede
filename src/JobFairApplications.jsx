@@ -37,6 +37,7 @@ export default function JobFairApplications() {
   const [sortBy, setSortBy] = useState("newest")
   const [expandedApplication, setExpandedApplication] = useState(null)
   const [jobs, setJobs] = useState([])
+  const [registrationCount,setRegistrationCount] = useState(0)
   const authToken = localStorage.getItem("authToken")
 
   // Modal states for applicant actions
@@ -68,6 +69,8 @@ export default function JobFairApplications() {
 
       const data = await response.json()
       setJobFair(data)
+      console.log(data.registrations_count)
+      setRegistrationCount(data.registrations_count)
       
     } catch (error) {
       console.error("Error fetching job fair:", error)
@@ -358,7 +361,7 @@ export default function JobFairApplications() {
 
         <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
           <h1 className="text-2xl font-bold mb-2">
-            {jobFair ? `Applications for ${jobFair.title}` : "Job Fair Applications"}
+            {jobFair ? ` ${jobFair.title} Details` : "Job Fair Details"}
           </h1>
           <div className="text-gray-600">
             {jobFair && (
@@ -371,8 +374,8 @@ export default function JobFairApplications() {
         </div>
 
         {/* Application Statistics */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-          <div className="bg-white rounded-lg shadow-sm p-4 flex items-center">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+           {/* <div className="bg-white rounded-lg shadow-sm p-4 flex items-center">
             <div className="rounded-full bg-blue-100 p-3 mr-4">
               <Briefcase className="h-5 w-5 text-blue-600" />
             </div>
@@ -380,9 +383,9 @@ export default function JobFairApplications() {
               <p className="text-sm text-gray-500">Total Applications</p>
               <p className="text-2xl font-bold">{stats.total}</p>
             </div>
-          </div>
+          </div> */}
 
-          <div className="bg-white rounded-lg shadow-sm p-4 flex items-center">
+          {/*<div className="bg-white rounded-lg shadow-sm p-4 flex items-center">
             <div className="rounded-full bg-yellow-100 p-3 mr-4">
               <Clock className="h-5 w-5 text-yellow-600" />
             </div>
@@ -390,19 +393,19 @@ export default function JobFairApplications() {
               <p className="text-sm text-gray-500">Pending</p>
               <p className="text-2xl font-bold">{stats.pending}</p>
             </div>
-          </div>
+          </div> */}
 
           <div className="bg-white rounded-lg shadow-sm p-4 flex items-center">
             <div className="rounded-full bg-green-100 p-3 mr-4">
               <CheckCircle className="h-5 w-5 text-green-600" />
             </div>
             <div>
-              <p className="text-sm text-gray-500">Approved</p>
-              <p className="text-2xl font-bold">{stats.approved}</p>
+          <p className="text-sm text-gray-500">Registered Job Seekers</p>
+<p className="text-2xl font-bold">{registrationCount}</p>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-sm p-4 flex items-center">
+          {/*<div className="bg-white rounded-lg shadow-sm p-4 flex items-center">
             <div className="rounded-full bg-red-100 p-3 mr-4">
               <XCircle className="h-5 w-5 text-red-600" />
             </div>
@@ -411,8 +414,9 @@ export default function JobFairApplications() {
               <p className="text-2xl font-bold">{stats.declined}</p>
             </div>
           </div>
+          */}
 
-          <div className="bg-white rounded-lg shadow-sm p-4 flex items-center">
+          {/*<div className="bg-white rounded-lg shadow-sm p-4 flex items-center">
             <div className="rounded-full bg-blue-100 p-3 mr-4">
               <Calendar className="h-5 w-5 text-blue-600" />
             </div>
@@ -420,7 +424,7 @@ export default function JobFairApplications() {
               <p className="text-sm text-gray-500">Interviewed</p>
               <p className="text-2xl font-bold">{stats.interviewed}</p>
             </div>
-          </div>
+          </div>*/}
         </div>
 
         {/* Filters and Search */}
@@ -578,7 +582,7 @@ export default function JobFairApplications() {
 
                         {application.application_status === "Pending" && (
                           <>
-                            <button
+                           {/* <button
                               onClick={() => openModal("approve", application)}
                               className="p-1 bg-green-50 text-green-600 rounded hover:bg-green-100 mr-2"
                               title="Approve Application"
@@ -591,7 +595,7 @@ export default function JobFairApplications() {
                               title="Decline Application"
                             >
                               <XCircle className="w-5 h-5" />
-                            </button>
+                            </button>*/}
                           </>
                         )}
 
@@ -685,7 +689,7 @@ export default function JobFairApplications() {
                             className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
                           >
                             <MessageSquare className="h-4 w-4 mr-2" />
-                            Contact Applicant
+                            Contact Job Seeker
                           </button>
                         </div>
                       </div>

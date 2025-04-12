@@ -336,6 +336,16 @@ export default function LoggedInHeader() {
 
                 <li>
                   <Link
+                    to={"/accessibility/"}
+                    className="block px-4 py-2 hover:bg-gray-100"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    Accessibility
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
                     to={"/privacy-policy/"}
                     className="block px-4 py-2 hover:bg-gray-100"
                     onClick={() => setIsDropdownOpen(false)}

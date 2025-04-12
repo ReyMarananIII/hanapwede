@@ -299,7 +299,7 @@ export default function PrivacyPolicy() {
           
             </div>
 
-            {/* Footer */}
+   
             <div className="mt-8 pt-6 border-t border-gray-200 text-center">
               <p className="text-sm text-gray-500">
                 By using our platform, you acknowledge that you have read and understood this Privacy Policy.

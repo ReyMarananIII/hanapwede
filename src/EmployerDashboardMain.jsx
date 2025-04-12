@@ -16,7 +16,6 @@ import {
   Loader,
   Edit,
   Trash2,
-  Maximize2
 } from "lucide-react"
 
 export default function EmployerDashboard() {
@@ -344,26 +343,17 @@ const handleDeleteApplication = async () => {
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
-      {/*<LoggedInHeader />*/}
+      <LoggedInHeader />
 
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-        
+          <h1 className="text-2xl font-bold">Employer Dashboard</h1>
           <button
             onClick={() => navigate("/employer/post-job")}
             className="bg-[#4CAF50] text-white px-4 py-2 rounded hover:bg-[#45a049] flex items-center"
           >
             <Briefcase className="w-4 h-4 mr-2" />
             Post New Job
-          </button>
-
-          <button
-            onClick={() => navigate("/employer/dashboard")}
-            className="bg-[#7cd1ed] text-white px-4 py-2 rounded hover:bg-[#45a049] flex items-center"
-          >
-            <Maximize2 className="w-4 h-4 mr-2" />
-            Full Dashboard
           </button>
         </div>
 
@@ -561,7 +551,7 @@ const handleDeleteApplication = async () => {
 
       {/* Modal for application actions */}
       {showModal && (
-    <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
 
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
             {/* Modal Header */}

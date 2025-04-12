@@ -11,8 +11,6 @@ import {
   FileText,
   Accessibility,
   Eye,
-  Maximize2,
-  SquareChartGantt,
   Brain,
   Ear,
   ShipWheelIcon as Wheelchair,
@@ -23,7 +21,7 @@ import {
   Loader,
 } from "lucide-react"
 
-export default function EmployeeDashboard() {
+export default function EmployeeDashboardMain() {
   const [location, setLocation] = useState("")
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
@@ -139,12 +137,12 @@ export default function EmployeeDashboard() {
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
-      {/*<LoggedInHeader />*/}
+      <LoggedInHeader />
 
       <div className="container mx-auto px-4 py-8">
         <h1 className="text-2xl font-bold mb-6">Job Feed</h1>
 
-        {/* Statistics Section */}
+       
       
 
         <div className="flex gap-4 mb-6 border-b">
@@ -163,6 +161,7 @@ export default function EmployeeDashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-h-[500px] overflow-y-auto">
+
           <div className="space-y-6">
             <div className="space-y-4">
               <div>
@@ -183,23 +182,13 @@ export default function EmployeeDashboard() {
                 <div>
             <h3 className="text-md font-medium mb-3 flex items-center mt-6 text-gray-500">
               <Briefcase className="h-4 w-4 mr-2 text-gray-400" />
-             Actions
+              Job Applications
             </h3>
             <button
               onClick={() => navigate(`/job-seeker/track-job`)}
               className="bg-[#7cd1ed] text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex mt-5 items-center"
             >
-<SquareChartGantt className="w-4 h-4 mr-2" />
-
-              Applications 
-            </button>
-
-            <button
-              onClick={() => navigate(`/job-seeker/dashboard`)}
-              className="bg-[#7cd1ed] text-white px-4 py-2 rounded-md hover:bg-blue-700 transition flex mt-5 items-center"
-            >
-                <Maximize2 className="w-4 h-4 mr-2" />
-                Dashboard
+              Track Applications
             </button>
           </div>
               </div>

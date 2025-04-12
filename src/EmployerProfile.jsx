@@ -5,8 +5,10 @@ import { Link } from "react-router-dom"
 import LoggedInHeader from "./LoggedInHeader"
 import { useNavigate } from "react-router-dom"
 import { baseURL } from './constants';
+
 import {
   Building,
+  Trash2,
   FileText,
   Globe,
   Briefcase,
@@ -22,7 +24,40 @@ export default function EmployerProfile() {
   const [profileData, setProfileData] = useState(null)
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
   const userId = localStorage.getItem("userId")
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+
+
+  const handleDeleteProfile = async () => {
+    setIsDeleting(true)
+    try {
+      const token = localStorage.getItem("authToken")
+      const response = await fetch(`${baseURL}/api/delete-emp-account/`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Token ${token}`,
+        },
+      })
+
+      if (response.ok) {
+      
+        localStorage.removeItem("authToken")
+        localStorage.removeItem("userId")
+        localStorage.removeItem("userType")
+        localStorage.removeItem("username")
+        navigate("/")
+      } else {
+        throw new Error("Failed to delete profile")
+      }
+    } catch (error) {
+      console.error("Error deleting profile:", error)
+      handleError("Failed to delete profile. Please try again.")
+    } finally {
+      setIsDeleting(false)
+      setShowDeleteModal(false)
+    }
+  }
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -122,8 +157,8 @@ export default function EmployerProfile() {
     <div className="min-h-screen bg-[#F8FBFF]">
      {/* <LoggedInHeader />*/}
 
-      {/* Banner */}
-      <div className="h-40 bg-gradient-to-r from-[#2563EB] to-[#3B82F6]" />
+    
+      <div className="h-40 bg-gradient-to-r from-blue-500 to-indigo-600 p-6 rounded-2xl shadow-lg" />
 
       <div className="container mx-auto px-4 -mt-20">
         <div className="flex justify-between items-start mb-8">
@@ -138,20 +173,30 @@ export default function EmployerProfile() {
               ) : (
                 <Building className="w-16 h-16 text-gray-300" />
               )}
+              
             </div>
             <div>
-              <h1 className="text-2xl font-semibold text-black mb-6">{profileData.comp_name}</h1>
-              <p className="text-white opacity-90">{profileData.industry}</p>
+              <h1 className="text-2xl mb-2 font-semibold text-white">{profileData.comp_name}</h1>
+              <p className="text-black mb-4 opacity-90">{profileData.industry}</p>
             </div>
           </div>
-
+          <div className="flex gap-3 mt-4">
           <Link
-            to="/employer/edit-profile"
-            className="mt-4 px-4 py-2 bg-white text-blue-600 border border-blue-600 rounded-md shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-          >
-            <Edit className="w-4 h-4 inline mr-2" />
-            Edit Profile
-          </Link>
+    to="/employer/edit-profile"
+    className="px-3 py-1.5 text-sm bg-white text-blue-600 border border-blue-600 rounded-md shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center"
+  >
+    <Edit className="w-4 h-4 mr-2" />
+    Edit Profile
+  </Link>
+
+  <button
+    onClick={() => setShowDeleteModal(true)}
+    className="px-3 py-1.5 text-sm bg-white text-red-600 border border-red-600 rounded-md shadow-sm hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors flex items-center"
+  >
+    <Trash2 className="w-4 h-4 mr-2" />
+    Delete Profile
+  </button>
+              </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -272,6 +317,50 @@ export default function EmployerProfile() {
           </div>
         </div>
       </div>
+
+      {showDeleteModal && (
+    <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
+
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="text-center mb-6">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Delete Your Profile</h3>
+              <p className="text-sm text-gray-500">
+                Are you sure you want to delete your profile? This action cannot be undone and all your data will be
+                permanently removed.
+              </p>
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDeleteProfile}
+                disabled={isDeleting}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="-ml-1 mr-2 h-4 w-4" />
+                    Delete Profile
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

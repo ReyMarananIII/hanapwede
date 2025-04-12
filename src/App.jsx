@@ -40,12 +40,22 @@ import ResetPassword from "./ResetPassword";
 import ManageEmployers from "./ManageEmployers";
 import ComponentWrapper from "./ComponentWrapper";
 import EmployerComponentWrapper from "./EmployerComponentWrapper";
-
+import EmployeeDashboardMain from "./EmployeeDashboardMain";
+import EmployerDashboardMain from "./EmployerDashboardMain";
 import PlatformStatistics from "./PlatformStatistics";
+import HomeRedirect from "./HomeRedirect";
+
+import ScrollToTop from "./ScrollToTop";
+import { Navigate } from "react-router-dom";
 function App() {
   const [isOpen, setIsOpen] = useState(false);
+  const [isLoggedIn] = useState(!!localStorage.getItem("authToken"))
+  const userType = localStorage.getItem("userType");
+
+
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route path="/job-seeker/signin" element={<EmployeeSignIn />} />
         <Route path="/employer/signin" element={<EmployerSignIn />} />
@@ -54,7 +64,10 @@ function App() {
         <Route path="/hanapwede/forum" element={<ForumPage />} />
         <Route path="/chat/:roomId" element={<ChatRoom />} />
         <Route path="/user-chats" element={<UserChats />} />
-        <Route path="/" element={<LandingPage />} />
+     
+      
+        <Route path="/" element={<HomeRedirect/>} />
+    
         <Route path="/FAQS" element={<FAQPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
         <Route path="/admin/signin" element={<AdminLoginPage />} />
@@ -126,7 +139,7 @@ function App() {
           path="/job-seeker/dashboard" 
           element={
             <ProtectedRoute allowedRoles={["Employee"]}>
-              <EmployeeDashboard />
+              <EmployeeDashboardMain />
               
             </ProtectedRoute>
           } 
@@ -278,7 +291,7 @@ function App() {
           path="/employer/dashboard" 
           element={
             <ProtectedRoute allowedRoles={["Employer"]}>
-              <EmployerDashboard />
+              <EmployerDashboardMain />
             </ProtectedRoute>
           } 
         />
