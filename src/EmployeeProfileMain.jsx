@@ -259,7 +259,7 @@ export default function EmployeeProfile() {
     </div>
 
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_5px] gap-8">
           {/* Main Content */}
           <div className="bg-white rounded-lg shadow-sm p-6">
             <div className="flex gap-6 border-b mb-6">

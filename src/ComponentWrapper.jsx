@@ -10,7 +10,7 @@ const ComponentWrapper = ({ top1, top2, bottom }) => {
         <div className="flex flex-col lg:flex-row gap-6 mb-6">
           {/* Phone-sized container for top1 */}
           <div className="w-full lg:w-[375px] flex-shrink-0 mx-auto lg:mx-0">
-       <div className="bg-white rounded-xl shadow-md overflow-hidden h-[1300px] max-h-[120vh] ">
+       <div className="bg-white rounded-xl shadow-md overflow-hidden h-[1000px] max-h-[120vh] ">
               <div className="p-4">
                 {/* Phone-sized preview */}
                 {top1}
@@ -20,7 +20,7 @@ const ComponentWrapper = ({ top1, top2, bottom }) => {
 
           {/* Larger container for top2 that takes remaining space */}
           <div className="flex-grow w-full">
-            <div className="bg-white rounded-xl shadow-md overflow-hidden h-[1300px] max-h-[120vh] overflow-y-auto">
+            <div className="bg-white rounded-xl shadow-md overflow-hidden h-[1000px] max-h-[120vh] overflow-y-auto">
               <div className="p-4">{top2}</div>
             </div>
           </div>
