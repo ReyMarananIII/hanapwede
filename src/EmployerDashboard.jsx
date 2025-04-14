@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { baseURL } from "./constants"
 import LoggedInHeader from "./LoggedInHeader"
 import { useNavigate } from "react-router-dom"
 import {
@@ -47,7 +48,7 @@ export default function EmployerDashboard() {
   // Fetch dashboard data
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/api/employer-dashboard", {
+      const response = await fetch(`${baseURL}/api/employer-dashboard`, {
         method: "GET",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -66,6 +67,55 @@ export default function EmployerDashboard() {
     }
   }
 
+  const handleDeleteApplication = async () => {
+    if (!selectedApplicant) return;
+  
+    setIsProcessing(true);
+    setActionMessage({ type: "", message: "" });
+  
+    try {
+      const response = await fetch(
+        `${baseURL}/api/delete-application/${selectedApplicant.application_id}/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Token ${authToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+  
+      if (!response.ok) {
+        throw new Error("Failed to delete application");
+      }
+  
+      setDashboardData((prev) => ({
+        ...prev,
+        applicants: prev.applicants.filter(
+          (app) => app.application_id !== selectedApplicant.application_id
+        ),
+      }));
+  
+      setActionMessage({
+        type: "success",
+        message: "Application deleted successfully!",
+      });
+  
+      setTimeout(() => {
+         closeModal();
+        fetchDashboardData();
+      }, 1000);
+    } catch (error) {
+      console.error("Error deleting application:", error);
+      setActionMessage({
+        type: "error",
+        message: "Failed to delete application. Please try again.",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+  // end of delete application functions
   // Open modal with appropriate type for applicant actions
   const openModal = (type, applicant) => {
     setModalType(type)
@@ -92,7 +142,7 @@ export default function EmployerDashboard() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/applications/${selectedApplicant.application_id}/approve/`,
+        `${baseURL}/api/applications/${selectedApplicant.application_id}/approve/`,
         {
           method: "POST",
           headers: {
@@ -124,7 +174,7 @@ export default function EmployerDashboard() {
         closeModal()
         // Refresh data
         fetchDashboardData()
-      }, 2000)
+      }, 1000)
     } catch (error) {
       console.error("Error approving application:", error)
       setActionMessage({
@@ -145,7 +195,7 @@ export default function EmployerDashboard() {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8000/api/applications/${selectedApplicant.application_id}/decline/`,
+        `${baseURL}/api/applications/${selectedApplicant.application_id}/decline/`,
         {
           method: "POST",
           headers: {
@@ -177,7 +227,7 @@ export default function EmployerDashboard() {
         closeModal()
         // Refresh data
         fetchDashboardData()
-      }, 2000)
+      }, 1000)
     } catch (error) {
       console.error("Error declining application:", error)
       setActionMessage({
@@ -212,7 +262,7 @@ export default function EmployerDashboard() {
     setJobActionMessage({ type: "", message: "" })
 
     try {
-      const response = await fetch(`http://localhost:8000/api/jobs/${selectedJob.post_id}/`, {
+      const response = await fetch(`${baseURL}/api/delete-job/${selectedJob.post_id}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -241,7 +291,7 @@ export default function EmployerDashboard() {
         closeDeleteModal()
         // Refresh data
         fetchDashboardData()
-      }, 2000)
+      }, 1000)
     } catch (error) {
       console.error("Error deleting job:", error)
       setJobActionMessage({
@@ -300,7 +350,7 @@ export default function EmployerDashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          {/* Candidates Table */}
+     
           <div className="lg:col-span-3">
             <h2 className="text-lg font-semibold mb-4 flex items-center">
               <User className="w-5 h-5 mr-2 text-blue-600" />
@@ -311,10 +361,11 @@ export default function EmployerDashboard() {
                 <thead>
                   <tr className="border-b bg-gray-50">
                     <th className="text-left p-4 font-medium text-gray-600">Name</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Role</th>
+                    <th className="text-left p-4 font-medium text-gray-600">Skills</th>
                     <th className="text-left p-4 font-medium text-gray-600">Experience</th>
                     <th className="text-left p-4 font-medium text-gray-600">Location</th>
                     <th className="text-left p-4 font-medium text-gray-600">Status</th>
+                    <th className="text-left p-4 font-medium text-gray-600">Contact</th>
                     <th className="text-left p-4 font-medium text-gray-600">Actions</th>
                   </tr>
                 </thead>
@@ -323,10 +374,10 @@ export default function EmployerDashboard() {
                     dashboardData.applicants.map((candidate, index) => (
                       <tr key={index} className="border-b last:border-b-0 hover:bg-gray-50">
                         <td className="p-4 font-medium">{candidate.applicant_name}</td>
-                        <td className="p-4">{candidate.applicant_role}</td>
+                        <td className="p-4">{candidate.applicant_skills}</td>
                         <td className="p-4">{candidate.applicant_experience}</td>
-                        <td className="p-4 flex items-center">
-                          <MapPin className="w-4 h-4 mr-1 text-gray-400" />
+                        <td className="p-4">
+                      
                           {candidate.applicant_location}
                         </td>
                         <td className="p-4">
@@ -336,6 +387,7 @@ export default function EmployerDashboard() {
                             {candidate.application_status || "Pending"}
                           </span>
                         </td>
+                        <td className="p-4">{candidate.applicant__employeeprofile__contact_no || "N/A"}</td>
                         <td className="p-4">
                           <div className="flex space-x-2">
                             <button
@@ -362,6 +414,14 @@ export default function EmployerDashboard() {
                                 >
                                   <XCircle className="w-4 h-4" />
                                 </button>
+                                <button
+                                  onClick={() => openModal("delete", candidate)}
+                                  className="p-1 bg-red-50 text-red-600 rounded hover:bg-red-100"
+                                  title="Delete Application"
+                                >
+                                  
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
                               </>
                             )}
                           </div>
@@ -383,72 +443,7 @@ export default function EmployerDashboard() {
               </table>
             </div>
 
-            {/* Job Postings Table */}
-            <h2 className="text-lg font-semibold mt-8 mb-4 flex items-center">
-              <Briefcase className="w-5 h-5 mr-2 text-blue-600" />
-              Current Job Postings
-            </h2>
-            <div className="bg-white rounded-lg shadow overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b bg-gray-50">
-                    <th className="text-left p-4 font-medium text-gray-600">Title</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Category</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Location</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Salary</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Posted On</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {dashboardData.job_posts.length > 0 ? (
-                    dashboardData.job_posts.map((job, index) => (
-                      <tr key={index} className="border-b last:border-b-0 hover:bg-gray-50">
-                        <td className="p-4 font-medium">{job.job_title}</td>
-                        <td className="p-4">{job.category || "N/A"}</td>
-                        <td className="p-4 flex items-center">
-                          <MapPin className="w-4 h-4 mr-1 text-gray-400" />
-                          {job.location || "N/A"}
-                        </td>
-                        <td className="p-4">{job.salary_range ? `₱${job.salary_range}` : "Negotiable"}</td>
-                        <td className="p-4 flex items-center">
-                          <Clock className="w-4 h-4 mr-1 text-gray-400" />
-                          {new Date(job.created_at).toLocaleDateString()}
-                        </td>
-                        <td className="p-4">
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => navigateToEditJob(job.post_id)}
-                              className="p-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100"
-                              title="Edit Job"
-                            >
-                              <Edit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => openDeleteModal(job)}
-                              className="p-1 bg-red-50 text-red-600 rounded hover:bg-red-100"
-                              title="Delete Job"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))
-                  ) : (
-                    <tr>
-                      <td colSpan="6" className="text-center p-6 text-gray-500">
-                        <div className="flex flex-col items-center">
-                          <Briefcase className="w-8 h-8 text-gray-300 mb-2" />
-                          <p>No job postings yet</p>
-                          <p className="text-sm mt-1">Click "Post New Job" to create your first job listing</p>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+      
           </div>
 
           {/* Sidebar - Quick Stats */}
@@ -472,11 +467,79 @@ export default function EmployerDashboard() {
             </div>
           </div>
         </div>
+
+        <div className="w-full mt-12 px-4 sm:px-6 lg:px-8">
+  <h2 className="text-lg font-semibold mb-4 flex items-center">
+    <Briefcase className="w-5 h-5 mr-2 text-blue-600" />
+    Current Job Postings
+  </h2>
+  <div className="bg-white rounded-lg shadow overflow-x-auto">
+    <table className="w-full">
+      <thead>
+        <tr className="border-b bg-gray-50">
+          <th className="text-left p-4 font-medium text-gray-600">Title</th>
+          <th className="text-left p-4 font-medium text-gray-600">Category</th>
+          <th className="text-left p-4 font-medium text-gray-600">Location</th>
+          <th className="text-left p-4 font-medium text-gray-600">Salary</th>
+          <th className="text-left p-4 font-medium text-gray-600">Posted On</th>
+          <th className="text-left p-4 font-medium text-gray-600">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {dashboardData.job_posts.length > 0 ? (
+          dashboardData.job_posts.map((job, index) => (
+            <tr key={index} className="border-b last:border-b-0 hover:bg-gray-50">
+              <td className="p-4 font-medium">{job.job_title}</td>
+              <td className="p-4">{job.category || "N/A"}</td>
+              <td className="p-4 flex items-center">
+                <MapPin className="w-4 h-4 mr-1 text-gray-400" />
+                {job.location || "N/A"}
+              </td>
+              <td className="p-4">{job.salary_range ? `₱${job.salary_range}` : "Negotiable"}</td>
+              <td className="p-4 flex items-center">
+                <Clock className="w-4 h-4 mr-1 text-gray-400" />
+                {new Date(job.created_at).toLocaleDateString()}
+              </td>
+              <td className="p-4">
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => navigateToEditJob(job.post_id)}
+                    className="p-1 bg-blue-50 text-blue-600 rounded hover:bg-blue-100"
+                    title="Edit Job"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => openDeleteModal(job)}
+                    className="p-1 bg-red-50 text-red-600 rounded hover:bg-red-100"
+                    title="Delete Job"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </td>
+            </tr>
+          ))
+        ) : (
+          <tr>
+            <td colSpan="6" className="text-center p-6 text-gray-500">
+              <div className="flex flex-col items-center">
+                <Briefcase className="w-8 h-8 text-gray-300 mb-2" />
+                <p>No job postings yet</p>
+                <p className="text-sm mt-1">Click "Post New Job" to create your first job listing</p>
+              </div>
+            </td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
       </div>
 
       {/* Modal for application actions */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+         <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
             {/* Modal Header */}
             <div className="p-4 border-b">
@@ -484,6 +547,7 @@ export default function EmployerDashboard() {
                 {modalType === "view" && "Applicant Details"}
                 {modalType === "approve" && "Approve Application"}
                 {modalType === "decline" && "Decline Application"}
+                {modalType === "delete" && "Delete Application"}
               </h3>
             </div>
 
@@ -541,7 +605,7 @@ export default function EmployerDashboard() {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Applied For</p>
-                      <p className="font-medium">{selectedApplicant.job_title || "N/A"}</p>
+                      <p className="font-medium">{selectedApplicant.job_post__job_title || "N/A"}</p>
                     </div>
                   </div>
 
@@ -566,6 +630,14 @@ export default function EmployerDashboard() {
                     <div className="mt-4">
                       <p className="text-gray-700">
                         Are you sure you want to decline this application? The candidate will be notified.
+                      </p>
+                    </div>
+                  )}
+
+{modalType === "delete" && (
+                    <div className="mt-4">
+                      <p className="text-gray-700">
+                        Are you sure you want to delete this application? This action cannot be undone.
                       </p>
                     </div>
                   )}
@@ -618,6 +690,25 @@ export default function EmployerDashboard() {
                     <>
                       <XCircle className="-ml-1 mr-2 h-4 w-4" />
                       Decline
+                    </>
+                  )}
+                </button>
+              )}
+              {modalType === "delete" && (
+                <button
+                  onClick={handleDeleteApplication}
+                  disabled={isProcessing}
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                >
+                  {isProcessing ? (
+                    <>
+                      <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="-ml-1 mr-2 h-4 w-4" />
+                      Delete
                     </>
                   )}
                 </button>
