@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react"
 import LoggedInHeader from "./LoggedInHeader"
 import { useNavigate } from "react-router-dom"
-import { baseURL } from './constants';
 import {
   CheckCircle,
   XCircle,
@@ -16,7 +15,6 @@ import {
   Loader,
   Edit,
   Trash2,
-  Maximize2
 } from "lucide-react"
 
 export default function EmployerDashboard() {
@@ -29,16 +27,15 @@ export default function EmployerDashboard() {
     job_posts: [],
   })
 
- 
+  // Modal states for applicant actions
   const [showModal, setShowModal] = useState(false)
   const [modalType, setModalType] = useState("") // "approve", "decline", "view"
   const [selectedApplicant, setSelectedApplicant] = useState(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [actionMessage, setActionMessage] = useState({ type: "", message: "" })
 
-
+  // Modal states for job deletion
   const [showDeleteModal, setShowDeleteModal] = useState(false)
-
   const [selectedJob, setSelectedJob] = useState(null)
   const [isJobProcessing, setIsJobProcessing] = useState(false)
   const [jobActionMessage, setJobActionMessage] = useState({ type: "", message: "" })
@@ -47,10 +44,10 @@ export default function EmployerDashboard() {
     fetchDashboardData()
   }, [authToken])
 
-
+  // Fetch dashboard data
   const fetchDashboardData = async () => {
     try {
-      const response = await fetch(`${baseURL}/api/employer-dashboard`, {
+      const response = await fetch("http://127.0.0.1:8000/api/employer-dashboard", {
         method: "GET",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -63,13 +60,13 @@ export default function EmployerDashboard() {
       }
 
       const data = await response.json()
-    
       setDashboardData(data)
     } catch (error) {
       console.error("Error fetching dashboard data:", error)
     }
   }
 
+  // Open modal with appropriate type for applicant actions
   const openModal = (type, applicant) => {
     setModalType(type)
     setSelectedApplicant(applicant)
@@ -77,7 +74,7 @@ export default function EmployerDashboard() {
     setActionMessage({ type: "", message: "" })
   }
 
-
+  // Close modal and reset states
   const closeModal = () => {
     setShowModal(false)
     setSelectedApplicant(null)
@@ -86,7 +83,7 @@ export default function EmployerDashboard() {
     setActionMessage({ type: "", message: "" })
   }
 
-
+  // Handle application approval
   const handleApprove = async () => {
     if (!selectedApplicant) return
 
@@ -95,7 +92,7 @@ export default function EmployerDashboard() {
 
     try {
       const response = await fetch(
-        `${baseURL}/api/applications/${selectedApplicant.application_id}/approve/`,
+        `http://127.0.0.1:8000/api/applications/${selectedApplicant.application_id}/approve/`,
         {
           method: "POST",
           headers: {
@@ -109,7 +106,7 @@ export default function EmployerDashboard() {
         throw new Error("Failed to approve application")
       }
 
-
+      // Update local state to reflect the change
       setDashboardData((prev) => ({
         ...prev,
         applicants: prev.applicants.map((app) =>
@@ -122,12 +119,12 @@ export default function EmployerDashboard() {
         message: "Application approved successfully! The candidate will be notified.",
       })
 
-  
+      // Close modal after a delay
       setTimeout(() => {
         closeModal()
- 
+        // Refresh data
         fetchDashboardData()
-      }, 1000)
+      }, 2000)
     } catch (error) {
       console.error("Error approving application:", error)
       setActionMessage({
@@ -139,7 +136,7 @@ export default function EmployerDashboard() {
     }
   }
 
-
+  // Handle application decline
   const handleDecline = async () => {
     if (!selectedApplicant) return
 
@@ -148,7 +145,7 @@ export default function EmployerDashboard() {
 
     try {
       const response = await fetch(
-        `${baseURL}/api/applications/${selectedApplicant.application_id}/decline/`,
+        `http://127.0.0.1:8000/api/applications/${selectedApplicant.application_id}/decline/`,
         {
           method: "POST",
           headers: {
@@ -162,7 +159,7 @@ export default function EmployerDashboard() {
         throw new Error("Failed to decline application")
       }
 
-
+      // Update local state to reflect the change
       setDashboardData((prev) => ({
         ...prev,
         applicants: prev.applicants.map((app) =>
@@ -175,12 +172,12 @@ export default function EmployerDashboard() {
         message: "Application declined. The candidate will be notified.",
       })
 
-
+      // Close modal after a delay
       setTimeout(() => {
         closeModal()
-
+        // Refresh data
         fetchDashboardData()
-      }, 1000)
+      }, 2000)
     } catch (error) {
       console.error("Error declining application:", error)
       setActionMessage({
@@ -192,14 +189,14 @@ export default function EmployerDashboard() {
     }
   }
 
-
+  // Open delete confirmation modal
   const openDeleteModal = (job) => {
     setSelectedJob(job)
     setShowDeleteModal(true)
     setJobActionMessage({ type: "", message: "" })
   }
 
-
+  // Close delete modal
   const closeDeleteModal = () => {
     setShowDeleteModal(false)
     setSelectedJob(null)
@@ -207,7 +204,7 @@ export default function EmployerDashboard() {
     setJobActionMessage({ type: "", message: "" })
   }
 
-
+  // Handle job deletion
   const handleDeleteJob = async () => {
     if (!selectedJob) return
 
@@ -215,8 +212,7 @@ export default function EmployerDashboard() {
     setJobActionMessage({ type: "", message: "" })
 
     try {
-
-      const response = await fetch(`${baseURL}/api/delete-job/${selectedJob.post_id}/`, {
+      const response = await fetch(`http://localhost:8000/api/jobs/${selectedJob.post_id}/`, {
         method: "DELETE",
         headers: {
           Authorization: `Token ${authToken}`,
@@ -228,6 +224,7 @@ export default function EmployerDashboard() {
         throw new Error("Failed to delete job posting")
       }
 
+      // Update local state to reflect the change
       setDashboardData((prev) => ({
         ...prev,
         job_posts: prev.job_posts.filter((job) => job.post_id !== selectedJob.post_id),
@@ -239,12 +236,12 @@ export default function EmployerDashboard() {
         message: "Job posting deleted successfully!",
       })
 
-
+      // Close modal after a delay
       setTimeout(() => {
         closeDeleteModal()
-
+        // Refresh data
         fetchDashboardData()
-      }, 1000)
+      }, 2000)
     } catch (error) {
       console.error("Error deleting job:", error)
       setJobActionMessage({
@@ -256,77 +253,12 @@ export default function EmployerDashboard() {
     }
   }
 
-
-
-
-
-
-
-const handleDeleteApplication = async () => {
-  if (!selectedApplicant) return;
-
-  setIsProcessing(true);
-  setActionMessage({ type: "", message: "" });
-
-  try {
-    const response = await fetch(
-      `${baseURL}/api/delete-application/${selectedApplicant.application_id}/`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Token ${authToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error("Failed to delete application");
-    }
-
-    setDashboardData((prev) => ({
-      ...prev,
-      applicants: prev.applicants.filter(
-        (app) => app.application_id !== selectedApplicant.application_id
-      ),
-    }));
-
-    setActionMessage({
-      type: "success",
-      message: "Application deleted successfully!",
-    });
-
-    setTimeout(() => {
-       closeModal();
-      fetchDashboardData();
-    }, 1000);
-  } catch (error) {
-    console.error("Error deleting application:", error);
-    setActionMessage({
-      type: "error",
-      message: "Failed to delete application. Please try again.",
-    });
-  } finally {
-    setIsProcessing(false);
-  }
-};
-// end of delete application functions
-
-
-
-
-
-
-
-
-
-
-
+  // Navigate to edit job page
   const navigateToEditJob = (jobId) => {
     navigate(`/employer/edit-job/${jobId}`)
   }
 
-
+  // Get status badge color
   const getStatusBadge = (status) => {
     switch (status) {
       case "Pending":
@@ -347,27 +279,27 @@ const handleDeleteApplication = async () => {
       {/*<LoggedInHeader />*/}
 
       <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl font-bold">Dashboard</h1>
-        
-          <button
-            onClick={() => navigate("/employer/post-job")}
-            className="bg-[#4CAF50] text-white px-4 py-2 rounded hover:bg-[#45a049] flex items-center"
-          >
-            <Briefcase className="w-4 h-4 mr-2" />
-            Post New Job
-          </button>
-
-          <button
-            onClick={() => navigate("/employer/dashboard")}
-            className="bg-[#7cd1ed] text-white px-4 py-2 rounded hover:bg-[#45a049] flex items-center"
-          >
-            <Maximize2 className="w-4 h-4 mr-2" />
-            Full Dashboard
-          </button>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
+          <h1 className="text-2xl font-bold">Employer Dashboard</h1>
+          <div className="flex flex-wrap gap-3 w-full sm:w-auto">
+            <button
+              onClick={() => navigate("/employer/post-job")}
+              className="bg-[#4CAF50] text-white px-4 py-2 rounded hover:bg-[#45a049] flex items-center justify-center w-full sm:w-auto"
+            >
+              <Briefcase className="w-4 h-4 mr-2" />
+              Post New Job
+            </button>
+            <button
+                onClick={() => navigate("/employer/dashboard")}
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 flex items-center justify-center w-full sm:w-auto"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              Full Dashboard
+            </button>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 max-h-[600px] overflow-y-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Candidates Table */}
           <div className="lg:col-span-3">
             <h2 className="text-lg font-semibold mb-4 flex items-center">
@@ -379,11 +311,10 @@ const handleDeleteApplication = async () => {
                 <thead>
                   <tr className="border-b bg-gray-50">
                     <th className="text-left p-4 font-medium text-gray-600">Name</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Skills</th>
+                    <th className="text-left p-4 font-medium text-gray-600">Role</th>
                     <th className="text-left p-4 font-medium text-gray-600">Experience</th>
                     <th className="text-left p-4 font-medium text-gray-600">Location</th>
                     <th className="text-left p-4 font-medium text-gray-600">Status</th>
-                    <th className="text-left p-4 font-medium text-gray-600">Contact</th>
                     <th className="text-left p-4 font-medium text-gray-600">Actions</th>
                   </tr>
                 </thead>
@@ -392,14 +323,12 @@ const handleDeleteApplication = async () => {
                     dashboardData.applicants.map((candidate, index) => (
                       <tr key={index} className="border-b last:border-b-0 hover:bg-gray-50">
                         <td className="p-4 font-medium">{candidate.applicant_name}</td>
-                        <td className="p-4">{candidate.applicant_skills}</td>
+                        <td className="p-4">{candidate.applicant_role}</td>
                         <td className="p-4">{candidate.applicant_experience}</td>
                         <td className="p-4 flex items-center">
                           <MapPin className="w-4 h-4 mr-1 text-gray-400" />
                           {candidate.applicant_location}
                         </td>
-
-                      
                         <td className="p-4">
                           <span
                             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(candidate.application_status)}`}
@@ -407,8 +336,6 @@ const handleDeleteApplication = async () => {
                             {candidate.application_status || "Pending"}
                           </span>
                         </td>
-                        <td className="p-4">{candidate.applicant__employeeprofile__contact_no || "N/A"}</td>
-
                         <td className="p-4">
                           <div className="flex space-x-2">
                             <button
@@ -433,17 +360,7 @@ const handleDeleteApplication = async () => {
                                   className="p-1 bg-red-50 text-red-600 rounded hover:bg-red-100"
                                   title="Decline Application"
                                 >
-                                  
                                   <XCircle className="w-4 h-4" />
-                                </button>
-
-                                <button
-                                  onClick={() => openModal("delete", candidate)}
-                                  className="p-1 bg-red-50 text-red-600 rounded hover:bg-red-100"
-                                  title="Delete Application"
-                                >
-                                  
-                                  <Trash2 className="w-4 h-4" />
                                 </button>
                               </>
                             )}
@@ -472,7 +389,6 @@ const handleDeleteApplication = async () => {
               Current Job Postings
             </h2>
             <div className="bg-white rounded-lg shadow overflow-x-auto">
-            <div className="max-h-[500px] overflow-y-auto"> {/* This adds the scroll */}
               <table className="w-full">
                 <thead>
                   <tr className="border-b bg-gray-50">
@@ -533,13 +449,12 @@ const handleDeleteApplication = async () => {
                 </tbody>
               </table>
             </div>
-            </div>
           </div>
 
           {/* Sidebar - Quick Stats */}
           <div className="lg:col-span-1">
             <h2 className="text-lg font-semibold mb-4">Quick Stats</h2>
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
               <div className="bg-[#E8F5E9] p-4 rounded-lg shadow">
                 <div className="text-sm text-gray-600">Active Jobs</div>
                 <div className="text-2xl font-bold text-[#2E7D32] flex items-center">
@@ -561,8 +476,7 @@ const handleDeleteApplication = async () => {
 
       {/* Modal for application actions */}
       {showModal && (
-    <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
-
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
             {/* Modal Header */}
             <div className="p-4 border-b">
@@ -570,7 +484,6 @@ const handleDeleteApplication = async () => {
                 {modalType === "view" && "Applicant Details"}
                 {modalType === "approve" && "Approve Application"}
                 {modalType === "decline" && "Decline Application"}
-                {modalType === "delete" && "Delete Application"}
               </h3>
             </div>
 
@@ -628,7 +541,7 @@ const handleDeleteApplication = async () => {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Applied For</p>
-                      <p className="font-medium">{selectedApplicant.job_post__job_title || "N/A"}</p>
+                      <p className="font-medium">{selectedApplicant.job_title || "N/A"}</p>
                     </div>
                   </div>
 
@@ -656,24 +569,16 @@ const handleDeleteApplication = async () => {
                       </p>
                     </div>
                   )}
-
-{modalType === "delete" && (
-                    <div className="mt-4">
-                      <p className="text-gray-700">
-                        Are you sure you want to delete this application? This action cannot be undone.
-                      </p>
-                    </div>
-                  )}
                 </div>
               )}
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t bg-gray-50 flex justify-end space-x-3">
+            <div className="p-4 border-t bg-gray-50 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
               <button
                 onClick={closeModal}
                 disabled={isProcessing}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 {modalType === "view" ? "Close" : "Cancel"}
               </button>
@@ -682,7 +587,7 @@ const handleDeleteApplication = async () => {
                 <button
                   onClick={handleApprove}
                   disabled={isProcessing}
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:opacity-50"
                 >
                   {isProcessing ? (
                     <>
@@ -702,7 +607,7 @@ const handleDeleteApplication = async () => {
                 <button
                   onClick={handleDecline}
                   disabled={isProcessing}
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                  className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
                 >
                   {isProcessing ? (
                     <>
@@ -713,27 +618,6 @@ const handleDeleteApplication = async () => {
                     <>
                       <XCircle className="-ml-1 mr-2 h-4 w-4" />
                       Decline
-                    </>
-                  )}
-                </button>
-              )}
-
-
-{modalType === "delete" && (
-                <button
-                  onClick={handleDeleteApplication}
-                  disabled={isProcessing}
-                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
-                >
-                  {isProcessing ? (
-                    <>
-                      <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 className="-ml-1 mr-2 h-4 w-4" />
-                      Delete
                     </>
                   )}
                 </button>
@@ -799,11 +683,11 @@ const handleDeleteApplication = async () => {
             </div>
 
             {/* Modal Footer */}
-            <div className="p-4 border-t bg-gray-50 flex justify-end space-x-3">
+            <div className="p-4 border-t bg-gray-50 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
               <button
                 onClick={closeDeleteModal}
                 disabled={isJobProcessing}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
                 Cancel
               </button>
@@ -811,7 +695,7 @@ const handleDeleteApplication = async () => {
               <button
                 onClick={handleDeleteJob}
                 disabled={isJobProcessing}
-                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
               >
                 {isJobProcessing ? (
                   <>
@@ -832,4 +716,3 @@ const handleDeleteApplication = async () => {
     </div>
   )
 }
-

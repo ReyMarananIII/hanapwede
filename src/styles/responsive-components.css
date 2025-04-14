@@ -1,0 +1,56 @@
+/* Global responsive overrides for components */
+.responsive-component {
+    width: 100%;
+  }
+  
+  /* Force all images to be responsive */
+  .responsive-component img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Make tables responsive */
+  .responsive-component table {
+    width: 100%;
+    display: block;
+    overflow-x: auto;
+  }
+  
+  /* Responsive text sizing */
+  @media (max-width: 640px) {
+    .responsive-component h1 {
+      font-size: 1.5rem !important;
+    }
+  
+    .responsive-component h2 {
+      font-size: 1.25rem !important;
+    }
+  
+    .responsive-component p,
+    .responsive-component div {
+      font-size: 0.875rem !important;
+    }
+  }
+  
+  /* Override fixed widths */
+  .responsive-component [style*="width"] {
+    max-width: 100% !important;
+  }
+  
+  /* Handle fixed position elements */
+  .responsive-component [style*="position: fixed"],
+  .responsive-component [style*="position:fixed"] {
+    position: relative !important;
+  }
+  
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .scrollbar-hide {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+  

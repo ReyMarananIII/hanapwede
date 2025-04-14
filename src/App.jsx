@@ -44,7 +44,7 @@ import EmployeeDashboardMain from "./EmployeeDashboardMain";
 import EmployerDashboardMain from "./EmployerDashboardMain";
 import PlatformStatistics from "./PlatformStatistics";
 import HomeRedirect from "./HomeRedirect";
-
+import EmployeeProfileMain from "./EmployeeProfileMain";
 import ScrollToTop from "./ScrollToTop";
 import { Navigate } from "react-router-dom";
 function App() {
@@ -140,6 +140,16 @@ function App() {
           element={
             <ProtectedRoute allowedRoles={["Employee"]}>
               <EmployeeDashboardMain />
+              
+            </ProtectedRoute>
+          } 
+        />
+
+<Route 
+          path="/job-seeker/profile-main" 
+          element={
+            <ProtectedRoute allowedRoles={["Employee"]}>
+              <EmployeeProfileMain />
               
             </ProtectedRoute>
           } 

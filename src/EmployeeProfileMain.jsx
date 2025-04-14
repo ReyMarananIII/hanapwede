@@ -1,7 +1,7 @@
 "use client"
-
-import { useState, useEffect } from "react"
 import LoggedInHeader from "./LoggedInHeader"
+import { useState, useEffect } from "react"
+
 import PreferencesPage from "./PreferencesPage"
 import { useNavigate } from "react-router-dom"
 import Header from "./Header"
@@ -150,7 +150,7 @@ export default function EmployeeProfile() {
   if (isLoading) {
     return (
       <div>
-       {/*{isLoggedIn ? <LoggedInHeader /> : <Header />}*/}
+       {isLoggedIn ? <LoggedInHeader /> : <Header />}
         <div className="flex items-center justify-center min-h-screen bg-[#F8FBFF]">
           <div className="flex flex-col items-center">
             <Loader className="w-10 h-10 text-[#4CAF50] animate-spin mb-4" />
@@ -164,7 +164,7 @@ export default function EmployeeProfile() {
   if (error) {
     return (
       <div>
-        {/*{isLoggedIn ? <LoggedInHeader /> : <Header />}*/}
+        {isLoggedIn ? <LoggedInHeader /> : <Header />}
         <div className="flex items-center justify-center min-h-screen bg-[#F8FBFF]">
           <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
             <div className="flex items-center justify-center text-red-500 mb-4">
@@ -181,7 +181,7 @@ export default function EmployeeProfile() {
   if (!userDetails) {
     return (
       <div>
-       {/* {isLoggedIn ? <LoggedInHeader /> : <Header />}*/}
+        {isLoggedIn ? <LoggedInHeader /> : <Header />}
         <div className="flex items-center justify-center min-h-screen bg-[#F8FBFF]">
           <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
             <div className="flex items-center justify-center text-gray-400 mb-4">
@@ -197,7 +197,7 @@ export default function EmployeeProfile() {
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
-      {/*{isLoggedIn ? <LoggedInHeader /> : <Header />}*/}
+      {isLoggedIn ? <LoggedInHeader /> : <Header />}
 
       {/* Profile Header with gradient banner */}
       <div className="h-40 bg-gradient-to-r from-[#4CAF50] to-[#00BCD4]" />
@@ -237,13 +237,7 @@ export default function EmployeeProfile() {
 
         {isLoggedIn && (
           <div className="flex flex-wrap gap-2 mt-2 w-full justify-center">
-            <button
-              onClick={() => navigate("/job-seeker/profile-main")}
-              className="px-2 py-1 text-xs sm:text-sm bg-white text-blue-600 border border-blue-600 rounded-md shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center justify-center"
-            >
-              <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-              <span className="whitespace-nowrap">View Profile</span>
-            </button>
+ 
             <Link
               to="/job-seeker/edit-profile"
               className="px-2 py-1 text-xs sm:text-sm bg-white text-blue-600 border border-blue-600 rounded-md shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center justify-center"
