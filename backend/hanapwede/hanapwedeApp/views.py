@@ -862,6 +862,31 @@ def get_all_jobs(request):
     return JsonResponse(job_data, safe=False)
 
 @api_view(["GET"])
+def get_all_jobs_public(request):
+    job_posts = JobPost.objects.all()
+
+    job_data = [
+        {
+            "post_id": job.post_id,
+            "job_title": job.job_title,
+            "job_description": job.job_desc,
+            "skills_required": job.skills_req if job.skills_req else "",
+            "tags": ", ".join(tag.name for tag in job.tags.all()),
+            "disabilitytag": ", ".join(tag.name for tag in job.disabilitytag.all()), 
+            "comp_name": job.get_company_name(),
+            "category": job.category,
+            "location": job.location,
+            "posted_by": job.posted_by.id if job.posted_by else None
+        }
+        for job in job_posts
+    ]
+
+    if not job_data:
+        return JsonResponse({"message": "No jobs found"}, status=404)
+
+    return JsonResponse(job_data, safe=False)
+
+@api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def get_all_users (request):
     users =  EmployeeProfile.objects.all()

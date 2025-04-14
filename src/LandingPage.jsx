@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "./Header";
 import LoggedInHeader from "./LoggedInHeader"; 
 import { useNavigate } from "react-router-dom";
+import { baseURL } from './constants';
 
 export default function LandingPage() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,6 +22,26 @@ export default function LandingPage() {
     }
   };
 
+  useEffect(() => {
+    const token = localStorage.getItem("authToken"); 
+    setIsLoggedIn(!!token);
+  
+    fetch(`${baseURL}/api/all-jobs-public/`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setFeaturedJobs(data.slice(0, 4)); // limit to 4 featured
+      })
+      .catch((error) => {
+        console.error("Error fetching featured jobs:", error);
+      });
+  }, []);
+  
+
   const handlePostJobUpdate = () => {
     const authToken = localStorage.getItem("authToken");
     if (authToken) {
@@ -38,32 +59,7 @@ export default function LandingPage() {
       navigate("/employer/signup");
     }
   }
-  const featuredJobs = [
-    {
-        title: "Software Developer",
-        company: "Batangas Tech Solutions",
-        location: "Batangas City, Philippines",
-        tags: ["Full-time", "Flexible Hours", "Screen Reader Compatible"],
-    },
-    {
-        title: "Customer Support Specialist",
-        company: "Batangas AccessWare",
-        location: "Batangas City, Philippines",
-        tags: ["Full-time", "Wheelchair Accessible", "Sign Language Interpreter"],
-    },
-    {
-        title: "Data Analyst",
-        company: "DataCore Batangas",
-        location: "Batangas City, Philippines",
-        tags: ["Full-time", "Flexible Schedule", "Assistive Technology"],
-    },
-    {
-        title: "Frontend Developer",
-        company: "WebPH Batangas",
-        location: "Batangas City, Philippines",
-        tags: ["Full-time", "Remote Work", "Flexible Hours"],
-    },
-];
+  const [featuredJobs, setFeaturedJobs] = useState([]);
 
 
   return (
@@ -112,18 +108,18 @@ export default function LandingPage() {
         <div className="grid md:grid-cols-2 gap-6">
           {featuredJobs.map((job, index) => (
             <div key={index} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-              <h3 className="text-xl font-semibold mb-2">{job.title}</h3>
+              <h3 className="text-xl font-semibold mb-2">{job.job_title}</h3>
               <div className="flex items-center text-gray-600 mb-4">
-                <span>{job.company}</span>
+                <span>{job.comp_name}</span>
                 <span className="mx-2">•</span>
                 <span>{job.location}</span>
               </div>
               <div className="flex flex-wrap gap-2">
-                {job.tags.map((tag, tagIndex) => (
-                  <span key={tagIndex} className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
-                    {tag}
-                  </span>
-                ))}
+              {job.tags?.split(",").map((tag, tagIndex) => (
+  <span key={tagIndex} className="bg-blue-100 text-blue-800 text-xs px-3 py-1 rounded-full">
+    {tag.trim()}
+  </span>
+))}
               </div>
             </div>
           ))}
