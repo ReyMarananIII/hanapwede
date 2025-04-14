@@ -65,8 +65,7 @@ export default function AdminDashboard() {
         }
 
         const data = await response.json()
-        console.log(data)
-        console.log(data.username)
+    
         setPendingUsers(data)
       } catch (error) {
         console.error("Error fetching pending users:", error)

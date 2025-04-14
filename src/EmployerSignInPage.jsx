@@ -47,7 +47,7 @@ export default function EmployerSignIn() {
         localStorage.setItem("userId", data.userId)
         localStorage.setItem("username", data.username)
         
-        console.log(data.has_profile)
+       
         data.has_profile ? navigate("/employer-components") : navigate("/employer/edit-profile");
       
         

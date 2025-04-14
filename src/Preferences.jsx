@@ -91,7 +91,7 @@ const Preferences = ({ onPreferencesSaved }) => {
         body: JSON.stringify({ tags: selectedTags }),
       });
       const data = await response.json();
-      console.log(data.has_profile)
+  
       if (response.ok) {
         handleSuccess("Preferences saved successfully!");
         data.has_profile ? navigate("/employee-components") : navigate("/job-seeker/edit-profile");

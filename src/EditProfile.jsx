@@ -171,12 +171,12 @@ const handleSubmit = async (e) => {
     if (skills.length > 0) {
       formDataToSend.append("skills", skills.join(","));
     }
-    console.log(profilePicture)
+ 
     
     if (profilePicture) {
       formDataToSend.append("profile_picture", profilePicture);
     }
-    console.log(formDataToSend)
+
 
     // Append resume with correct field name
     if (resume) {

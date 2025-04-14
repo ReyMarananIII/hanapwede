@@ -391,7 +391,7 @@ export default function ForumPage() {
 
   // Check if the current user is the author of a post or comment
   const isCurrentUserAuthor = (authorId) => {
-    console.log(currentUserId,authorId,currentUserId.toString(),authorId.toString())
+ 
     return currentUserId && authorId && currentUserId.toString() === authorId.toString()
   }
 

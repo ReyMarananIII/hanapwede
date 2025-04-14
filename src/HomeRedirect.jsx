@@ -12,8 +12,8 @@ const HomeRedirect = () => {
   const isLoggedIn = !!token;
 
   useEffect(() => {
-    console.log("isLoggedIn:", isLoggedIn);
-    console.log("userType:", userType);
+
+
     if (isLoggedIn) {
       if (userType === "Employee") {
         navigate("/employee-components", { replace: true });

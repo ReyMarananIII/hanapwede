@@ -56,7 +56,7 @@ const AdminManageEmployersPage = () => {
 
       const data = await response.json()
       setEmployers(data.results || data)
-      console.log(data)
+   
 
       // Extract unique industries and locations for filters
       const allIndustries = [...new Set((data.results || data).map((emp) => emp.industry).filter(Boolean))]

@@ -61,7 +61,7 @@ export default function JobSeekerJobFairs() {
       }
 
       const data = await response.json()
-      console.log("Fetched registrations:", data) // Debugging line
+  
       setRegistrations(data)
     } catch (error) {
       console.error("Error fetching registrations:", error)

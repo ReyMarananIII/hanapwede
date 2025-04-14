@@ -87,7 +87,7 @@ export default function JobFairApplications() {
 
       const data = await response.json()
       setJobFair(data)
-      console.log(data.registrations_count)
+    
       setRegistrationCount(data.registrations_count)
       
     } catch (error) {
@@ -157,7 +157,7 @@ export default function JobFairApplications() {
       }
 
       const data = await response.json()
-      console.log(data)
+
       setRegistrations(data)
     } catch (error) {
       console.error("Error fetching participants:", error)
