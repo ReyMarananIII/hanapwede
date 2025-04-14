@@ -474,6 +474,7 @@ export default function EmployerDashboard() {
     Current Job Postings
   </h2>
   <div className="bg-white rounded-lg shadow overflow-x-auto">
+  <div className="max-h-[500px] overflow-y-auto">
     <table className="w-full">
       <thead>
         <tr className="border-b bg-gray-50">
@@ -533,6 +534,7 @@ export default function EmployerDashboard() {
         )}
       </tbody>
     </table>
+    </div>
   </div>
 </div>
       </div>
