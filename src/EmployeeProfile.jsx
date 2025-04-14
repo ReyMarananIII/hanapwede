@@ -226,17 +226,17 @@ export default function EmployeeProfile() {
               )}
             </div>
             <div>
-              <h1 className="text-2xl font-semibold text-white mb-1">
-                {userDetails.full_name || userDetails.username}
+              <h1 className="text-2xl font-semibold text-white mb-4">
+                {userDetails.profile.full_name || userDetails.username}
               </h1>
-              <p className="text-black-500 font-bold opacity-90">{userDetails.profile?.pro_headline || "Job Seeker"}</p>
+              <p className="text-black-500 mb-6 font-bold opacity-90">{userDetails.profile?.pro_headline || "Job Seeker"}</p>
             </div>
           </div>
 
           {isLoggedIn && (
-            <div className="flex gap-3 mt-4">
+            <div className="flex flex-col gap-3 mt-4 mr-4">
         <Link
-    to="/employer/edit-profile"
+    to="/job-seeker/edit-profile"
     className="px-3 py-1.5 text-sm bg-white text-blue-600 border border-blue-600 rounded-md shadow-sm hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors flex items-center"
   >
     <Edit className="w-4 h-4 mr-2" />

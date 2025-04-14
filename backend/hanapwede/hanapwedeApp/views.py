@@ -417,12 +417,15 @@ def recommend_jobs(request):
     user_id = request.GET.get("user_id")  
     user = User.objects.get(id=user_id)
     
+    
 
     preferred_tags = user.preferences.all()
+
     preferred_tag_names = [tag.name for tag in preferred_tags]
     emp_profile = EmployeeProfile.objects.get(user_id=user_id)
     user_disability = emp_profile.user_disability
-
+    user_skills = emp_profile.skills
+    print(user_skills)
     job_posts = JobPost.objects.all()
   
     job_data = [
@@ -445,17 +448,21 @@ def recommend_jobs(request):
         return JsonResponse({"message": "No jobs found"}, status=404)
 
     df = pd.DataFrame(job_data)
-    df["combined_text"] = df["job_description"] + " " + df["skills_required"] + " " + df["tags"] +" " + df["category"] + ", " +  (df["disabilitytag"] + " ") * 2
+    df["combined_text"] = df["job_description"] + " " + df["skills_required"] + " " + df["tags"] +" " + df["category"] + ", " +  (df["disabilitytag"] + " ") 
 
-    user_profile = " ".join(preferred_tag_names)*2 + ", " + (user_disability + " ") 
+    user_profile = (" ".join(preferred_tag_names) + " " + " ".join(preferred_tag_names)) + ", " + (user_disability + " ") + (user_skills + " ") *2
   
-
+    print("USER PROFILE", user_profile)
     tfidf_vectorizer = TfidfVectorizer(stop_words="english")
     tfidf_matrix = tfidf_vectorizer.fit_transform(df["combined_text"])
 
     user_vector = tfidf_vectorizer.transform([user_profile])
 
     similarity_scores = cosine_similarity(user_vector, tfidf_matrix).flatten()
+    sorted_scores = sorted(enumerate(similarity_scores), key=lambda x: x[1], reverse=True)
+    for idx, score in sorted_scores:
+        print(f"Index {idx}: Similarity Score = {score:.4f}")
+
 
     df["similarity_score"] = similarity_scores
     recommended_jobs = df.sort_values(by="similarity_score", ascending=False).head(3) #count nung irereturn na jobs, ranked by similarity score
@@ -750,16 +757,22 @@ def send_message(request):
 def get_user_chats(request):
     user = request.user
 
-   
     chat_rooms = ChatRooms.objects.filter(employee=user) | ChatRooms.objects.filter(employer=user)
 
     chat_list = []
     for chat in chat_rooms:
         other_user = chat.employer if chat.employee == user else chat.employee  
         last_message = chat.messages.last()  
+
+       
+        profile_picture_url = None
+        if other_user.profile_picture and hasattr(other_user.profile_picture, 'url'):
+            profile_picture_url = str(other_user.profile_picture)
+
         chat_list.append({
             "room_id": chat.id,
             "other_user": other_user.username,
+            "other_user_profile_picture": profile_picture_url,
             "other_user_type": other_user.user_type,
             "last_message": last_message.content if last_message else "No messages yet",
             "last_timestamp": last_message.timestamp if last_message else None,
@@ -1393,3 +1406,22 @@ def get_profile_picture(request):
     return Response({
         "profile_picture": request.build_absolute_uri(profile_picture_url) if profile_picture_url else None
     })
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def registered_users_jobfair(request):
+    job_fair_id = request.GET.get("job_fair_id")
+    user_id = request.GET.get("user")
+    if not job_fair_id:
+        return Response({"error": "Missing JOB FAIR ID."}, status=400)
+
+    try:
+        job_fair = JobFair.objects.get(id=job_fair_id)
+    except JobFair.DoesNotExist:
+        return Response({"error": "WALANG JOB FAIR ID."}, status=404)
+
+    registrations = JobFairRegistration.objects.filter(job_fair=job_fair).select_related('user', 'user__employeeprofile')
+    serializer = JobFairRegistrationSerializer(registrations, many=True)
+    print(serializer.data)
+
+    return Response(serializer.data, status=200)

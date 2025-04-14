@@ -158,9 +158,17 @@ export default function UserChats() {
               onClick={() => navigate(`/chat/${chat.room_id}`)}
             >
               {/* Avatar */}
-              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium mr-4 flex-shrink-0">
-                {getInitials(chat.other_user)}
-              </div>
+              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-medium mr-4 flex-shrink-0 overflow-hidden">
+  {chat.other_user_profile_picture ? (
+    <img
+      src={`${baseURL}/media/${chat.other_user_profile_picture}`}
+      alt="Profile"
+      className="w-full h-full object-cover"
+    />
+  ) : (
+    getInitials(chat.other_user)
+  )}
+</div>
 
               {/* Content */}
               <div className="flex-1 min-w-0">

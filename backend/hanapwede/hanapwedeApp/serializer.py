@@ -9,10 +9,7 @@ class EmployerProfileSerializer(serializers.ModelSerializer):
         model = EmployerProfile
         fields = ["comp_name", "comp_desc", "comp_site", "industry", "contact_no", "location","user_id"]
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CustomUser
-        fields = ['id', 'username', 'email', 'user_type', 'profile_picture']
+
 
 class JobPostSerializer(serializers.ModelSerializer):
     disabilitytag = serializers.PrimaryKeyRelatedField(
@@ -30,10 +27,7 @@ class TagSerializer(serializers.ModelSerializer):
         model = Tag
         fields = '__all__'
 
-class UserSerializer(serializers.ModelSerializer):
-    class Meta:
-        model= CustomUser
-        fields = ['id', 'username', 'first_name', 'last_name', 'email','profile_picture']
+
 
 class UserPreferenceSerializer(serializers.ModelSerializer):
     preferences = TagSerializer(many=True)
@@ -60,7 +54,7 @@ class JobApplicationSerializer(serializers.ModelSerializer):
 
 #start of forums serializers
 class PostSerializer(serializers.ModelSerializer):
-    user = serializers.CharField(source="user.first_name", read_only=True)
+    username = serializers.CharField(source="user.first_name", read_only=True)
     comment_count = serializers.SerializerMethodField()  # Include comment count
 
     class Meta:
@@ -71,7 +65,7 @@ class PostSerializer(serializers.ModelSerializer):
         return obj.comments.count()
 
 class CommentSerializer(serializers.ModelSerializer):
-    user = serializers.CharField(source="user.first_name", read_only=True)
+    username = serializers.CharField(source="user.first_name", read_only=True)
     replies = serializers.SerializerMethodField()
 
     class Meta:
@@ -120,6 +114,13 @@ class EmployeeProfileSerializer(serializers.ModelSerializer):
             'location',
             'activated',
         ]
+class UserSerializer(serializers.ModelSerializer):
+    employeeprofile = EmployeeProfileSerializer(read_only=True)
+    class Meta:
+        model = CustomUser
+        fields = ['id', 'username', 'first_name','last_name', 'email', 'user_type', 'profile_picture', 'employeeprofile']
+
+
 
 
 class NotificationSerializer(serializers.ModelSerializer):
@@ -194,9 +195,10 @@ class JobFairSerializer(serializers.ModelSerializer):
 
 
 class JobFairRegistrationSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
     class Meta:
         model = JobFairRegistration
-        fields = ['job_fair']
+        fields = ['id','job_fair','user','registered_at']
 
 
 class PWDCardSerializer(serializers.ModelSerializer):

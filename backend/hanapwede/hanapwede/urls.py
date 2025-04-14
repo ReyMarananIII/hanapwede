@@ -31,7 +31,7 @@ from hanapwedeApp.views import get_user_details_redirect, delete_account, ocr_vi
 from hanapwedeApp.views import my_applications, all_reports,cancel_application,delete_application,JobFairJobListView,JobFairViewSet,JobFairRegistrationViewSet,EmployerJobListView,JobListDataView, EmployerJobFairJobListView
 from hanapwedeApp.views import JobFairApplicationsView,UploadPWDCardView,GetPWDCardImage, verify_email
 from hanapwedeApp.views import forgot_password, reset_password,get_all_employers,delete_employer,user_has_profile,get_profile_picture
-from hanapwedeApp.views import delete_emp_account
+from hanapwedeApp.views import delete_emp_account,registered_users_jobfair
 from django.conf.urls.static import static
 from django.conf import settings
 router = DefaultRouter()
@@ -103,6 +103,7 @@ urlpatterns = [
     path('api/admin/get-all-employers/', get_all_employers, name='get_all_employers'),
     path('api/admin/delete-employer/<int:id>/', delete_employer, name='delete_employer'),
     path('api/user-has-profile/<int:user_id>/', user_has_profile, name='user_has_profile'),
+    path('api/registered-users-jobfair/', registered_users_jobfair, name='registered_users_jobfair'),
 
      # URL for requesting password reset
      path('api/forgot-password/', forgot_password, name='forgot_password'),

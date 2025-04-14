@@ -14,6 +14,7 @@ export default function JobSeekerJobFairs() {
   const [registrations, setRegistrations] = useState([])
   const [isRegistering, setIsRegistering] = useState(false)
   const [registrationSuccess, setRegistrationSuccess] = useState(null)
+  const userId = localStorage.getItem("userId")
 
   useEffect(() => {
     fetchJobFairs()
@@ -60,6 +61,7 @@ export default function JobSeekerJobFairs() {
       }
 
       const data = await response.json()
+      console.log("Fetched registrations:", data) // Debugging line
       setRegistrations(data)
     } catch (error) {
       console.error("Error fetching registrations:", error)
@@ -78,7 +80,7 @@ export default function JobSeekerJobFairs() {
           "Content-Type": "application/json",
           Authorization: `Token ${token}`,
         },
-        body: JSON.stringify({ job_fair: jobFairId }),
+        body: JSON.stringify({ job_fair: jobFairId,user: userId }),
       })
 
       if (!response.ok) {
@@ -99,9 +101,11 @@ export default function JobSeekerJobFairs() {
     }
   }
 
-  const isRegistered = (jobFairId) => {
-    return registrations.some((reg) => reg.job_fair === jobFairId)
-  }
+  const isRegistered = (jobFairId, userId) => {
+    return registrations.some(
+      (reg) => Number(reg.job_fair) === Number(jobFairId) && Number(reg.user) === Number(userId)
+    );
+  };
 
   const formatDate = (dateString) => {
     const options = { year: "numeric", month: "long", day: "numeric" }
@@ -166,7 +170,7 @@ export default function JobSeekerJobFairs() {
                 </div>
               </div>
               <div className="bg-gray-50 px-6 py-3 flex justify-between">
-                {isRegistered(jobFair.id) ? (
+                {isRegistered(jobFair.id,userId) ? (
                   <button
                     onClick={() => {
                       setSelectedJobFair(jobFair)

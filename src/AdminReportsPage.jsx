@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { baseURL } from './constants';
+import { baseURL } from "./constants"
 import AdminLayout from "./AdminLayout"
-import Swal from "sweetalert2";
+import Swal from "sweetalert2"
 import {
   AlertTriangle,
   Search,
@@ -22,21 +22,21 @@ import {
 } from "lucide-react"
 
 export default function AdminReportsPage() {
-    const handleError = (message) => {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: message
-      });
-    };
-  
-    const handleSuccess = (message) => {
-      Swal.fire({
-        icon: 'success',
-        title: 'Success!',
-        text: message
-      });
-    }
+  const handleError = (message) => {
+    Swal.fire({
+      icon: "error",
+      title: "Oops...",
+      text: message,
+    })
+  }
+
+  const handleSuccess = (message) => {
+    Swal.fire({
+      icon: "success",
+      title: "Success!",
+      text: message,
+    })
+  }
   const [reports, setReports] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -50,6 +50,7 @@ export default function AdminReportsPage() {
   const [processingId, setProcessingId] = useState(null)
   const [showContentModal, setShowContentModal] = useState(false)
   const [selectedContent, setSelectedContent] = useState(null)
+  const [isDeletingContent, setIsDeletingContent] = useState(false)
 
   // Fetch reports when component mounts
   useEffect(() => {
@@ -78,7 +79,6 @@ export default function AdminReportsPage() {
 
       const data = await response.json()
 
-      
       setReports(data)
     } catch (error) {
       console.error("Error fetching reports:", error)
@@ -160,16 +160,34 @@ export default function AdminReportsPage() {
     }
   }
 
+  const confirmDeleteContent = (reportId, contentType, contentId) => {
+    Swal.fire({
+      title: `Delete ${contentType === "post" ? "Post" : "Comment"}?`,
+      text: `This will permanently delete this ${contentType}. This action cannot be undone.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        handleDeleteContent(reportId, contentType, contentId)
+      }
+    })
+  }
+
   const handleDeleteContent = async (reportId, contentType, contentId) => {
     setProcessingId(reportId)
     setIsProcessing(true)
+    setIsDeletingContent(true)
 
     try {
       const token = localStorage.getItem("authToken")
       const endpoint =
         contentType === "post"
-          ? `${baseURL}/api/admin/posts/${contentId}/`
-          : `${baseURL}/api/admin/comments/${contentId}/`
+          ? `${baseURL}/api/posts/${contentId}/`
+          : `${baseURL}/api/comments/${contentId}/`
 
       const response = await fetch(endpoint, {
         method: "DELETE",
@@ -196,6 +214,18 @@ export default function AdminReportsPage() {
         ),
       )
 
+      // If we're deleting from the modal, update the selected content
+      if (
+        selectedContent &&
+        ((contentType === "post" && selectedContent.id === contentId) ||
+          (contentType === "comment" && selectedContent.id === contentId))
+      ) {
+        setSelectedContent({
+          ...selectedContent,
+          deleted: true,
+        })
+      }
+
       handleSuccess(`${contentType.charAt(0).toUpperCase() + contentType.slice(1)} has been deleted successfully.`)
     } catch (error) {
       console.error(`Error deleting ${contentType}:`, error)
@@ -203,6 +233,7 @@ export default function AdminReportsPage() {
     } finally {
       setIsProcessing(false)
       setProcessingId(null)
+      setIsDeletingContent(false)
     }
   }
 
@@ -215,19 +246,15 @@ export default function AdminReportsPage() {
     setShowContentModal(true)
   }
 
-
   const filteredReports = reports
     .filter((report) => {
-
       const matchesSearch =
         report.reported_by_username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         report.reason?.toLowerCase().includes(searchTerm.toLowerCase()) ||
         report.report_desc?.toLowerCase().includes(searchTerm.toLowerCase())
 
-    
       const matchesType =
         filterType === "all" || (filterType === "post" && report.post) || (filterType === "comment" && report.comment)
-
 
       const matchesStatus = filterStatus === "all" || report.status === filterStatus
 
@@ -365,8 +392,6 @@ export default function AdminReportsPage() {
                 </select>
               </div>
             </div>
-
-     
           </div>
         </div>
 
@@ -518,13 +543,15 @@ export default function AdminReportsPage() {
                                     {report.content_deleted ? (
                                       <span className="italic text-gray-500">Content has been deleted</span>
                                     ) : (
-                                        (report.comment_content || report.post_content || "No preview available").slice(0, 100)
-
+                                      (report.comment_content || report.post_content || "No preview available").slice(
+                                        0,
+                                        100,
+                                      )
                                     )}
                                   </p>
                                 </div>
                               </div>
-                              <div className="flex items-center">
+                              <div className="flex items-center gap-3">
                                 <button
                                   onClick={() =>
                                     viewReportedContent({
@@ -547,35 +574,43 @@ export default function AdminReportsPage() {
                           </div>
                         </div>
 
-                        {report.status === "pending" && (
-                          <div className="mt-6 flex flex-wrap gap-3">
-                            <button
-                              onClick={() => handleDismissReport(report.id)}
-                              disabled={isProcessing && processingId === report.id}
-                              className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {isProcessing && processingId === report.id ? (
-                                <Loader className="animate-spin h-4 w-4 mr-2" />
-                              ) : (
-                                <XCircle className="h-4 w-4 mr-2" />
-                              )}
-                              Dismiss Report
-                            </button>
-                            <button
-                              onClick={() => handleResolveReport(report.id)}
-                              disabled={isProcessing && processingId === report.id}
-                              className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
-                            >
-                              {isProcessing && processingId === report.id ? (
-                                <Loader className="animate-spin h-4 w-4 mr-2" />
-                              ) : (
-                                <CheckCircle className="h-4 w-4 mr-2" />
-                              )}
-                              Resolve Report
-                            </button>
+                        {/* Content Actions Section - Available for all reports */}
+                        <div className="mt-6 border-t border-gray-200 pt-4">
+                          <h4 className="font-medium text-gray-700 mb-3">Content Actions</h4>
+                          <div className="flex flex-wrap gap-3">
+                            {report.status === "pending" && (
+                              <>
+                                <button
+                                  onClick={() => handleDismissReport(report.id)}
+                                  disabled={isProcessing && processingId === report.id}
+                                  className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  {isProcessing && processingId === report.id ? (
+                                    <Loader className="animate-spin h-4 w-4 mr-2" />
+                                  ) : (
+                                    <XCircle className="h-4 w-4 mr-2" />
+                                  )}
+                                  Dismiss Report
+                                </button>
+                                <button
+                                  onClick={() => handleResolveReport(report.id)}
+                                  disabled={isProcessing && processingId === report.id}
+                                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                  {isProcessing && processingId === report.id ? (
+                                    <Loader className="animate-spin h-4 w-4 mr-2" />
+                                  ) : (
+                                    <CheckCircle className="h-4 w-4 mr-2" />
+                                  )}
+                                  Resolve Report
+                                </button>
+                              </>
+                            )}
+
+                            {/* Delete button available for all reports */}
                             <button
                               onClick={() =>
-                                handleDeleteContent(
+                                confirmDeleteContent(
                                   report.id,
                                   report.post ? "post" : "comment",
                                   report.post || report.comment,
@@ -583,8 +618,14 @@ export default function AdminReportsPage() {
                               }
                               disabled={(isProcessing && processingId === report.id) || report.content_deleted}
                               className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                              aria-label={`Delete ${report.post ? "post" : "comment"}`}
+                              title={
+                                report.content_deleted
+                                  ? "Content already deleted"
+                                  : `Delete this ${report.post ? "post" : "comment"}`
+                              }
                             >
-                              {isProcessing && processingId === report.id ? (
+                              {isProcessing && processingId === report.id && isDeletingContent ? (
                                 <Loader className="animate-spin h-4 w-4 mr-2" />
                               ) : (
                                 <Trash2 className="h-4 w-4 mr-2" />
@@ -592,7 +633,7 @@ export default function AdminReportsPage() {
                               Delete Content
                             </button>
                           </div>
-                        )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -603,14 +644,16 @@ export default function AdminReportsPage() {
         </div>
       </div>
 
-
       {showContentModal && selectedContent && (
         <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
-
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full">
             <div className="p-4 border-b flex justify-between items-center">
               <h3 className="text-lg font-medium text-gray-900 capitalize">Reported {selectedContent.type}</h3>
-              <button onClick={() => setShowContentModal(false)} className="text-gray-400 hover:text-gray-500">
+              <button
+                onClick={() => setShowContentModal(false)}
+                className="text-gray-400 hover:text-gray-500"
+                aria-label="Close modal"
+              >
                 <XCircle className="h-5 w-5" />
               </button>
             </div>
@@ -627,14 +670,30 @@ export default function AdminReportsPage() {
                       <span className="text-sm text-gray-500">{formatDate(selectedContent.created_at)}</span>
                     </div>
                     <div className="p-4 bg-gray-50 rounded-lg">
-                    <span className="text-sm text-gray-500">Content Preview</span>
-                      <p className="text-gray-700 whitespace-pre-line">{selectedContent.content}</p>
+                      <span className="text-sm text-gray-500">Content Preview</span>
+                      <p className="text-gray-700 whitespace-pre-line mt-2">{selectedContent.content}</p>
                     </div>
                   </div>
                 </>
               )}
             </div>
-            <div className="p-4 border-t bg-gray-50 flex justify-end">
+            <div className="p-4 border-t bg-gray-50 flex justify-between">
+              {!selectedContent.deleted && (
+                <button
+                  onClick={() => {
+                    confirmDeleteContent(selectedContent.reportId, selectedContent.type, selectedContent.id)
+                  }}
+                  disabled={isProcessing}
+                  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isProcessing && isDeletingContent ? (
+                    <Loader className="animate-spin h-4 w-4 mr-2" />
+                  ) : (
+                    <Trash2 className="h-4 w-4 mr-2" />
+                  )}
+                  Delete {selectedContent.type}
+                </button>
+              )}
               <button
                 onClick={() => setShowContentModal(false)}
                 className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
@@ -648,4 +707,3 @@ export default function AdminReportsPage() {
     </AdminLayout>
   )
 }
-

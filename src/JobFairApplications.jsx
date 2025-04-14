@@ -28,7 +28,7 @@ export default function JobFairApplications() {
   const { jobFairId } = useParams()
   const navigate = useNavigate()
   const [jobFair, setJobFair] = useState(null)
-  const [applications, setApplications] = useState([])
+  const [registrations, setRegistrations] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const [searchTerm, setSearchTerm] = useState("")
@@ -46,12 +46,30 @@ export default function JobFairApplications() {
   const [selectedApplicant, setSelectedApplicant] = useState(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [actionMessage, setActionMessage] = useState({ type: "", message: "" })
+  const userId = localStorage.getItem("userId")
 
   useEffect(() => {
     fetchJobFair()
     fetchJobFairJobs()
-    fetchApplications()
+    fetchRegistrations()
   }, [jobFairId])
+
+
+
+  const filteredRegistrations = registrations.filter((app) => {
+  
+    const fullName = (app.user.employeeprofile?.full_name || `${app.user?.first_name || ""} ${app.user?.last_name || ""}`).toLowerCase();
+  
+  
+    const location = app.user.employeeprofile?.location || "";
+  
+
+    const matchesSearch =
+      fullName.includes(searchTerm.toLowerCase()) ||
+      location.includes(searchTerm.toLowerCase());
+  
+    return matchesSearch;
+  });
 
 
   const fetchJobFair = async () => {
@@ -121,27 +139,29 @@ export default function JobFairApplications() {
     }
   }
 
-  const fetchApplications = async () => {
+  const fetchRegistrations = async () => {
     setIsLoading(true)
     setError(null)
 
     try {
       const token = localStorage.getItem("authToken")
-      const response = await fetch(`${baseURL}/api/jobfairs/${jobFairId}/applications/`, {
+      const response = await fetch(`${baseURL}/api/registered-users-jobfair/?job_fair_id=${jobFairId}&user=${userId}`, {
         headers: {
           Authorization: `Token ${token}`,
         },
+
       })
 
       if (!response.ok) {
-        throw new Error("Failed to fetch applications")
+        throw new Error("Failed to fetch participants")
       }
 
       const data = await response.json()
-      setApplications(data)
+      console.log(data)
+      setRegistrations(data)
     } catch (error) {
-      console.error("Error fetching applications:", error)
-      setError("Failed to load applications. Please try again.")
+      console.error("Error fetching participants:", error)
+      setError("Failed to load participants. Please try again.")
     } finally {
       setIsLoading(false)
     }
@@ -189,9 +209,9 @@ export default function JobFairApplications() {
       }
 
       // Update local state to reflect the change
-      setApplications((prev) =>
+      setRegistrations((prev) =>
         prev.map((app) =>
-          app.application_id === selectedApplicant.application_id ? { ...app, status: "Approved" } : app,
+          app.id === selectedApplicant.id ? { ...app, status: "Approved" } : app,
         ),
       )
 
@@ -204,7 +224,7 @@ export default function JobFairApplications() {
       setTimeout(() => {
         closeModal()
         // Refresh data
-        fetchApplications()
+        fetchRegistrations()
       }, 2000)
     } catch (error) {
       console.error("Error approving application:", error)
@@ -241,9 +261,9 @@ export default function JobFairApplications() {
       }
 
       // Update local state to reflect the change
-      setApplications((prev) =>
+      setRegistrations((prev) =>
         prev.map((app) =>
-          app.application_id === selectedApplicant.application_id ? { ...app, status: "Declined" } : app,
+          app.id === selectedApplicant.id ? { ...app, status: "Declined" } : app,
         ),
       )
 
@@ -256,7 +276,7 @@ export default function JobFairApplications() {
       setTimeout(() => {
         closeModal()
         // Refresh data
-        fetchApplications()
+        fetchRegistrations()
       }, 2000)
     } catch (error) {
       console.error("Error declining application:", error)
@@ -273,30 +293,8 @@ export default function JobFairApplications() {
     setExpandedApplication(expandedApplication === id ? null : id)
   }
 
-  // Filter and sort applications
-  const filteredApplications = applications
-    .filter((app) => {
-      // Filter by search term
-      const matchesSearch =
-        app.applicant_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        app.job_title?.toLowerCase().includes(searchTerm.toLowerCase())
 
-      // Filter by status
-      const matchesStatus = filterStatus === "all" || app.application_status === filterStatus
 
-      // Filter by job
-      const matchesJob = filterJob === "all" || app.job_id.toString() === filterJob
-
-      return matchesSearch && matchesStatus && matchesJob
-    })
-    .sort((a, b) => {
-      // Sort by date
-      if (sortBy === "newest") {
-        return new Date(b.applied_date) - new Date(a.applied_date)
-      } else {
-        return new Date(a.applied_date) - new Date(b.applied_date)
-      }
-    })
 
   // Format date
   const formatDate = (dateString) => {
@@ -338,13 +336,7 @@ export default function JobFairApplications() {
   }
 
   // Calculate statistics
-  const stats = {
-    total: applications.length,
-    pending: applications.filter((app) => app.application_status === "Pending").length,
-    approved: applications.filter((app) => app.application_status === "Approved").length,
-    declined: applications.filter((app) => app.application_status === "Declined").length,
-    interviewed: applications.filter((app) => app.application_status === "Interviewed").length,
-  }
+
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
@@ -435,13 +427,13 @@ export default function JobFairApplications() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <input
                   type="text"
-                  placeholder="Search applications..."
+                  placeholder="Search participants..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
-
+    {/*
               <div className="flex items-center">
                 <Filter className="h-4 w-4 text-gray-400 mr-2" />
                 <select
@@ -455,7 +447,7 @@ export default function JobFairApplications() {
                   <option value="Declined">Declined</option>
              
                 </select>
-              </div>
+              </div>*/}
 
               {/*<div className="flex items-center">
                 <Briefcase className="h-4 w-4 text-gray-400 mr-2" />
@@ -472,7 +464,7 @@ export default function JobFairApplications() {
                   ))}
                 </select>
               </div>*/}
-
+{/*
               <div className="flex items-center">
                 <Clock className="h-4 w-4 text-gray-400 mr-2" />
                 <select
@@ -483,7 +475,7 @@ export default function JobFairApplications() {
                   <option value="newest">Newest First</option>
                   <option value="oldest">Oldest First</option>
                 </select>
-              </div>
+              </div>*/}
             </div>
 
        
@@ -500,28 +492,28 @@ export default function JobFairApplications() {
           </div>
         )}
 
-        {/* Applications List */}
+  
         <div className="bg-white rounded-lg shadow-sm overflow-hidden">
           {isLoading ? (
             <div className="flex justify-center items-center h-64">
               <Loader className="h-8 w-8 text-blue-600 animate-spin mr-3" />
-              <p className="text-gray-600">Loading applications...</p>
+              <p className="text-gray-600">Loading participants...</p>
             </div>
-          ) : filteredApplications.length === 0 ? (
+          ) : registrations.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-16">
               <User className="h-16 w-16 text-gray-300 mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-1">No applications found</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-1">No participants found</h3>
               <p className="text-gray-500 text-center max-w-md">
-                {searchTerm || filterStatus !== "all" || filterJob !== "all"
-                  ? "No applications match your current filters"
-                  : "There are no applications for this job fair yet"}
+                {searchTerm //|| filterStatus !== "all" || filterJob !== "all"
+                  ? "No participants match your current filters"
+                  : "There are no participants for this job fair yet"}
               </p>
               {(searchTerm || filterStatus !== "all" || filterJob !== "all") && (
                 <button
                   onClick={() => {
                     setSearchTerm("")
-                    setFilterStatus("all")
-                    setFilterJob("all")
+                    //setFilterStatus("all")
+                    //setFilterJob("all")
                   }}
                   className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
                 >
@@ -531,41 +523,52 @@ export default function JobFairApplications() {
             </div>
           ) : (
             <div className="divide-y divide-gray-200">
-              {filteredApplications.map((application) => (
-                <div key={application.application_id} className="hover:bg-gray-50 transition-colors">
+              {filteredRegistrations.map((application) => (
+                <div key={application.id} className="hover:bg-gray-50 transition-colors">
                   <div className="p-4">
                     <div className="flex flex-col md:flex-row md:items-center md:justify-between">
                       <div className="flex-1">
                         <div className="flex items-start">
-                          <div className="w-12 h-12 rounded-full bg-blue-100 flex-shrink-0 mr-4 flex items-center justify-center">
-                            {application.applicant_name
-                              .split(" ")
-                              .map((n) => n[0])
-                              .join("")
-                              .toUpperCase()}
-                          </div>
+                        <div className="w-12 h-12 rounded-full bg-blue-100 flex-shrink-0 mr-4 flex items-center justify-center">
+  {application.user?.profile_picture ? (
+    <img
+      src={`${baseURL}${application.user.profile_picture}`}
+      alt="Profile"
+      className="w-full h-full rounded-full object-cover"
+    />
+  ) : (
+    (application.user.employeeprofile?.full_name || `${application.user.first_name} ${application.user.last_name}`)
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+  )}
+</div>
                           <div className="flex-1">
                             <div className="flex flex-col sm:flex-row sm:items-center mb-1">
-                              <h3 className="font-medium text-lg">{application.applicant_name}</h3>
-                              <span
-                                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(
-                                  application.application_status,
-                                )} mt-1 sm:mt-0 sm:ml-2`}
-                              >
-                                {getStatusIcon(application.application_status)}
-                                <span className="ml-1">{application.application_status}</span>
-                              </span>
+                              <h3 className="font-medium text-lg">{application.user.employeeprofile?.full_name||`${application.user.first_name} ${application.user.last_name}` }</h3>
+                           
+                          
                             </div>
-                            <p className="text-gray-600">{application.job_title}</p>
+                            <p className="text-gray-600">{application.user.employeeprofile.role}</p>
                             <div className="flex flex-wrap items-center text-sm text-gray-500 mt-1">
                               <div className="flex items-center mr-4">
                                 <MapPin className="h-3.5 w-3.5 mr-1" />
-                                {application.applicant_location || "Not specified"}
+                                {application.user.employeeprofile.location || "Not specified"}
                               </div>
                               <div className="flex items-center">
-                                <Calendar className="h-3.5 w-3.5 mr-1" />
-                                Applied on {formatDate(application.applied_date)}
-                              </div>
+  <Calendar className="h-3.5 w-3.5 mr-1" />
+  <span>Registered on</span>
+  <span
+    className={`ml-1 ${
+      new Date(application.registered_at) > new Date(jobFair.date)
+        ? "text-red-500"
+        : ""
+    }`}
+  >
+    {formatDate(application.registered_at)}
+  </span>
+</div>
                             </div>
                           </div>
                         </div>
@@ -600,10 +603,10 @@ export default function JobFairApplications() {
                         )}
 
                         <button
-                          onClick={() => toggleExpandApplication(application.application_id)}
+                          onClick={() => toggleExpandApplication(application.id)}
                           className="ml-3 flex items-center px-3 py-1.5 text-sm text-blue-600 hover:bg-blue-50 rounded-md"
                         >
-                          {expandedApplication === application.application_id ? (
+                          {expandedApplication === application.id ? (
                             <>
                               <ChevronUp className="h-4 w-4 mr-1" />
                               Hide Details
@@ -619,7 +622,7 @@ export default function JobFairApplications() {
                     </div>
 
                     {/* Expanded Details */}
-                    {expandedApplication === application.application_id && (
+                    {expandedApplication === application.id && (
                       <div className="mt-4 pt-4 border-t border-gray-200">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           {/*  <div>
@@ -642,16 +645,13 @@ export default function JobFairApplications() {
                           </div>*/}
 
                           <div>
-                            <h4 className="font-medium text-gray-700 mb-2">Application Details</h4>
+                            <h4 className="font-medium text-gray-700 mb-2">Participant Details</h4>
                             <div className="bg-gray-50 rounded-lg p-4 space-y-3">
                               <div>
-                                <p className="text-sm text-gray-500">Status</p>
-                                <p className="font-medium">{application.application_status}</p>
+                                <p className="text-sm text-gray-500">Date Registered</p>
+                                Registered on {formatDate(application.registered_at)}
                               </div>
-                              <div>
-                                <p className="text-sm text-gray-500">Applied For</p>
-                                <p className="font-medium">{application.job_title}</p>
-                              </div>
+                            
 
                               {/*<div>
                                 <p className="text-sm text-gray-500">Resume</p>
@@ -684,12 +684,12 @@ export default function JobFairApplications() {
                             onClick={() => {
                         
 
-                         handleChat(application.applicant_id)
+                         handleChat(application.user.id)
                             }}
                             className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
                           >
                             <MessageSquare className="h-4 w-4 mr-2" />
-                            Contact Job Seeker
+                            Contact Participant
                           </button>
                         </div>
                       </div>
@@ -704,12 +704,12 @@ export default function JobFairApplications() {
 
       {/* Modal for application actions */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
             {/* Modal Header */}
             <div className="p-4 border-b">
               <h3 className="text-lg font-medium text-gray-900">
-                {modalType === "view" && "Applicant Details"}
+                {modalType === "view" && "Participant Details"}
                 {modalType === "approve" && "Approve Application"}
                 {modalType === "decline" && "Decline Application"}
               </h3>
@@ -737,51 +737,44 @@ export default function JobFairApplications() {
               {selectedApplicant && (
                 <div className="space-y-4">
                   <div className="flex items-center">
-                    <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold mr-3">
-                      {selectedApplicant.applicant_name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")
-                        .toUpperCase()}
-                    </div>
+                  <div className="w-12 h-12 rounded-full bg-blue-100 flex-shrink-0 mr-4 flex items-center justify-center">
+  {selectedApplicant.user?.profile_picture ? (
+    <img
+      src={`${baseURL}${selectedApplicant.user.profile_picture}`}
+      alt="Profile"
+      className="w-full h-full rounded-full object-cover"
+    />
+  ) : (
+    (selectedApplicant.user.employeeprofile?.full_name || `${selectedApplicant.user.first_name} ${selectedApplicant.user.last_name}`)
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+  )}
+</div>
                     <div>
-                      <h4 className="font-medium text-gray-900">{selectedApplicant.applicant_name}</h4>
-                      <p className="text-sm text-gray-500">Applied for: {selectedApplicant.job_title}</p>
-                    </div>
+                    <h4 className="font-medium text-gray-900">
+  {selectedApplicant.user.employeeprofile?.full_name || `${selectedApplicant.user.first_name} ${selectedApplicant.user.last_name}`}
+</h4>
+</div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 mt-4">
-                    <div>
-                      <p className="text-sm text-gray-500">Experience</p>
-                      <p className="font-medium">{selectedApplicant.applicant_experience || "Not specified"}</p>
-                    </div>
+              
                     <div>
                       <p className="text-sm text-gray-500">Location</p>
-                      <p className="font-medium">{selectedApplicant.applicant_location || "Not specified"}</p>
+                      <p className="font-medium">{selectedApplicant.user.employeeprofile?.location || "Not specified"}</p>
                     </div>
+            
                     <div>
-                      <p className="text-sm text-gray-500">Status</p>
-                      <span
-                        className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(
-                          selectedApplicant.application_status,
-                        )}`}
-                      >
-                        {getStatusIcon(selectedApplicant.application_status)}
-                        <span className="ml-1">{selectedApplicant.application_status}</span>
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Applied On</p>
-                      <p className="font-medium">{formatDate(selectedApplicant.applied_date)}</p>
+                      <p className="text-sm text-gray-500">Registered on</p>
+                      <p className="font-medium">{formatDate(selectedApplicant.registered_at)}</p>
                     </div>
                   </div>
 
                   {modalType === "view" && (
                     <div className="mt-4">
-                      <p className="text-sm text-gray-500 mb-1">Cover Letter</p>
-                      <div className="bg-gray-50 p-3 rounded text-sm">
-                        {selectedApplicant.cover_letter || "No cover letter provided."}
-                      </div>
+                   
                     </div>
                   )}
 
