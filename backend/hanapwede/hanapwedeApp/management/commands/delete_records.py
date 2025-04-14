@@ -7,7 +7,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         today = timezone.now().date()
-        jobfairs_to_delete = JobFair.objects.filter(date=today)
+        jobfairs_to_delete = JobFair.objects.filter(date__lte=today) 
         count = jobfairs_to_delete.count()
         jobfairs_to_delete.delete()
         self.stdout.write(self.style.SUCCESS(
