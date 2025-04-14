@@ -162,7 +162,7 @@ export default function EmployeeDashboard() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-h-[500px] overflow-y-auto">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 max-h-[1200px] overflow-y-auto">
           <div className="space-y-6">
             <div className="space-y-4">
               <div>
