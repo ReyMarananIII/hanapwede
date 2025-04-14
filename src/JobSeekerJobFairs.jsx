@@ -102,9 +102,13 @@ export default function JobSeekerJobFairs() {
   }
 
   const isRegistered = (jobFairId, userId) => {
-    return registrations.some(
-      (reg) => Number(reg.job_fair) === Number(jobFairId) && Number(reg.user) === Number(userId)
-    );
+    return registrations.some((reg) => {
+      const match =
+        Number(reg.job_fair) === Number(jobFairId) &&
+        Number(reg.user.id) === Number(userId); 
+  
+      return match;
+    });
   };
 
   const formatDate = (dateString) => {
@@ -175,6 +179,7 @@ export default function JobSeekerJobFairs() {
                     onClick={() => {
                       setSelectedJobFair(jobFair)
                       setShowDetailsModal(true)
+
                     }}
                     className="w-full text-green-600 hover:text-green-800 flex items-center justify-center"
                   >
