@@ -389,8 +389,8 @@ export default function EmployeeProfile() {
       </div>
     </div>
 
-    {/* Preferences Section */}
     <div className="w-full md:w-1/2">
+
       <PreferencesPage />
     </div>
   </div>

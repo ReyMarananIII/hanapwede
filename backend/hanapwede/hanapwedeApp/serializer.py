@@ -16,6 +16,7 @@ class JobPostSerializer(serializers.ModelSerializer):
         queryset=DisabilityTag.objects.all(), many=True, required=False
     )
     salary_range = serializers.DecimalField(max_digits=10, decimal_places=2)  # If salary is numeric
+   
 
     class Meta:
         model = JobPost

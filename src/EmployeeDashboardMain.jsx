@@ -23,6 +23,7 @@ import {
 
 export default function EmployeeDashboardMain() {
   const [location, setLocation] = useState("")
+  const [jobTerm,setJobTerm] = useState("")
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -132,7 +133,7 @@ export default function EmployeeDashboardMain() {
   }
 
   const filteredJobs = (activeTab === "recommended" ? jobs : allJobs).filter((job) =>
-    location ? job.location?.toLowerCase().includes(location.toLowerCase()) : true,
+    jobTerm ? job.job_title?.toLowerCase().includes(jobTerm.toLowerCase()) : true,
   )
 
   return (
@@ -166,15 +167,15 @@ export default function EmployeeDashboardMain() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-gray-600 mb-2 flex items-center">
-                  <MapPin className="h-4 w-4 mr-1 text-gray-400" />
-                  Location
+                  <Briefcase className="h-4 w-4 mr-1 text-gray-400" />
+                  Job Title
                 </label>
                 <div className="relative">
                   <input
                     type="text"
-                    placeholder="Enter location"
-                    value={location}
-                    onChange={(e) => setLocation(e.target.value)}
+                    placeholder="Enter Job Title"
+                    value={jobTerm}
+                    onChange={(e) => setJobTerm(e.target.value)}
                     className="w-full p-2 pl-8 border rounded-md"
                   />
                   <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />

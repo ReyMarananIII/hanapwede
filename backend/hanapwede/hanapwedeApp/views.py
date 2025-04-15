@@ -412,22 +412,28 @@ def user_has_profile(request, user_id):
 
 
 
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
+from django.http import JsonResponse
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from .models import JobPost, User, EmployeeProfile
+
 @permission_classes([IsAuthenticated]) 
 def recommend_jobs(request):
     user_id = request.GET.get("user_id")  
     user = User.objects.get(id=user_id)
-    
-    
 
     preferred_tags = user.preferences.all()
-
     preferred_tag_names = [tag.name for tag in preferred_tags]
+
     emp_profile = EmployeeProfile.objects.get(user_id=user_id)
     user_disability = emp_profile.user_disability
     user_skills = emp_profile.skills
-    print(user_skills)
+
     job_posts = JobPost.objects.all()
-  
+
     job_data = [
         {
             "post_id": job.post_id,
@@ -436,9 +442,9 @@ def recommend_jobs(request):
             "skills_required": job.skills_req if job.skills_req else "",
             "tags": ", ".join(tag.name for tag in job.tags.all()),
             "disabilitytag": ", ".join(tag.name for tag in job.disabilitytag.all()),
-            "comp_name":job.get_company_name(),
-            "category":job.category,
-            "location":job.location,
+            "comp_name": job.get_company_name(),
+            "category": job.category,
+            "location": job.location,
             "posted_by": job.posted_by.id if job.posted_by else None
         }
         for job in job_posts
@@ -448,26 +454,59 @@ def recommend_jobs(request):
         return JsonResponse({"message": "No jobs found"}, status=404)
 
     df = pd.DataFrame(job_data)
-    df["combined_text"] = df["job_description"] + " " + df["skills_required"] + " " + df["tags"] +" " + df["category"] + ", " +  (df["disabilitytag"] + " ") 
+    df["combined_text"] = df["job_description"] + " " + df["skills_required"] + " " + df["tags"] + " " + df["category"] + ", " + (df["disabilitytag"] + " ")
 
-    user_profile = (" ".join(preferred_tag_names) + " " + " ".join(preferred_tag_names)) + ", " + (user_disability + " ") + (user_skills + " ") *2
-  
-    print("USER PROFILE", user_profile)
+    user_profile = (
+        " ".join(preferred_tag_names) + " " +
+        " ".join(preferred_tag_names) + ", " +
+        user_disability + " " +
+        (user_skills + " ") * 2
+    )
+
     tfidf_vectorizer = TfidfVectorizer(stop_words="english")
     tfidf_matrix = tfidf_vectorizer.fit_transform(df["combined_text"])
-
     user_vector = tfidf_vectorizer.transform([user_profile])
 
     similarity_scores = cosine_similarity(user_vector, tfidf_matrix).flatten()
-    sorted_scores = sorted(enumerate(similarity_scores), key=lambda x: x[1], reverse=True)
-    for idx, score in sorted_scores:
-        print(f"Index {idx}: Similarity Score = {score:.4f}")
-
-
     df["similarity_score"] = similarity_scores
-    recommended_jobs = df.sort_values(by="similarity_score", ascending=False).head(3) #count nung irereturn na jobs, ranked by similarity score
+
+    adjusted_scores = []
+
+    for idx, row in df.iterrows():
+        score = row["similarity_score"]
+        
+        job_disabilities = row["disabilitytag"].lower().split(", ")
+        job_skills_required = row["skills_required"].lower().split(",") if row["skills_required"] else []
+        job_tags = row["tags"].lower().split(", ")
+
+        user_disability_lower = user_disability.lower()
+        user_skills_list = [s.strip().lower() for s in user_skills.split(",")]
+        user_pref_tags_lower = [tag.lower() for tag in preferred_tag_names]
+
+        
+        if user_disability_lower not in job_disabilities:
+            score *= 0.85  
+            print("disability penalty", score)
+
+    
+        skill_match = any(skill in job_skills_required for skill in user_skills_list)
+        if not skill_match:
+            score *= 0.85  
+            print("skill penalty", score)
+
+        
+        pref_match = any(tag in job_tags for tag in user_pref_tags_lower)
+        if user_disability_lower in job_disabilities and skill_match and pref_match:
+            score *= 1.10 
+            print("bonus", score)
+
+        adjusted_scores.append(score)
+
+    df["adjusted_score"] = adjusted_scores
+    recommended_jobs = df.sort_values(by="adjusted_score", ascending=False).head(3)
 
     return JsonResponse(recommended_jobs.to_dict(orient="records"), safe=False)
+
 
 @api_view(["GET"])  
 def get_disability_tags(request):

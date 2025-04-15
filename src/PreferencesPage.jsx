@@ -40,7 +40,8 @@ const PreferencesPage = () => {
 
 
   return (
-    <div className="max-w-lg mr-20 mt-2 p-6 bg-white ">
+<div className="max-w-lg mr-20 mt-2 p-6 bg-white h-80 w-[200px] overflow-y-auto">
+
       <div className="flex items-start">
           <UserCog className="w-5 h-5 text-gray-500 mt-0.5 mr-3" />
       <h2 className="text-lg font-semibold mb-4">Preferences</h2>
