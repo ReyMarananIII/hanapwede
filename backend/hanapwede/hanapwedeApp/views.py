@@ -420,26 +420,31 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from .models import JobPost, User, EmployeeProfile
 
-@permission_classes([IsAuthenticated]) 
+@permission_classes([IsAuthenticated])
 def recommend_jobs(request):
-    user_id = request.GET.get("user_id")  
-    user = User.objects.get(id=user_id)
+    user_id = request.GET.get("user_id")
+    debug_mode = request.GET.get("debug") == "true"
 
+    try:
+        user = User.objects.get(id=user_id)
+        emp_profile = EmployeeProfile.objects.get(user_id=user_id)
+    except (User.DoesNotExist, EmployeeProfile.DoesNotExist):
+        return JsonResponse({"message": "User or profile not found"}, status=404)
+
+    # Preferences and profile
     preferred_tags = user.preferences.all()
     preferred_tag_names = [tag.name for tag in preferred_tags]
-
-    emp_profile = EmployeeProfile.objects.get(user_id=user_id)
     user_disability = emp_profile.user_disability
     user_skills = emp_profile.skills
 
+    # All job posts
     job_posts = JobPost.objects.all()
-
     job_data = [
         {
             "post_id": job.post_id,
             "job_title": job.job_title,
             "job_description": job.job_desc,
-            "skills_required": job.skills_req if job.skills_req else "",
+            "skills_required": job.skills_req or "",
             "tags": ", ".join(tag.name for tag in job.tags.all()),
             "disabilitytag": ", ".join(tag.name for tag in job.disabilitytag.all()),
             "comp_name": job.get_company_name(),
@@ -454,8 +459,15 @@ def recommend_jobs(request):
         return JsonResponse({"message": "No jobs found"}, status=404)
 
     df = pd.DataFrame(job_data)
-    df["combined_text"] = df["job_description"] + " " + df["skills_required"] + " " + df["tags"] + " " + df["category"] + ", " + (df["disabilitytag"] + " ")
+    df["combined_text"] = (
+        df["job_description"] + " " +
+        df["skills_required"] + " " +
+        df["tags"] + " " +
+        df["category"] + ", " +
+        df["disabilitytag"]
+    )
 
+    # Create user profile text
     user_profile = (
         " ".join(preferred_tag_names) + " " +
         " ".join(preferred_tag_names) + ", " +
@@ -463,50 +475,87 @@ def recommend_jobs(request):
         (user_skills + " ") * 2
     )
 
+    # TF-IDF and similarity
     tfidf_vectorizer = TfidfVectorizer(stop_words="english")
     tfidf_matrix = tfidf_vectorizer.fit_transform(df["combined_text"])
     user_vector = tfidf_vectorizer.transform([user_profile])
-
     similarity_scores = cosine_similarity(user_vector, tfidf_matrix).flatten()
     df["similarity_score"] = similarity_scores
 
-    adjusted_scores = []
+    # Filters
+    recommended_jobs = []
+    debug_list = []
 
+    user_disability_lower = user_disability.lower()
+    user_skills_list = [s.strip().lower() for s in user_skills.split(",")]
+    user_pref_tags_lower = [tag.lower() for tag in preferred_tag_names]
+
+    def semantic_skill_match(user_skills, job_skills):
+        if not user_skills or not job_skills:
+            return False
+    
+        all_skills = user_skills + job_skills
+        vectorizer = TfidfVectorizer().fit(all_skills)
+        vectors = vectorizer.transform(all_skills)
+
+        user_vecs = vectors[:len(user_skills)]
+        job_vecs = vectors[len(user_skills):]
+
+        similarity = cosine_similarity(user_vecs, job_vecs)
+        return similarity.max() > 0.5
+    
     for idx, row in df.iterrows():
-        score = row["similarity_score"]
-        
         job_disabilities = row["disabilitytag"].lower().split(", ")
-        job_skills_required = row["skills_required"].lower().split(",") if row["skills_required"] else []
+        job_skills_required = [s.strip().lower() for s in row["skills_required"].split(",")] if row["skills_required"] else []
         job_tags = row["tags"].lower().split(", ")
 
-        user_disability_lower = user_disability.lower()
-        user_skills_list = [s.strip().lower() for s in user_skills.split(",")]
-        user_pref_tags_lower = [tag.lower() for tag in preferred_tag_names]
+        pref_match = any(utag in jtag or jtag in utag for utag in user_pref_tags_lower for jtag in job_tags)
+        disability_match = any(user_disability_lower in jd or jd in user_disability_lower for jd in job_disabilities)
+        skill_match = semantic_skill_match(user_skills_list, job_skills_required)
 
-        
-        if user_disability_lower not in job_disabilities:
-            score *= 0.85  
-            print("disability penalty", score)
-
-    
-        skill_match = any(skill in job_skills_required for skill in user_skills_list)
+        reason = []
+        if not pref_match:
+            reason.append("pref tag doesn't match")
+        if not disability_match:
+            reason.append("disability doesn't match")
         if not skill_match:
-            score *= 0.85  
-            print("skill penalty", score)
+            reason.append("skills don't match")
 
-        
-        pref_match = any(tag in job_tags for tag in user_pref_tags_lower)
-        if user_disability_lower in job_disabilities and skill_match and pref_match:
-            score *= 1.10 
-            print("bonus", score)
+        if pref_match and disability_match and skill_match:
+            print(f"[✔️ INCLUDED] Job ID {row['post_id']} - {row['job_title']}")
+            recommended_jobs.append(row)
+            status = "Included"
+        else:
+            print(f"[❌ SKIPPED] Job ID {row['post_id']} - {row['job_title']} → Reason: {', '.join(reason)}")
+            status = ", ".join(reason)
 
-        adjusted_scores.append(score)
+        if debug_mode:
+            debug_list.append({
+                "post_id": row["post_id"],
+                "job_title": row["job_title"],
+                "match_status": status,
+                "similarity_score": row["similarity_score"]
+            })
 
-    df["adjusted_score"] = adjusted_scores
-    recommended_jobs = df.sort_values(by="adjusted_score", ascending=False).head(3)
+    if recommended_jobs:
+        recommended_df = pd.DataFrame(recommended_jobs)
+        recommended_df["similarity_score"] = recommended_df["similarity_score"].astype(float)
+        top_recommendations = recommended_df.sort_values(by="similarity_score", ascending=False).head(3)
 
-    return JsonResponse(recommended_jobs.to_dict(orient="records"), safe=False)
+        if debug_mode:
+            return JsonResponse({
+                "recommended": top_recommendations.to_dict(orient="records"),
+                "debug_info": debug_list
+            }, safe=False)
 
+        return JsonResponse(top_recommendations.to_dict(orient="records"), safe=False)
+    else:
+        if debug_mode:
+            return JsonResponse({
+                "message": "No suitable job recommendations found",
+                "debug_info": debug_list
+            }, status=200)
+        return JsonResponse({"message": "No suitable job recommendations found"}, status=200)
 
 @api_view(["GET"])  
 def get_disability_tags(request):
@@ -704,7 +753,24 @@ def mark_all_notifications_read(request):
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
+@api_view(['DELETE']) #api/delete-all-notifications
+@permission_classes([IsAuthenticated])
+def delete_all_notifications(request):
+    notifications = Notification.objects.filter(recipient=request.user)
+    notifications.delete()
+    return Response({"message": "All notifications have been deleted."})
 
+
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def delete_notification(request, notification_id):
+    try:
+        # Get the specific notification
+        notification = Notification.objects.get(id=notification_id, recipient=request.user)
+        notification.delete()
+        return Response({"message": "Notification has been deleted."})
+    except Notification.DoesNotExist:
+        return Response({"error": "Notification not found or you do not have permission to delete it."}, status=404)
 
 
 #g views

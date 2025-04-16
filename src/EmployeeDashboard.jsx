@@ -135,9 +135,13 @@ export default function EmployeeDashboard() {
     }
   }
 
-  const filteredJobs = (activeTab === "recommended" ? jobs : allJobs).filter((job) =>
-    jobTerm ? job.job_title?.toLowerCase().includes(jobTerm.toLowerCase()) : true,
-  )
+  const jobList = Array.isArray(activeTab === "recommended" ? jobs : allJobs)
+  ? (activeTab === "recommended" ? jobs : allJobs)
+  : [];
+
+const filteredJobs = jobList.filter((job) =>
+  jobTerm ? job.job_title?.toLowerCase().includes(jobTerm.toLowerCase()) : true
+);
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
