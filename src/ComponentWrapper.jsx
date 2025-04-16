@@ -20,7 +20,7 @@ const ComponentWrapper = ({ top1, top2, bottom }) => {
 
           {/* Larger container for top2 that takes remaining space */}
           <div className="flex-grow w-full">
-            <div className="bg-white rounded-xl shadow-md overflow-hidden h-[1000px] max-h-[120vh] overflow-y-auto">
+            <div className="bg-white rounded-xl shadow-md overflow-hidden h-[1000px] max-h-[120vh] overflow-y-auto hide-scrollbar">
               <div className="p-4">{top2}</div>
             </div>
           </div>

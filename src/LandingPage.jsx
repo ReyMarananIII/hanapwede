@@ -34,13 +34,15 @@ export default function LandingPage() {
     })
       .then((res) => res.json())
       .then((data) => {
-        setFeaturedJobs(data.slice(0, 4)); // limit to 4 featured
+        // Shuffle the array
+        const shuffled = data.sort(() => 0.5 - Math.random());
+        // Slice the first 4
+        setFeaturedJobs(shuffled.slice(0, 4));
       })
       .catch((error) => {
         console.error("Error fetching featured jobs:", error);
       });
   }, []);
-  
 
   const handlePostJobUpdate = () => {
     const authToken = localStorage.getItem("authToken");

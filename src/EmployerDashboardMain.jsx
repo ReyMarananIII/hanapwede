@@ -16,6 +16,7 @@ import {
   Loader,
   Edit,
   Trash2,
+  Search
 } from "lucide-react"
 
 export default function EmployerDashboard() {
@@ -34,13 +35,16 @@ export default function EmployerDashboard() {
   const [selectedApplicant, setSelectedApplicant] = useState(null)
   const [isProcessing, setIsProcessing] = useState(false)
   const [actionMessage, setActionMessage] = useState({ type: "", message: "" })
-
+  const [searchTerm, setSearchTerm] = useState("")
 
   const [showDeleteModal, setShowDeleteModal] = useState(false)
 
   const [selectedJob, setSelectedJob] = useState(null)
   const [isJobProcessing, setIsJobProcessing] = useState(false)
   const [jobActionMessage, setJobActionMessage] = useState({ type: "", message: "" })
+  const filteredJobPosts = dashboardData.job_posts.filter((job) =>
+    job.job_title.toLowerCase().includes(searchTerm.toLowerCase()),
+  )
 
   useEffect(() => {
     fetchDashboardData()
@@ -461,6 +465,17 @@ const handleDeleteApplication = async () => {
               <Briefcase className="w-5 h-5 mr-2 text-blue-600" />
               Current Job Postings
             </h2>
+
+              <div className="relative w-full md:w-64">
+                      <input
+                        type="text"
+                        placeholder="Search job titles..."
+                        className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                      <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+                    </div>
             <div className="bg-white rounded-lg shadow overflow-x-auto">
             <div className="max-h-[500px] overflow-y-auto"> {/* This adds the scroll */}
               <table className="w-full">
@@ -475,8 +490,8 @@ const handleDeleteApplication = async () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {dashboardData.job_posts.length > 0 ? (
-                    dashboardData.job_posts.map((job, index) => (
+                  {filteredJobPosts.length > 0 ? (
+                    filteredJobPosts.map((job, index) => (
                       <tr key={index} className="border-b last:border-b-0 hover:bg-gray-50">
                         <td className="p-4 font-medium">{job.job_title}</td>
                         <td className="p-4">{job.category || "N/A"}</td>
