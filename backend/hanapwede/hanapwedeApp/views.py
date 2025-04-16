@@ -137,7 +137,7 @@ def signup(request):
 
             send_mail(
                 subject='Verify your Hanapwede email',
-                message=f'Click the link to verify your email: {verification_link}',
+                message= f"Hi {user.first_name},\n\n""Thank you for registering with Hanapwede!\n\n"f"To complete your registration, please verify your email by clicking the link below:\n"f"{verification_link}\n\n""If you did not sign up for this account, please ignore this email.\n\n""Best regards,\n""Hanapwede Team",
                 from_email='noreply@hanapwede.com',
                 recipient_list=[user.email],
                 fail_silently=False,
