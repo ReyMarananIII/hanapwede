@@ -542,7 +542,7 @@ def recommend_jobs(request):
     if recommended_jobs:
         recommended_df = pd.DataFrame(recommended_jobs)
         recommended_df["similarity_score"] = recommended_df["similarity_score"].astype(float)
-        top_recommendations = recommended_df.sort_values(by="similarity_score", ascending=False).head(5)
+        top_recommendations = recommended_df.sort_values(by="similarity_score", ascending=False).head(7)
 
         if debug_mode:
             return JsonResponse({
@@ -642,7 +642,8 @@ def employer_dashboard(request):
         "category", 
         "location", 
         "salary_range", 
-        "created_at"
+        "created_at",
+        "skills_req",
     ))
 
     applications = Application.objects.filter(job_post__in=jobs, job_fair__isnull=True)

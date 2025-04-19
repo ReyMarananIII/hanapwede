@@ -386,6 +386,7 @@ useEffect(() => {
                     <th className="text-left p-4 font-medium text-gray-600">Skills</th>
                     <th className="text-left p-4 font-medium text-gray-600">Experience</th>
                     <th className="text-left p-4 font-medium text-gray-600">Location</th>
+
                     <th className="text-left p-4 font-medium text-gray-600">Status</th>
                     <th className="text-left p-4 font-medium text-gray-600">Contact</th>
                     <th className="text-left p-4 font-medium text-gray-600">Actions</th>
@@ -533,6 +534,7 @@ useEffect(() => {
           <th className="text-left p-4 font-medium text-gray-600">Title</th>
           <th className="text-left p-4 font-medium text-gray-600">Category</th>
           <th className="text-left p-4 font-medium text-gray-600">Location</th>
+          <th className="text-left p-4 font-medium text-gray-600">Skills Required</th>
           <th className="text-left p-4 font-medium text-gray-600">Salary</th>
           <th className="text-left p-4 font-medium text-gray-600">Posted On</th>
           <th className="text-left p-4 font-medium text-gray-600">Actions</th>
@@ -548,6 +550,7 @@ useEffect(() => {
                 <MapPin className="w-4 h-4 mr-1 text-gray-400" />
                 {job.location || "N/A"}
               </td>
+              <td className="p-4">{job.skills_req || "N/A"}</td>
               <td className="p-4">{job.salary_range ? `₱${job.salary_range}` : "Negotiable"}</td>
               <td className="p-4 flex items-center">
                 <Clock className="w-4 h-4 mr-1 text-gray-400" />

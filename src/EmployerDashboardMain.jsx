@@ -517,6 +517,7 @@ const handleDeleteApplication = async () => {
                     <th className="text-left p-4 font-medium text-gray-600">Title</th>
                     <th className="text-left p-4 font-medium text-gray-600">Category</th>
                     <th className="text-left p-4 font-medium text-gray-600">Location</th>
+                    <th className="text-left p-4 font-medium text-gray-600">Skills Required</th>
                     <th className="text-left p-4 font-medium text-gray-600">Salary</th>
                     <th className="text-left p-4 font-medium text-gray-600">Posted On</th>
                     <th className="text-left p-4 font-medium text-gray-600">Actions</th>
@@ -532,6 +533,8 @@ const handleDeleteApplication = async () => {
                           <MapPin className="w-4 h-4 mr-1 text-gray-400" />
                           {job.location || "N/A"}
                         </td>
+
+                        <td className="p-4">{job.skills_req || "N/A"}</td>
                         <td className="p-4">{job.salary_range ? `₱${job.salary_range}` : "Negotiable"}</td>
                         <td className="p-4 flex items-center">
                           <Clock className="w-4 h-4 mr-1 text-gray-400" />
@@ -828,6 +831,7 @@ const handleDeleteApplication = async () => {
                     <p className="text-sm font-medium text-gray-700">Job details:</p>
                     <ul className="mt-2 text-sm text-gray-600 space-y-1">
                       <li>Location: {selectedJob.location || "N/A"}</li>
+                      
                       <li>Salary: {selectedJob.salary_range ? `₱${selectedJob.salary_range}` : "Negotiable"}</li>
                       <li>Posted on: {new Date(selectedJob.created_at).toLocaleDateString()}</li>
                     </ul>
