@@ -151,7 +151,7 @@ export default function EmployeeProfile() {
     return (
       <div>
        {/*{isLoggedIn ? <LoggedInHeader /> : <Header />}*/}
-        <div className="flex items-center justify-center min-h-screen bg-[#F8FBFF]">
+        <div className="flex items-center justify-center min-h-screen bg-[#FFFFFF]">
           <div className="flex flex-col items-center">
             <Loader className="w-10 h-10 text-[#4CAF50] animate-spin mb-4" />
             <p className="text-gray-600">Loading profile...</p>
@@ -165,7 +165,7 @@ export default function EmployeeProfile() {
     return (
       <div>
         {/*{isLoggedIn ? <LoggedInHeader /> : <Header />}*/}
-        <div className="flex items-center justify-center min-h-screen bg-[#F8FBFF]">
+        <div className="flex items-center justify-center min-h-screen bg-[#FFFFFF]">
           <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
             <div className="flex items-center justify-center text-red-500 mb-4">
               <AlertCircle className="w-12 h-12" />
@@ -182,7 +182,7 @@ export default function EmployeeProfile() {
     return (
       <div>
        {/* {isLoggedIn ? <LoggedInHeader /> : <Header />}*/}
-        <div className="flex items-center justify-center min-h-screen bg-[#F8FBFF]">
+        <div className="flex items-center justify-center min-h-screen bg-[#FFFFFF]">
           <div className="bg-white p-8 rounded-lg shadow-md max-w-md w-full">
             <div className="flex items-center justify-center text-gray-400 mb-4">
               <User className="w-12 h-12" />
@@ -196,7 +196,7 @@ export default function EmployeeProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FBFF]">
+    <div className="min-h-screen bg-[#FFFFFF]">
       {/*{isLoggedIn ? <LoggedInHeader /> : <Header />}*/}
 
       {/* Profile Header with gradient banner */}
@@ -267,8 +267,8 @@ export default function EmployeeProfile() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-[1fr_300px] gap-8">
           {/* Main Content */}
-          <div className="bg-white rounded-lg  p-6">
-            <div className="flex gap-6 border-b mb-6">
+          <div className="bg-[#FFFFFF] rounded-lg  p-6">
+            <div className="flex gap-6  mb-6">
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
