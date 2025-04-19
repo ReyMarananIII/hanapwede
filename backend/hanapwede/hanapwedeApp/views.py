@@ -509,33 +509,35 @@ def recommend_jobs(request):
         job_skills_required = [s.strip().lower() for s in row["skills_required"].split(",")] if row["skills_required"] else []
         job_tags = row["tags"].lower().split(", ")
 
-        pref_match = any(utag in jtag or jtag in utag for utag in user_pref_tags_lower for jtag in job_tags)
         disability_match = any(user_disability_lower in jd or jd in user_disability_lower for jd in job_disabilities)
         skill_match = semantic_skill_match(user_skills_list, job_skills_required)
+        pref_match = any(utag in jtag or jtag in utag for utag in user_pref_tags_lower for jtag in job_tags)
 
+        status = ""
         reason = []
-        if not pref_match:
-            reason.append("pref tag doesn't match")
-        if not disability_match:
-            reason.append("disability doesn't match")
-        if not skill_match:
-            reason.append("skills don't match")
 
-        if pref_match and disability_match and skill_match:
-            print(f"[✔️ INCLUDED] Job ID {row['post_id']} - {row['job_title']}")
-            recommended_jobs.append(row)
-            status = "Included"
+        if not disability_match:
+            status = "Excluded"
+            reason.append("No disability match")
+        elif not skill_match and not pref_match:
+            status = "Excluded"
+            reason.append("No skill or preference match")
         else:
-            print(f"[❌ SKIPPED] Job ID {row['post_id']} - {row['job_title']} → Reason: {', '.join(reason)}")
-            status = ", ".join(reason)
+            status = "Included"
+            recommended_jobs.append(row)
+
+        if status == "Included":
+            print(f"[✔️ INCLUDED] Job ID {row['post_id']} - {row['job_title']}")
+        else:
+            print(f"[❌ EXCLUDED] Job ID {row['post_id']} - {row['job_title']} → Reason: {', '.join(reason)}")
 
         if debug_mode:
             debug_list.append({
-                "post_id": row["post_id"],
-                "job_title": row["job_title"],
-                "match_status": status,
-                "similarity_score": row["similarity_score"]
-            })
+            "post_id": row["post_id"],
+            "job_title": row["job_title"],
+            "match_status": status if not reason else ", ".join(reason),
+            "similarity_score": row["similarity_score"]
+        })
 
     if recommended_jobs:
         recommended_df = pd.DataFrame(recommended_jobs)

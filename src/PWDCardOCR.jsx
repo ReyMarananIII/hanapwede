@@ -119,7 +119,7 @@ export default function PwdCardOCR({ formData, setFormData, onFileChange }) {
       extractFields(data.text);
     } catch (error) {
       console.error("OCR Error:", error);
-      setError("Failed to process image.");
+      setError("There was an issue processing your image. Please enter your credentials manually below to continue.");
     } finally {
       setLoading(false);
     }

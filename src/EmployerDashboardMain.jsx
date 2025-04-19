@@ -42,14 +42,28 @@ export default function EmployerDashboard() {
   const [selectedJob, setSelectedJob] = useState(null)
   const [isJobProcessing, setIsJobProcessing] = useState(false)
   const [jobActionMessage, setJobActionMessage] = useState({ type: "", message: "" })
-  const filteredJobPosts = dashboardData.job_posts.filter((job) =>
-    job.job_title.toLowerCase().includes(searchTerm.toLowerCase()),
-  )
 
+  const categories = Array.from(
+    new Set(dashboardData.job_posts.map((job) => job.category).filter(Boolean))
+  );
+const [selectedCategories, setSelectedCategories] = useState([]);
+  
   useEffect(() => {
     fetchDashboardData()
   }, [authToken])
-
+  const filteredJobPosts = dashboardData.job_posts.filter((job) => {
+    const matchesSearch = job.job_title.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesCategory =
+      selectedCategories.length === 0 || selectedCategories.includes(job.category);
+    return matchesSearch && matchesCategory;
+  });
+  const handleCategoryChange = (category) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category]
+    );
+  };
 
   const fetchDashboardData = async () => {
     try {
@@ -461,21 +475,40 @@ const handleDeleteApplication = async () => {
             </div>
 
             {/* Job Postings Table */}
-            <h2 className="text-lg font-semibold mt-8 mb-4 flex items-center">
-              <Briefcase className="w-5 h-5 mr-2 text-blue-600" />
-              Current Job Postings
-            </h2>
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 mt-8 gap-4">
+  <h2 className="text-lg font-semibold flex items-center">
+    <Briefcase className="w-5 h-5 mr-2 text-blue-600" />
+    Current Job Postings
+  </h2>
 
-              <div className="relative w-full md:w-64">
-                      <input
-                        type="text"
-                        placeholder="Search job titles..."
-                        className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                      <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
-                    </div>
+  <div className="relative w-full md:w-64">
+    <input
+      type="text"
+      placeholder="Search job titles..."
+      className="w-full pl-10 pr-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+      value={searchTerm}
+      onChange={(e) => setSearchTerm(e.target.value)}
+    />
+    <Search className="absolute left-3 top-2.5 h-5 w-5 text-gray-400" />
+  </div>
+</div>
+
+<div className="mb-4">
+  <p className="font-medium text-sm text-gray-700 mb-2">Filter by Category:</p>
+  <div className="flex flex-wrap gap-3">
+    {categories.map((cat) => (
+      <label key={cat} className="flex items-center space-x-2">
+        <input
+          type="checkbox"
+          checked={selectedCategories.includes(cat)}
+          onChange={() => handleCategoryChange(cat)}
+          className="form-checkbox h-4 w-4 text-blue-600"
+        />
+        <span className="text-sm text-gray-700">{cat}</span>
+      </label>
+    ))}
+  </div>
+</div>
             <div className="bg-white rounded-lg shadow overflow-x-auto">
             <div className="max-h-[500px] overflow-y-auto"> {/* This adds the scroll */}
               <table className="w-full">
@@ -750,7 +783,7 @@ const handleDeleteApplication = async () => {
 
       {/* Delete Job Confirmation Modal */}
       {showDeleteModal && selectedJob && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+         <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
             {/* Modal Header */}
             <div className="p-4 border-b">

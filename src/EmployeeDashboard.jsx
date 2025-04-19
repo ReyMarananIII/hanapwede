@@ -33,6 +33,8 @@ export default function EmployeeDashboard() {
   const [activeTab, setActiveTab] = useState("recommended")
   const [allJobs, setAllJobs] = useState([])
 
+
+  const [selectedCategories, setSelectedCategories] = useState([]);
   // New state for statistics
   const [statistics, setStatistics] = useState({
     employeeCount: 0,
@@ -138,10 +140,29 @@ export default function EmployeeDashboard() {
   const jobList = Array.isArray(activeTab === "recommended" ? jobs : allJobs)
   ? (activeTab === "recommended" ? jobs : allJobs)
   : [];
+  const categories = Array.from(
+    new Set(jobList.map((job) => job.category).filter(Boolean))
+  );
 
-const filteredJobs = jobList.filter((job) =>
-  jobTerm ? job.job_title?.toLowerCase().includes(jobTerm.toLowerCase()) : true
-);
+  const handleCategoryChange = (category) => {
+    setSelectedCategories((prev) =>
+      prev.includes(category)
+        ? prev.filter((c) => c !== category)
+        : [...prev, category]
+    );
+  };
+  const filteredJobs = jobList.filter((job) => {
+    const matchesTitle = jobTerm
+      ? job.job_title?.toLowerCase().includes(jobTerm.toLowerCase())
+      : true;
+  
+    const matchesCategory =
+      activeTab === "all"
+        ? selectedCategories.length === 0 || selectedCategories.includes(job.category)
+        : true;
+  
+    return matchesTitle && matchesCategory;
+  });
 
   return (
     <div className="min-h-screen bg-[#F8FBFF]">
@@ -208,6 +229,25 @@ const filteredJobs = jobList.filter((job) =>
                 Dashboard
             </button>
           </div>
+
+          {activeTab === "all" && categories.length > 0 && (
+  <div className="mb-4 mt-6">
+    <p className="font-medium text-sm text-gray-700 mb-2">Filter by Category:</p>
+    <div className="flex flex-wrap gap-3">
+      {categories.map((cat) => (
+        <label key={cat} className="flex items-center space-x-2">
+          <input
+            type="checkbox"
+            checked={selectedCategories.includes(cat)}
+            onChange={() => handleCategoryChange(cat)}
+            className="form-checkbox h-4 w-4 text-blue-600"
+          />
+          <span className="text-sm text-gray-700">{cat}</span>
+        </label>
+      ))}
+    </div>
+  </div>
+)}
               </div>
             </div>
           </div>
