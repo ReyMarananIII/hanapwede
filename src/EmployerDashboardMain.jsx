@@ -375,7 +375,7 @@ const handleDeleteApplication = async () => {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 max-h-[600px] overflow-y-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 max-h-[800px] overflow-y-auto">
           {/* Candidates Table */}
           <div className="lg:col-span-3">
             <h2 className="text-lg font-semibold mb-4 flex items-center">

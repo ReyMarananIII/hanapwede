@@ -596,6 +596,7 @@ def get_job(request, post_id):
         "location": job.location,
         "category": job.category,
         "salary_range": job.salary_range,
+        "skills_req":job.skills_req,
     }
     
     return JsonResponse(job_data, safe=False)
@@ -1069,7 +1070,7 @@ def approve_application(request, application_id):
         Notification.objects.create(
             recipient=application.applicant, 
             title="Application Approved",
-            action=f"Your application for {application.job_post.job_title} has been approved!",
+            action=f"Congratulations! The employer has reviewed your application and would like to proceed to the next step. Please contact us at hanapwede@gmail.com or send us a message for more details. We’ll keep you informed about any next steps or requirements. Thank you for your patience!",
             target_content_type=ContentType.objects.get_for_model(Application),
             target_object_id=application.application_id
         )

@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import LoggedInHeader from "./LoggedInHeader"
-import { Briefcase, CheckCircle, AlertCircle, Loader, ArrowLeft } from "lucide-react"
+import { Briefcase, CheckCircle, AlertCircle, Loader, ArrowLeft,Building } from "lucide-react"
 
 import { baseURL } from './constants';
 
@@ -25,6 +25,8 @@ export default function EditJob() {
     job_desc: "",
     job_type: "",
     tags: "",
+    category:"Technology",
+    skills_req: "",
   })
 
   // Tags state
@@ -60,6 +62,7 @@ export default function EditJob() {
           salary_range: jobData.salary_range || "",
           job_desc: jobData.job_desc || "",
           job_type: jobData.job_type || "",
+          skills_req: jobData.skills_req || "",
    
         })
 
@@ -77,6 +80,24 @@ export default function EditJob() {
       fetchJobData()
     }
   }, [jobId, authToken])
+
+  const jobCategories = [
+    "Technology",
+    "Sales",
+    "Marketing",
+    "Finance",
+    "Education",
+    "Healthcare",
+    "Customer Service",
+    "Administrative",
+    "Engineering",
+    "Design",
+    "Human Resources",
+    "Legal",
+    "Manufacturing",
+    "Retail",
+    "Transportation",
+  ]
 
   // Function to fetch disability tags
   const fetchDisabilityTags = async () => {
@@ -304,19 +325,31 @@ export default function EditJob() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <div>
-                <label htmlFor="category" className="block text-sm font-medium text-gray-700">
-                  Category
-                </label>
-                <input
-                  type="text"
-                  id="category"
-                  name="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                />
-              </div>
+            <div>
+                  <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-2">
+                    Category
+                  </label>
+                  <div className="relative rounded-md shadow-sm">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <Building className="h-5 w-5 text-gray-400" />
+                    </div>
+                    <select
+                      id="category"
+                      name="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white"
+                      required
+                    >
+                      {jobCategories.map((category) => (
+                        <option key={category} value={category}>
+                          {category}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
 
               <div>
                 <label htmlFor="job_type" className="block text-sm font-medium text-gray-700">
@@ -332,9 +365,7 @@ export default function EditJob() {
                   <option value="">Select Type</option>
                   <option value="Full-time">Full-time</option>
                   <option value="Part-time">Part-time</option>
-                  <option value="Contract">Contract</option>
-                  <option value="Freelance">Freelance</option>
-                  <option value="Internship">Internship</option>
+    
                 </select>
               </div>
             </div>
@@ -369,7 +400,18 @@ export default function EditJob() {
                 />
               </div>
             </div>
-
+            <div>
+              <label htmlFor="skills_req" className="block text-sm font-medium text-gray-700">
+                Skills Required
+              </label>
+              <textarea
+                id="skills_req"
+                name="skills_req"
+                value={formData.skills_req}
+                onChange={handleChange}
+                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+              />
+            </div>
             <div>
               <label htmlFor="job_desc" className="block text-sm font-medium text-gray-700">
                 Job Description

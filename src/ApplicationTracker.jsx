@@ -24,6 +24,7 @@ import {
   ChevronUp,
   RefreshCw,
   Delete,
+  Trash2
 } from "lucide-react"
 
 export default function ApplicationTracker() {
@@ -51,6 +52,9 @@ export default function ApplicationTracker() {
   const [sortBy, setSortBy] = useState("newest")
   const [expandedApplication, setExpandedApplication] = useState(null)
   const [isRefreshing, setIsRefreshing] = useState(false)
+  const [showDeleteModal, setShowDeleteModal] = useState(false) 
+  const [isDeleting, setIsDeleting] = useState(false)     
+  const [selectedApplication, setSelectedApplication] = useState(null)  
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
@@ -58,6 +62,21 @@ export default function ApplicationTracker() {
     declined: 0,
     interviewed: 0,
   })
+
+
+
+  const openDeleteModal = (application) => {
+    setSelectedApplication(application);
+    setShowDeleteModal(true);
+  };
+
+ 
+  const closeDeleteModal = () => {
+    setShowDeleteModal(false)
+    setSelectedApplication(null)
+    setShowDeleteModal(null)
+  }
+
 
   // Fetch applications when component mounts
   useEffect(() => {
@@ -137,26 +156,53 @@ export default function ApplicationTracker() {
     }
   }
 
-  const handleCancelApplication = async (applicationId) => {
-    if (window.confirm("Are you sure you want to cancel this application?")) {
-      try {
-        const token = localStorage.getItem("authToken");
-        const response = await fetch(`${baseURL}/api/cancel-application/${applicationId}/`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Token ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
+  const handleCancelApplication = async () => {
+    if (!selectedApplication) return;
   
-        if (!response.ok) {
-          throw new Error("Failed to delete application");
-        }
-        handleSuccess("Application cancelled successfully.");
-      } catch (error) {
-        console.error("Error deleting application:", error);
-        handleError("Failed to delete application. Please try again.");
+    setIsDeleting(true);
+    try {
+      const token = localStorage.getItem("authToken");
+      const response = await fetch(`${baseURL}/api/cancel-application/${selectedApplication.application_id}/`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Token ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to delete application");
       }
+  
+      handleSuccess("Application cancelled successfully.");
+  
+     
+      setApplications((prevApplications) => {
+        const updatedApplications = prevApplications.filter(
+          (app) => app.application_id !== selectedApplication.application_id
+        );
+  
+     
+        const updatedStats = {
+          total: updatedApplications.length,
+          pending: updatedApplications.filter((app) => app.application_status === "Pending").length,
+          approved: updatedApplications.filter((app) => app.application_status === "Approved").length,
+          declined: updatedApplications.filter((app) => app.application_status === "Declined").length,
+          interviewed: updatedApplications.filter((app) => app.application_status === "Interviewed").length,
+        };
+        setStats(updatedStats);
+  
+        return updatedApplications;
+      });
+  
+      setTimeout(() => {
+        closeDeleteModal();
+      }, 1000);
+    } catch (error) {
+      console.error("Error deleting application:", error);
+      handleError("Failed to delete application. Please try again.");
+    } finally {
+      setIsDeleting(false);
     }
   };
   
@@ -476,13 +522,13 @@ export default function ApplicationTracker() {
 
                         <div className="mt-6 flex flex-wrap gap-3">
                    
-                   <button
-                     onClick={() => handleCancelApplication(application.application_id)}
-                     className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-500 hover:bg-red-600"
-                   >
-                     <XCircle className="h-4 w-4 mr-2" />
-                     Cancel Application
-                   </button>
+                        <button
+  onClick={() => openDeleteModal(application)}
+  className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-500 hover:bg-red-600"
+>
+  <XCircle className="h-4 w-4 mr-2" />
+  Cancel Application
+</button>
                  </div>
                       </div>
                     )}
@@ -493,6 +539,49 @@ export default function ApplicationTracker() {
           )}
         </div>
       </div>
+      
+{showDeleteModal && selectedApplication && (
+    <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
+
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+            <div className="text-center mb-6">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <Trash2 className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900 mb-2">Delete Your Profile</h3>
+              <p className="text-sm text-gray-500">
+                Are you sure you want to cancel your application? This action cannot be undone and your application will be permanently removed
+              </p>
+            </div>
+
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={() => closeDeleteModal()}
+                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleCancelApplication}
+                disabled={isDeleting}
+                className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" />
+                    Deleting...
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="-ml-1 mr-2 h-4 w-4" />
+                    Cancel Application
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
