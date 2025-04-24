@@ -226,7 +226,7 @@ export default function EmployeeProfile() {
             )}
           </div>
           <div className="text-center mt-1 sm:mt-2">
-            <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-white mb-1">
+            <h1 className="text-lg sm:text-xl md:text-2xl font-semibold text-black-500 mb-1">
               {userDetails.profile?.full_name || userDetails.username}
             </h1>
             <p className="text-black-500 mb-3 sm:mb-6 font-bold opacity-90 text-sm sm:text-base">

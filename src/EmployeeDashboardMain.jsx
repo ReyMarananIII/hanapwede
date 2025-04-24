@@ -29,6 +29,9 @@ export default function EmployeeDashboardMain() {
   const [error, setError] = useState(null)
   const [activeTab, setActiveTab] = useState("recommended")
   const [allJobs, setAllJobs] = useState([])
+  const token = localStorage.getItem("authToken")
+  const [applications, setApplications] = useState([])
+  
 
 
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -133,9 +136,39 @@ export default function EmployeeDashboardMain() {
       return <Accessibility className="h-5 w-5 text-purple-600" />
     }
   }
-  const jobList = Array.isArray(activeTab === "recommended" ? jobs : allJobs)
-  ? (activeTab === "recommended" ? jobs : allJobs)
-  : [];
+  useEffect(() => {
+    const fetchApplications = async () => {
+      try {
+        const response = await fetch(`${baseURL}/api/my-applications/`, {
+          headers: {
+            Authorization: `Token ${token}`,
+          },
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setApplications(data);
+        } else {
+          console.error("Failed to fetch applications");
+        }
+      } catch (error) {
+        console.error("Error fetching applications:", error);
+      }
+    };
+
+    fetchApplications();
+  }, [token, baseURL]);
+
+  // Extract job IDs from applications
+  const appliedJobIds = new Set(applications.map(app => app.job_id));
+
+ 
+  const sourceList = activeTab === "recommended" ? jobs : allJobs;
+
+  const jobList = Array.isArray(sourceList)
+    ? sourceList.filter(job => !appliedJobIds.has(job.post_id))  
+    : [];
+
+
   const categories = Array.from(
     new Set(jobList.map((job) => job.category).filter(Boolean))
   );
@@ -215,6 +248,24 @@ export default function EmployeeDashboardMain() {
             >
               Track Applications
             </button>
+
+            {activeTab === "recommended" &&(<div className="mt-6 p-4 bg-gray-50 border border-gray-200 rounded-xl">
+  <h3 className="text-sm font-semibold text-gray-600 mb-2 flex items-center gap-2">
+  
+    Matching Guide
+  </h3>
+  <ul className="text-sm text-gray-700 space-y-1 pl-5 list-disc">
+    <li>
+      <span className="font-medium text-green-600">Green</span> = Skills + Preferences + Disability
+    </li>
+    <li>
+      <span className="font-medium text-yellow-600">Yellow</span> = Skills + Disability
+    </li>
+    <li>
+      <span className="font-medium text-red-600">Red</span> = Preferences + Disability
+    </li>
+  </ul>
+</div>)}
           </div>
 
           {activeTab === "all" && categories.length > 0 && (
@@ -257,7 +308,23 @@ export default function EmployeeDashboardMain() {
               <div className="space-y-4">
                 {filteredJobs.map((job, index) => (
                   <div key={index} className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
-                    <h3 className="text-xl font-semibold mb-2">{job.job_title}</h3>
+                    <div className="flex items-center gap-2 mb-2">
+  
+  {activeTab === "recommended" && (<span
+className={`w-3 h-3 rounded-full inline-block ${
+job.color === "Green"
+? "bg-green-600"
+: job.color === "Yellow"
+? "bg-yellow-500"
+: job.color === "Red"
+? "bg-red-500"
+: "bg-gray-400"
+}`}
+></span>)}
+<h3 className="text-xl font-semibold">
+{job.job_title}
+</h3>
+</div>
                     <div className="flex items-center text-gray-600 mb-4">
                       <Building className="h-4 w-4 mr-1 text-gray-400" />
                       <span>{job.comp_name || "Unknown Company"}</span>

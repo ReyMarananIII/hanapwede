@@ -524,19 +524,35 @@ def recommend_jobs(request):
             reason.append("No skill or preference match")
         else:
             status = "Included"
-            recommended_jobs.append(row)
+        
+      
 
         if status == "Included":
+            if skill_match and pref_match and disability_match:
+                color = "Green"
+            elif skill_match and disability_match:
+                color = "Yellow"
+            elif pref_match and disability_match:
+                color = "Red"
+            else:
+                color = "Uncategorized"
+            row_data = row.to_dict()
+            row_data["color"] = color
+            recommended_jobs.append(row_data)
+
             print(f"[✔️ INCLUDED] Job ID {row['post_id']} - {row['job_title']}")
         else:
             print(f"[❌ EXCLUDED] Job ID {row['post_id']} - {row['job_title']} → Reason: {', '.join(reason)}")
+            color = "Excluded"  # Set this so it's available for debug output
+
 
         if debug_mode:
             debug_list.append({
             "post_id": row["post_id"],
             "job_title": row["job_title"],
             "match_status": status if not reason else ", ".join(reason),
-            "similarity_score": row["similarity_score"]
+            "similarity_score": row["similarity_score"],
+            "color": color
         })
 
     if recommended_jobs:

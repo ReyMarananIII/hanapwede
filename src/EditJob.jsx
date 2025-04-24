@@ -19,7 +19,6 @@ export default function EditJob() {
   // Form data state
   const [formData, setFormData] = useState({
     job_title: "",
-    category: "",
     location: "",
     salary_range: "",
     job_desc: "",

@@ -135,6 +135,7 @@ class JobApplicationSerializerv2(serializers.ModelSerializer):
     job_type = serializers.CharField(source="job_post.job_type", read_only=True)
     location = serializers.CharField(source="job_post.location", read_only=True)
     posted_by_id = serializers.IntegerField(source="job_post.posted_by.id", read_only=True)
+    job_id = serializers.IntegerField(source="job_post.post_id", read_only=True)
 
     class Meta:
         model = Application
@@ -145,7 +146,8 @@ class JobApplicationSerializerv2(serializers.ModelSerializer):
             "application_status", 
             "job_type", 
             "location", 
-            "posted_by_id",  # Include Employer's User ID
+            "posted_by_id",
+            "job_id"  # Include Employer's User ID
         ]
 
 

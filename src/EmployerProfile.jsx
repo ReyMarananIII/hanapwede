@@ -93,7 +93,7 @@ export default function EmployerProfile() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#F8FBFF]">
+      <div className="min-h-screen bg-[#FFFFF]">
         {/*<LoggedInHeader />*/}
         <div className="flex items-center justify-center h-[calc(100vh-64px)]">
           <div className="text-center">
@@ -107,7 +107,7 @@ export default function EmployerProfile() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#F8FBFF]">
+      <div className="min-h-screen bg-[#FFFFF]">
        {/* <LoggedInHeader />*/}
         <div className="flex items-center justify-center h-[calc(100vh-64px)]">
           <div className="bg-white rounded-lg shadow-md p-8 max-w-md w-full">
@@ -131,7 +131,7 @@ export default function EmployerProfile() {
 
   if (!profileData) {
     return (
-      <div className="min-h-screen bg-[#F8FBFF]">
+      <div className="min-h-screen bg-[#FFFFF]">
         {/*<LoggedInHeader />*/}
         <div className="flex items-center justify-center h-[calc(100vh-64px)]">
           <div className="bg-white rounded-lg shadow-md p-8 max-w-md w-full text-center">
@@ -154,7 +154,7 @@ export default function EmployerProfile() {
   }
 
   return (
-    <div className="min-h-screen bg-[#F8FBFF]">
+    <div className="min-h-screen bg-[#FFFFF]">
      {/* <LoggedInHeader />*/}
 
     

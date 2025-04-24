@@ -16,7 +16,8 @@ import {
   Loader,
   Edit,
   Trash2,
-  Search
+  Search,
+  FileText
 } from "lucide-react"
 
 export default function EmployerDashboard() {
@@ -36,6 +37,7 @@ export default function EmployerDashboard() {
   const [isProcessing, setIsProcessing] = useState(false)
   const [actionMessage, setActionMessage] = useState({ type: "", message: "" })
   const [searchTerm, setSearchTerm] = useState("")
+    const [resume, setResume] = useState(null)
   // Modal states for job deletion
   const [showDeleteModal, setShowDeleteModal] = useState(false)
   const [selectedJob, setSelectedJob] = useState(null)
@@ -86,6 +88,29 @@ useEffect(() => {
       console.error("Error fetching dashboard data:", error)
     }
   }
+
+
+  useEffect(() => {
+    if (!selectedApplicant) return;
+  
+    const token = localStorage.getItem("authToken");
+  
+    fetch(`${baseURL}/api/get-user-details/${selectedApplicant.applicant__id}/`, {
+      headers: token ? { Authorization: `Token ${token}` } : {},
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch applicant details");
+        return res.json();
+      })
+      .then((data) => {
+        const profile = data.profile;
+        setResume(profile.employee_resume || null);
+        // Optionally set other data too
+      })
+      .catch((err) => {
+        console.error("Error fetching applicant resume:", err);
+      });
+  }, [selectedApplicant]);
 
   const handleDeleteApplication = async () => {
     if (!selectedApplicant) return;
@@ -526,8 +551,8 @@ useEffect(() => {
     ))}
   </div>
 </div>
-  <div className="bg-white rounded-lg shadow overflow-x-auto">
-  <div className="max-h-[500px] overflow-y-auto">
+  <div className="bg-white rounded-lg shadow overflow-x-auto ">
+  <div className="max-h-[500px] overflow-y-auto ">
     <table className="w-full">
       <thead>
         <tr className="border-b bg-gray-50">
@@ -667,12 +692,37 @@ useEffect(() => {
                   </div>
 
                   {modalType === "view" && (
-                    <div className="mt-4">
-                      <p className="text-sm text-gray-500 mb-1">Cover Letter</p>
-                      <div className="bg-gray-50 p-3 rounded text-sm">
-                        {selectedApplicant.cover_letter || "No cover letter provided."}
-                      </div>
-                    </div>
+                 <div>
+                 <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                   <FileText className="w-4 h-4 mr-2 text-gray-500" />
+                   Resume
+                 </label>
+                 <div className="mt-1 p-6 border border-gray-300 border-dashed rounded-lg bg-gray-50 flex flex-col items-center justify-center">
+                   {resume ? (
+                     <div className="text-center">
+                       <FileText className="w-12 h-12 text-green-600 mx-auto mb-2" />
+                       <p className="text-sm text-gray-700 mb-2">Resume uploaded</p>
+                       <a
+                        href={`${baseURL}${resume}`}
+
+
+                         target="_blank"
+                         rel="noopener noreferrer"
+                         className="text-sm text-blue-600 hover:text-blue-800 underline flex items-center justify-center"
+                       >
+                         <Eye className="w-4 h-4 mr-1" />
+                         View Resume
+                       </a>
+                     </div>
+                   ) : (
+                     <div className="text-center">
+                       <FileText className="w-12 h-12 text-gray-400 mx-auto mb-2" />
+                       <p className="text-gray-500">No resume uploaded.</p>
+                       <p className="text-sm text-gray-500 mt-1">Please update your profile to add a resume.</p>
+                     </div>
+                   )}
+                 </div>
+               </div>
                   )}
 
                   {modalType === "approve" && (
