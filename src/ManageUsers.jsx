@@ -130,7 +130,7 @@ export default function ManageUsers() {
   return (
     <div className="min-h-screen bg-gray-100">
       {/* Admin Header */}
-      <header className="bg-indigo-700 text-white shadow-md">
+     {/* <header className="bg-indigo-700 text-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex justify-between items-center">
             <h1 className="text-2xl font-bold flex items-center">
@@ -145,7 +145,7 @@ export default function ManageUsers() {
             </div>
           </div>
         </div>
-      </header>
+      </header>*/}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
@@ -169,25 +169,7 @@ export default function ManageUsers() {
               />
             </div>
 
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center">
-                <Filter className="h-5 w-5 text-gray-400 mr-2" />
-                <span className="text-sm text-gray-600 mr-2">Filter:</span>
-                <select
-                  value={filterType}
-                  onChange={(e) => setFilterType(e.target.value)}
-                  className="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-                >
-                  <option value="all">All Users</option>
-                  <option value="employee">Job Seekers</option>
-                  <option value="employer">Employers</option>
-                </select>
-              </div>
-
-              <div className="text-sm text-gray-600">
-                {filteredUsers.length} {filteredUsers.length === 1 ? "user" : "users"} found
-              </div>
-            </div>
+         
           </div>
         </div>
 
@@ -329,7 +311,7 @@ export default function ManageUsers() {
 
       {/* User Details Modal */}
       {showUserDetails && selectedUser && (
-     <div className="fixed inset-0 bg-white bg-opacity-60 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300 ease-out">
+     <div className="fixed inset-0 bg-white/30 backdrop-blur-md flex items-center justify-center z-50 transition-opacity duration-300">
 
           <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center sticky top-0 bg-white z-10">
