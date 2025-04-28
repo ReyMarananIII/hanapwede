@@ -305,7 +305,7 @@ export default function PostJobForm() {
 
                 <div>
                   <label htmlFor="salary_range" className="block text-sm font-medium text-gray-700 mb-2">
-                    Salary Range*
+                    Salary Range
                   </label>
                   <div className="relative rounded-md shadow-sm">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -319,7 +319,7 @@ export default function PostJobForm() {
                       onChange={handleChange}
                       placeholder="e.g. ₱30,000"
                       className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                      required
+                   
                     />
                   </div>
                 </div>
