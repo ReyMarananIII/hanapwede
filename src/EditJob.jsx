@@ -361,6 +361,10 @@ export default function EditJob() {
                   <option value="">Select Type</option>
                   <option value="Full-time">Full-time</option>
                   <option value="Part-time">Part-time</option>
+                  <option value="Part-time">Contract</option>
+                  <option value="Part-time">Freelance</option>
+                  <option value="Part-time">Internship</option>
+                  <option value="Part-time">Remote</option>
     
                 </select>
               </div>
