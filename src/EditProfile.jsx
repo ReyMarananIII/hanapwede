@@ -321,7 +321,7 @@ const handleSubmit = async (e) => {
                   <div className="space-y-4">
                     <h3 className="font-semibold">Contact Information</h3>
 
-                    <div>
+                   {/* <div>
                       <label className="block text-sm mb-2">Email</label>
                       <input
                         type="email"
@@ -331,7 +331,7 @@ const handleSubmit = async (e) => {
                         placeholder="Email address"
                         className="w-full p-2 border rounded-md"
                       />
-                    </div>
+                    </div> */}
 
                     <div>
                       <label className="block text-sm mb-2">Phone</label>

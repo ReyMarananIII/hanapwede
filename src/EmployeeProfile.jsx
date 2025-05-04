@@ -315,7 +315,7 @@ export default function EmployeeProfile() {
                       <Mail className="w-5 h-5 text-gray-500 mt-0.5 mr-3" />
                       <div>
                         <p className="text-sm text-gray-500">Email</p>
-                        <p>{userDetails.email || "Not provided"}</p>
+                        <p>{userDetails.profile?.username || "Not provided"}</p>
                       </div>
                     </div>
 

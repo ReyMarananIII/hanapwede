@@ -12,7 +12,7 @@ const faqs = [
   {
     "id": 2,
     "question": "How do I search and apply for jobs?",
-    "answer": "Once you sign in, you will be directed to your Job Feed or Dashboard, where you can browse Recommended Jobs based on your profile or explore All Jobs. You can use the Location Filter to refine your search. When you find a job that interests you, click Apply Now and follow the instructions to submit your application."
+    "answer": "Once you sign in, you will be directed to your Job Feed or Dashboard, where you can browse Recommended Jobs based on your profile or explore All Jobs. When you find a job that interests you, click Apply Now and follow the instructions to submit your application."
   },
   {
     "id": 3,
